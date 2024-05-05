@@ -1,0 +1,189 @@
+* {
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    margin: 0;
+    padding: 0;
+}
+  
+  .container {
+    top: 0;
+    background-color: white;
+    height: 80px;
+    position: fixed;
+    border-bottom: 2px solid #a9a9ac;
+
+  }
+
+  .navbar {
+    background-color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 30px;
+    padding: 0;
+    position: fixed; /* Navbar tetap berada di posisi yang sama saat menggulir halaman */
+    width: 100%; /* Menempati lebar seluruh halaman */
+    border-right: 2px solid #a9a9ac;
+
+  }
+
+  .logo {
+    width: 5cm;
+
+  }
+
+  .logo img {
+    width: 170px; 
+
+  }
+
+  .username {
+    background-color: #ececed;
+    flex-grow: 1;
+    display: flex;
+    align-items: center; 
+    border-left: 2px solid #ccc;
+    height: 80px;
+    border-bottom: 2px solid #a9a9ac;
+    justify-content: space-between;
+    padding: 0 15px;
+    margin-left: 0;
+  }
+
+  .username img {
+    width: 30px;
+    height: 30px;
+    margin-right: 30px;
+  }
+
+  .username span {
+    /* margin-right: 950px; */
+  }
+
+  
+
+
+/*sidebar*/
+.sidebar {
+    margin-top: 80px;
+    width: 203px;
+    height: 100vh;
+    border-right: 2px solid #ccc;
+    position: fixed;
+    left: 0;
+}
+
+.sidebar .text {
+    color: #000000;
+    font-size: 25px;
+    font-weight: 600;
+    line-height: 65px;
+    text-align: center;
+    background: pink;
+    letter-spacing: 1px;
+    user-select: none;
+    
+}
+.sidebar-nav {
+    padding: 0;
+}
+
+
+nav ul {
+    background:white;
+    height: 100%;
+    width: 100%;
+    list-style: none;
+}
+nav ul li {
+    line-height: 60px;
+}
+
+nav ul li a {
+    position: relative;
+    color: #000000;
+    text-decoration: none;
+    font-size: 15px;
+    padding-left: 30px;
+    font-weight: 500;
+    display: block;
+    width: 100%;
+    border-left: 3px solid transparent ;
+}
+
+nav ul li.active a {
+    color: #2d1b6b;
+    background: #ececed;
+    text-decoration: none;
+    border-left-color: #2d1b6b;
+}
+nav ul li a:hover {
+    color: #2d1b6b;
+    background: white;
+    text-decoration: none;
+    border-left-color: #2d1b6b;
+}
+
+nav ul ul {
+    position: static;
+    /* display: none; */
+}
+
+nav ul ul li {
+    line-height: 42px;
+    border-bottom: none;
+}
+
+nav ul ul li a {
+    font-size: 14px;
+    color: black;
+    padding-left: 0.5px;
+}
+
+nav ul li.active ul li a {
+    color: black;
+    background: #ececed;
+    border-left-color: transparent ;
+}
+
+nav ul li ul li a:hover {
+    color: #2d1b6b!important;
+    background: #a9a9ac!important;
+}
+
+nav ul li a span{
+    position: absolute;
+    top: 50%;
+    right: 20px;
+    transform: translateY(-50%);
+    transition: transform 0.4s;
+}
+
+nav ul li a:hover span {
+    transform: translateY(-50%) rotate(-180deg);
+}
+
+.logout-btn {
+  width: 100px;
+  height: 35px;
+  margin-top:200px;
+  margin-left:1000px;
+  background-color: #d15b5b; /* Warna latar belakang biru */
+  border: none;
+  color: white; /* Warna teks putih */
+  cursor: pointer;
+  font-size: 16px; /* Ukuran teks */
+  border-radius: 5px;
+}
+
+
+.content {
+  background-color: #ececed;
+  flex: 1;
+  padding-top: 100px; /* Tetapkan padding sesuai kebutuhan Anda */
+  padding-left: 250px; /* Tetapkan padding sesuai kebutuhan Anda */
+  width: 100%; /* Memenuhi lebar layar */
+}

@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Sidebar dengan Footer Statis dan Menu Dropdown</title>
+        <style>
+            body {
+                margin: 0;
+                font-family: Arial, sans-serif;
+              }
+              
+              .sidebar {
+                height: 100%;
+                width: 250px;
+                position: fixed;
+                top: 0;
+                left: 0;
+                background-color: #333;
+                padding-top: 20px;
+              }
+              
+              .sidebar h2 {
+                color: #fff;
+                text-align: center;
+              }
+              
+              .sidebar ul {
+                list-style-type: none;
+                padding: 0;
+              }
+              
+              .sidebar ul li {
+                padding: 10px;
+              }
+              
+              .sidebar ul li a {
+                color: #fff;
+                text-decoration: none;
+                display: block;
+              }
+              
+              .sidebar ul li a:hover {
+                background-color: #555;
+              }
+              
+              .dropdown-content {
+                display: none;
+                background-color: #555;
+              }
+              
+              .dropdown-content li {
+                padding: 10px;
+              }
+              
+              .dropdown:hover .dropdown-content {
+                display: block;
+              }
+              
+              .content {
+                margin-left: 250px;
+                padding: 20px;
+              }
+            
+              .logout-btn {
+                position: absolute;
+                bottom: 20px;
+                width: 90%;
+                margin-left: 5%;
+                background-color: #c22d2d;
+                color: #fff;
+                border: none;
+                padding: 10px;
+                cursor: pointer;
+              }
+              
+              .logout-btn:hover {
+                background-color: #db7a7a;
+              }
+              
+        </style>
+    </head>
+
+    <body>
+        <div class="sidebar">
+            <h2>Sidebar</h2>
+            <ul>
+                <li><a href="#">Beranda</a></li>
+                <li><a href="#">Profil</a></li>
+                <li class="dropdown">
+                    <a href="#">Menu Dropdown</a>
+                    <ul class="dropdown-content">
+                        <li><a href="#">Submenu 1</a></li>
+                        <li><a href="#">Submenu 2</a></li>
+                        <li><a href="#">Submenu 3</a></li>
+                    </ul>
+                </li>
+                <li><a href="#">Kontak</a></li>
+            </ul>
+            <button class="logout-btn">Logout</button>
+        </div>
+
+        <div class="content">
+            <h2>Content Area</h2>
+            <p>Ini adalah area konten.</p>
+        </div>
+    </body>
+
+</html>
