@@ -1,45 +1,66 @@
+
 <?php
     session_start();
-    include '../koneksi.php'; // Menghubungkan ke file koneksi.php
-    
+    include '../koneksi.php'; 
+
     if (!isset($_SESSION['username'])) {
         // Jika belum, redirect pengguna ke halaman login
         header("Location: ../login/login.php");
         exit(); // Pastikan untuk keluar dari skrip setelah redirect
     }
-
+    
     $username = $_SESSION['username'];
     $role = $_SESSION['role'];
     $nama = $_SESSION['nama'];
-    
+
+    $query_get_responden_id = "SELECT responden_industri_id FROM t_responden_industri WHERE responden_nama = '$nama'";
+    $result_get_responden_id = mysqli_query($kon, $query_get_responden_id);
+    $row_get_responden_id = mysqli_fetch_assoc($result_get_responden_id);
+    $responden_industri_id = $row_get_responden_id['responden_industri_id'];
+
+    $query_get_profil_image = "SELECT image FROM t_responden_industri WHERE responden_nama = '$nama'";
+    $result_get_profil_image = mysqli_query($kon, $query_get_profil_image);
+    $row_get_profil_image = mysqli_fetch_assoc($result_get_profil_image);
+    $profil_image = $row_get_profil_image['image'];
+    // Query untuk memeriksa apakah survei pendidikan sudah diisi oleh responden tertentu
+    $query_check_survey = "SELECT COUNT(*) AS jumlah_survey FROM t_jawaban_industri
+                            JOIN m_survey_soal ON t_jawaban_industri.soal_id = m_survey_soal.soal_id
+                            WHERE m_survey_soal.kategori_id = 4
+                            AND t_jawaban_industri.responden_industri_id = '$responden_industri_id'";
+    $result_check_survey = mysqli_query($kon, $query_check_survey);
+    $row_check_survey = mysqli_fetch_assoc($result_check_survey);
+    $jumlah_survey = $row_check_survey['jumlah_survey'];
+
     // Query untuk mengambil soal survei dengan kategori_id 1
     $query = "SELECT m_survey_soal.soal_id, m_survey_soal.soal_nama
         FROM m_survey_soal
         JOIN m_survey ON m_survey_soal.survey_id = m_survey.survey_id
         JOIN m_kategori ON m_survey_soal.kategori_id = m_kategori.kategori_id
         JOIN m_user ON m_survey.user_id = m_user.user_id
-        WHERE m_kategori.kategori_id = 2
-        AND m_user.role = 'mahasiswa'
+        WHERE m_kategori.kategori_id = 4
+        AND m_user.role = 'industri'
         AND (m_survey_soal.soal_nama, m_survey_soal.soal_id) IN (
             SELECT soal_nama, MIN(soal_id)
             FROM m_survey_soal
             JOIN m_survey ON m_survey_soal.survey_id = m_survey.survey_id
             JOIN m_kategori ON m_survey_soal.kategori_id = m_kategori.kategori_id
             JOIN m_user ON m_survey.user_id = m_user.user_id
-            WHERE m_kategori.kategori_id = 2
-            AND m_user.role = 'mahasiswa'
+            WHERE m_kategori.kategori_id = 4
+            AND m_user.role = 'industri'
             GROUP BY soal_nama
         )";
 
+        
     $result = mysqli_query($kon, $query);
 
-    $fasilitas = array();
+    $lulusan = array();
 	while ($data = mysqli_fetch_assoc($result)) {
-		$fasilitas[] = $data;
+		$lulusan[] = $data;
 	}
     
     
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -58,30 +79,33 @@
         /* CSS untuk menyesuaikan tata letak radio button */
         h2 {
             font-weight: bold;
-            margin-bottom: 15px;
         }
 
         .survey-question {
+            margin-right: 100px;
             background-color: white; /* Tambahkan background color merah */
             padding: 10px; /* Tambahkan padding untuk memberi jarak antara konten dan border */
             width : 1000px;
+
         }
 
         .pilihan-container {
             display: flex;
         }
-
+        .username img {
+            margin-left: 795px;
+        }
         .pilihan1,
         .pilihan2 {
-            margin-left: 40px;
+            flex: 1;
         }
 
         .pilihan1 {
-            margin-right: 70px;
+            margin-right: 10px;
         }
 
         .pilihan2 {
-            margin-left: 30px;
+            margin-left: 10px;
         }
 
         .button-container {
@@ -96,47 +120,70 @@
             cursor: pointer;
         }
 
-        .button-hapus {
-            padding: 0;
-            border: #2d1b6b;
-            font-size: 12px;
-            align-items: center;
-            height: 20px;
-            width: 50px;
-            background-color: #e87818;
-            color: white;
-            margin-left: 540px;
-        }
-        
-        .button-tambah {
+        .button-kembali {
             background-color: white;
-            margin-left: 920px;
-            border: 1px solid black;
         }
 
-        .button-edit {
-            padding: 0;
-            border: #2d1b6b;
-            font-size: 12px;
-            align-items: center;
-            height: 20px;
-            width: 50px;
-            margin-left: 1px;
+        .button-simpan {
+            margin-left: 810px; 
             background-color: #2d1b6b;
             color: white;
+
         }
 
+        /* CSS untuk garis pembatas */
         hr {
-                    border: none;
-                    border-top: 2px solid #ccc;
-                }
-
-                .message {
-            width: 5px;
-            margin-left: 885px
+            border: none;
+            border-top: 2px solid #ccc;
         }
+
+        .popup-container {
+            display: none;
+            position: fixed;
+            width: 500px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            z-index: 9999;
+        }
+
+        .popup-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 9998;
+        }
+
+        /* Tambahkan CSS untuk menengahkan pesan dan tombol */
+        .popupmessage {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .popupbutton {
+            padding-left: 10px;
+            padding-right: 10px;
+            color: white;
+            background: #2d1b6b;
+            display: block;
+            margin: 0 auto;
+            border: none;
+            cursor: pointer;
+            border-radius: 10px;
+        }
+
     </style>
 </head>
+
 <body>
 <div class="container">
         <nav class="navbar">
@@ -144,10 +191,8 @@
                 <img src="img/logo-nama.png" alt="Logo" width="100">
             </div>
             <div class="username">
-                <span><?php echo $nama; ?> | Admin </span>
-                <a href="permintaan-user.php" class="message">
-                    <i class="fa-regular fa-envelope"></i>
-                </a>
+                <span><?php echo $nama; ?> | Industri</span>
+                <img src="img/<?php echo $profil_image; ?>" alt="User" width="35" height="35" style="border-radius: 50%;">
                 <a href="../login/logout.php" class="logout">
                     <i class="fa-solid fa-arrow-right-from-bracket"></i>
                 </a>
@@ -158,47 +203,39 @@
     <nav class="sidebar">
         <ul class="sidebar-nav">
             <li class="">
-                <a href="dashboard-admin.php" class="">
-                    <i class="fa-solid fa-house"></i>
+                <a href="dashboard-industri.php" class="">
+                <i class="fa-solid fa-house"></i>
                     Dashboard
                 </a>
             </li>
             <li class="">
                 <a href="#" class="" data-bs-toggle="collapse" data-bs-target="#auth" aria-expanded="false" aria-controls="auth">
-                <i class="fa-solid fa-list-ol"></i> Survey
+                    <i class="fa-solid fa-list-ol"></i> Survey
                     <span class="lni lni-chevron-down"></span>
                 </a>
                 <ul id="auth" class="" data-bs-parent="#sidebar">
-                    <li><a href="soal-pendidikan.php"><i class="fa-solid fa-medal"></i> Kualitas Pendidikan</a></li>
-                    <li><a href="soal-fasilitas.php"><i class="fa-solid fa-layer-group"></i>     Fasilitas</a></li>                    
-                    <li><a href="soal-pelayanan.php"><i class="fa-solid fa-handshake"></i>  Pelayanan</a></li>
-                    <li><a href="soal-lulusan.php"><i class="fa-solid fa-graduation-cap"></i>  Lulusan</a></li>
+                    <li><a href="survey-pelayanan.php"><i class="fa-solid fa-handshake"></i>  Pelayanan</a></li>
+                    <li><a href="survey-lulusan.php"><i class="fa-solid fa-graduation-cap"></i>  Lulusan</a></li>
                 </ul>
             </li>
             <li class="">
-                <a href="responden-survey.php" class="">
-                    <i class="fa-solid fa-user-group"></i>
-                    Responden
-                </a>
-            </li>
-            <li class="">
-                <a href="laporan-survey.php" class="">
-                    <i class="fa-solid fa-book-open"></i>
-                    Laporan
+                <a href="profil.php" class="">
+                    <i class="fa-solid fa-user"></i>
+                     Profile
                 </a>
             </li>
         </ul>
     </nav>
+
     <section>
     <div class="content">
-        <h2>Survey Fasilitas Polinema</h2>
+        <h2>Survey Lulusan</h2>
+        <form action="jawaban-lulusan-industri.php" method="post" >
         <?php
             $no = 1;
-            foreach ($fasilitas as $p) {
+            foreach ($lulusan as $p) {
                 ?>
                     <div class="survey-question">
-                    <form action="hapus-fasilitas.php?id=<?php echo $p['soal_id']; ?>" method="post" id="hapusForm">
-
                         <label for="jawaban_<?php echo $p['soal_id']; ?>"><?php echo $p['soal_nama']; ?></label>
                         <div class="pilihan-container">
                             <div class="pilihan1">
@@ -212,17 +249,8 @@
                                 <label for="jawaban_<?php echo $p['soal_id']; ?>_baik">Baik</label><br>
                                 <input type="radio" id="jawaban_<?php echo $p['soal_id']; ?>_sangat_baik" name="jawaban_<?php echo $p['soal_id']; ?>" value="sangat_baik">
                                 <label for="jawaban_<?php echo $p['soal_id']; ?>_sangat_baik">Sangat Baik</label>
-                                    <input type="submit" class="btn button-hapus" name="hapus" value="Hapus" onclick="return confirm('Apakah Anda yakin ingin menghapus?');">
-                                    <!-- Tambahkan input hidden untuk menyimpan ID -->
-                                    <input type="hidden" name="soal_id" value="<?php echo $p['soal_id']; ?>">
-                                <a href="edit-fasilitas.php?id=<?php echo $p['soal_id']; ?>" class="btn button-edit">Edit</a>
-
                             </div>
-                            
-                            
                         </div>
-                        </form>
-
                         <hr> <!-- Garis pembatas -->
                     </div>
 
@@ -230,12 +258,37 @@
                         $no++; // Increment the counter
                     }
                 ?>
-        
-        <!-- Button container -->
-        <div class="button-container">
-            <a href="tambah-fasilitas.php" class="btn button-tambah">Tambah</a>
-        </div>    
+            <!-- Button container -->
+            <div class="button-container">
+                <button class="button-kembali">Kembali</button>
+                <input type="submit" class="btn btn-outline-light button-simpan" name="simpan" value="Simpan">
+            </div> 
+        </form>   
     </div>
+    <div class="popup-overlay"></div>
+    <div class="popup-container">
+        <p class="popupmessage">Survey Lulusan Telah Diisi</p>
+        <button class="popupbutton" onclick="closePopup()">Lanjut</button>
+    </div>
+
+    <script>
+    // Tambahkan skrip JavaScript di sini
+    <?php if ($jumlah_survey > 0): ?>
+        // Jika survei pendidikan sudah diisi, tampilkan pesan pop-up
+        document.querySelector('.popup-overlay').style.display = 'block';
+        document.querySelector('.popup-container').style.display = 'block';
+    <?php endif; ?>
+
+    // Fungsi untuk menutup pesan pop-up
+    function closePopup() {
+        document.querySelector('.popup-overlay').style.display = 'none';
+        document.querySelector('.popup-container').style.display = 'none';
+        // Alihkan pengguna kembali ke dashboard-industri setelah mengklik OK pada pesan pop-up
+        window.location.href = "dashboard-industri.php";
+    }
+    </script>
+
+
 </section>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"></script>

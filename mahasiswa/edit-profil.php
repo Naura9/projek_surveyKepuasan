@@ -1,8 +1,17 @@
 <?php
+session_start();
 include '../koneksi.php';
 
+if (!isset($_SESSION['username'])) {
+    // Jika belum, redirect pengguna ke halaman login
+    header("Location: ../login/login.php");
+    exit(); // Pastikan untuk keluar dari skrip setelah redirect
+}
+
 // Ambil parameter dari URL
+$nama = $_SESSION['nama'];
 $username = $_GET['username'];
+
 
 // Query untuk mengambil data profil berdasarkan username
 $query = "SELECT * FROM t_responden_mahasiswa 
@@ -15,6 +24,28 @@ $res = mysqli_query($kon, $query);
 // Pastikan data ditemukan sebelum menampilkan form edit
 if(mysqli_num_rows($res) > 0) {
     $mhs = mysqli_fetch_assoc($res);
+
+    if(isset($_FILES["fileImg"]["name"])){ // Change this line
+        $id = $_POST["responden_mahasiswa_id"];
+    
+        $src = $_FILES["fileImg"]["tmp_name"];
+        $imageName = uniqid() . $_FILES["fileImg"]["name"]; // Change this line
+    
+        $target = "img/" . $imageName;
+    
+        move_uploaded_file($src, $target);
+    
+        $query = "UPDATE t_responden_mahasiswa SET image = '$imageName' WHERE responden_mahasiswa_id = $id"; // Change this line
+        mysqli_query($kon, $query);
+    
+        header("Location: profil.php");
+    }
+    
+    $query_get_profil_image = "SELECT image FROM t_responden_mahasiswa WHERE responden_nama = '$nama'";
+    $result_get_profil_image = mysqli_query($kon, $query_get_profil_image);
+    $row_get_profil_image = mysqli_fetch_assoc($result_get_profil_image);
+    $profil_image = $row_get_profil_image['image'];
+    
 ?>
 
 <!DOCTYPE html>
@@ -27,7 +58,7 @@ if(mysqli_num_rows($res) > 0) {
     <link href="https://cdn.lineicons.com/4.0/lineicons.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="path/to/font-awesome/css/font-awesome.min.css">   
+    <script src="https://kit.fontawesome.com/96cfbc074b.js" crossorigin="anonymous"></script>
      <link rel="stylesheet" href="../header.css">
     <script src="https://code.jquery.com/jquery-3.4.1.js"></script>
     <style>
@@ -47,16 +78,16 @@ if(mysqli_num_rows($res) > 0) {
         }
 
             .card-body {
-    background-color: #ececed;
-}
+            background-color: #ececed;
+        }
 
-.bg-custom {
-    background-color: #ececed;
-    width:700px;
-}
+        .bg-custom {
+            background-color: #ececed;
+            width:700px;
+        }
 
 
-.button-container {
+        .button-container {
             display: flex;
             margin-top: 20px;
         }
@@ -81,17 +112,71 @@ if(mysqli_num_rows($res) > 0) {
 
         }
 
+        .username img {
+            margin-left: 795px;
+        }
+
+
+
+
+    .upload{
+      width: 140px;
+      margin-bottom: 20px;
+      
+    }
+    .upload img{
+      border: 2px solid #DCDCDC;
+      width: 150px;
+      height: 150x;
+    }
+    .upload .rightRound{
+        background: #00B4FF;
+        width: 32px;
+        height: 32px;
+        line-height: 32px;
+        text-align: center;
+        border-radius: 50%;
+        overflow: hidden;
+        cursor: pointer;
+    }
+    .upload .leftRound{
+      bottom: 0;
+      left: 0;
+      background: red;
+      width: 32px;
+      height: 32px;
+      line-height: 33px;
+      text-align: center;
+      border-radius: 50%;
+      overflow: hidden;
+      cursor: pointer;
+    }
+    .upload .fa{
+      color: white;
+    }
+    .upload input{
+      position: absolute;
+      transform: scale(2);
+      opacity: 0;
+    }
+    .upload input::-webkit-file-upload-button, .upload input[type=submit]{
+      cursor: pointer;
+    }
+
     </style>
 </head>
 <body>
-    <div class="container">
+<div class="container">
         <nav class="navbar">
             <div class="logo">
                 <img src="img/logo-nama.png" alt="Logo" width="100">
             </div>
             <div class="username">
-                <span>Nama Pengguna</span>
-                <img src="img/profile.png" alt="User" width="30" height="30">
+                <span><?php echo $nama; ?> | Mahasiswa</span>
+                <img src="img/<?php echo $profil_image; ?>" alt="User" width="35" height="35" style="border-radius: 50%;">
+                <a href="../login/logout.php" class="logout">
+                    <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                </a>
             </div>
         </nav>
     </div>
@@ -99,45 +184,57 @@ if(mysqli_num_rows($res) > 0) {
     <nav class="sidebar">
         <ul class="sidebar-nav">
             <li class="">
-                <a href="dashboard-user.php" class="">
-                    <i class="lni lni-user"></i>
+                <a href="dashboard-mahasiswa.php" class="">
+                <i class="fa-solid fa-house"></i>
                     Dashboard
                 </a>
             </li>
             <li class="">
                 <a href="#" class="" data-bs-toggle="collapse" data-bs-target="#auth" aria-expanded="false" aria-controls="auth">
-                    <i class="lni lni-layout"></i> Survey
+                    <i class="fa-solid fa-list-ol"></i> Survey
                     <span class="lni lni-chevron-down"></span>
                 </a>
                 <ul id="auth" class="" data-bs-parent="#sidebar">
-                    <li><a href="#">Kualitas Pendidikan</a></li>
-                    <li><a href="survey_fasilitas.php" onclick="loadContent(this)">Fasilitas</a></li>                    
-                    <li><a href="#">Pelayanan</a></li>
-                    <li><a href="#">Lulusan</a></li>
+                    <li><a href="survey-pendidikan.php"><i class="fa-solid fa-medal"></i> Kualitas Pendidikan</a></li>
+                    <li><a href="survey-fasilitas.php"><i class="fa-solid fa-layer-group"></i>     Fasilitas</a></li>                    
+                    <li><a href="survey-pelayanan.php"><i class="fa-solid fa-handshake"></i>  Pelayanan</a></li>
                 </ul>
             </li>
             <li class="">
-                <a href="profil-user.php" class="">
-                    <i class="lni lni-user"></i>
+                <a href="profil.php" class="">
+                    <i class="fa-solid fa-user"></i>
                      Profile
                 </a>
             </li>
-
-            <li>
-                <a href="login.php" class="btn logout-btn">Logout</a>
-            </li>
-
         </ul>
-    </nav>
+    </nav>    
     <section>
     <div class="content">
         <h2>Edit Profil</h2>
-        <form action="proses-edit.php" method="POST">
             <div class="form-profile">
                 <table class="table">
                     <div class="form-group text-left font-weight-bold">
                         <div class="profile-label">Foto Profil</div>
-                            <img src="../img/profil-kotak.jfif" alt="Polinema Logo">                                
+                            <form class="form" id = "form" action="" enctype="multipart/form-data" method="post">
+                            <input type="hidden" name="responden_mahasiswa_id" value="<?php echo $mhs['responden_mahasiswa_id']; ?>">
+                            <div class="upload">
+                            <div class="rightRound" id = "upload">
+                                    <input type="file" name="fileImg" id = "fileImg" accept=".jpg, .jpeg, .png">
+                                    <i class = "fa fa-camera"></i>
+                                </div>
+                                <img src="img/<?php echo $mhs['image']; ?>" id = "image">
+
+                                <div class="leftRound" id = "cancel" style = "display: none;">
+                                    <i class = "fa fa-times"></i>
+                                </div>
+                                <div class="rightRound" id = "confirm" style = "display: none;">
+                                    <input type="submit">
+                                    <i class = "fa fa-check"></i>
+                                </div>
+                            </div>     
+                            </form>                        
+                    <form action="proses-edit.php" method="POST">
+
                         </div>					
                         <div class="form-group text-left font-weight-bold">
                             <label for="responden_nim">NIM</label>
@@ -153,7 +250,7 @@ if(mysqli_num_rows($res) > 0) {
 						</div>						
                         <div class="form-group text-left font-weight-bold">
                             <label for="password">Password</label>
-							<input type="text" class="form-control bg-custom" name="password" id="password" value="<?php echo $mhs['password']; ?>">
+							<input type="text" class="form-control bg-custom" name="password" id="password" value="xxxxxxxx">
 						</div>						
                         <div class="form-group text-left font-weight-bold">
                             <label for="responden_email">Email</label>
@@ -177,7 +274,7 @@ if(mysqli_num_rows($res) > 0) {
 
         <!-- Button container -->
             <div class="button-container">
-                <a href="profil-user.php" class="btn btn-light btn-outline-dark button-kembali">Kembali</a>
+                <a href="profil.php" class="btn btn-light btn-outline-dark button-kembali">Kembali</a>
                 <input type="submit" class="btn btn-outline-light button-simpan" name="simpan" value="Simpan">
             </div>    
         </form>
@@ -190,6 +287,28 @@ if(mysqli_num_rows($res) > 0) {
         $('nav ul li').click(function(){
              $(this).addClass("active").siblings().removeClass("active");
         });    
+    </script>
+
+    
+<script type="text/javascript">
+      document.getElementById("fileImg").onchange = function(){
+        document.getElementById("image").src = URL.createObjectURL(fileImg.files[0]); // Preview new image
+
+        document.getElementById("cancel").style.display = "block";
+        document.getElementById("confirm").style.display = "block";
+
+        document.getElementById("upload").style.display = "none";
+      }
+
+      var userImage = document.getElementById('image').src;
+      document.getElementById("cancel").onclick = function(){
+        document.getElementById("image").src = userImage; // Back to previous image
+
+        document.getElementById("cancel").style.display = "none";
+        document.getElementById("confirm").style.display = "none";
+
+        document.getElementById("upload").style.display = "block";
+      }
     </script>
 </body>
 </html>

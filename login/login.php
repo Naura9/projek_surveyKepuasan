@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="http://localhost/survey/login/login.css">
     <link href="https://cdn.lineicons.com/4.0/lineicons.css" rel="stylesheet">
     <script src="https://kit.fontawesome.com/96cfbc074b.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="login.css">
 
 
 </head>
@@ -32,20 +33,15 @@
             <div class="form-group">
                 <label for="password">Password</label>
                 <input type="password" id="password" name="password" class="form-control" placeholder="Masukkan Password Anda" required>
-                <div class="input-group-append">
-                        <div class="input-group-text" onclick="togglePassword()">
-                            <i id="eyeIcon" class="fa-regular fa-eye-slash"></i>
-                        </div>
-                    </div>
             </div>
-            <div class="forgot">
+            <!-- <div class="forgot">
                 <a href="#" class="link"> Forgot Your Password?</a>
-            </div>
+            </div> -->
 
             <button type="submit" class="btn btn-primary btn-block btn-login">Masuk</button>        
         </form>
         <br>
-        <h4>Belum Memiliki Akun? <a href="" class="link"> Hubungi Admin Polinema</h4>
+        <h4>Belum Memiliki Akun? <a href="profil-form.php" class="link"> Register</h4>
 
     </div>
 </body>

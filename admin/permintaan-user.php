@@ -13,83 +13,48 @@ $username = $_SESSION['username'];
 $role = $_SESSION['role'];
 $nama = $_SESSION['nama'];
 
-// Query to fetch user information from m_user table based on username
-$query_user = "SELECT nama, role FROM m_user WHERE username = '$username'";
 
-// Execute the query
-$result_user = mysqli_query($kon, $query_user);
+// Periksa apakah form telah disubmit
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    // Periksa apakah id telah diterima
+    if(isset($_POST['id'])) {
+        $id = $_POST['id'];
 
-// Check if the query executed successfully
-if ($result_user) {
-    // Fetch the user's information
-    $user_info = mysqli_fetch_assoc($result_user);
+        // Jika tombol delete diklik
 
-    // Store the user's name and role in variables
-    $nama = $user_info['nama'];
-    $role = $user_info['role'];
-} else {
-    // Handle the case where the query fails
-    $nama = "Nama Pengguna";
-    $role = "Role";
+        // Jika tombol status diklik
+        if(isset($_POST['status'])) {
+            $status = $_POST['status'];
+
+            // Lakukan sanitasi input sebelum query
+            $status = mysqli_real_escape_string($kon, $status);
+            $id = intval($id); // Pastikan id adalah integer
+
+            // Lakukan query untuk memperbarui status
+            $query = "UPDATE m_registrasi SET status='$status' WHERE id=$id";
+
+            if(mysqli_query($kon, $query)) {
+                // Tampilkan pesan sukses atau lakukan tindakan lain yang diperlukan
+                // echo "Status berhasil diperbarui.";
+            } else {
+                // echo "Gagal memperbarui status: " . mysqli_error($kon);
+            }
+        }
+        $delete_query = "DELETE FROM m_registrasi WHERE id=$id";
+        if(mysqli_query($kon, $delete_query)) {
+            // echo "Status berhasil diperbarui dan entri dihapus.";
+        } else {
+            // echo "Gagal memperbarui status atau menghapus entri: " . mysqli_error($kon);
+        }
+    }
 }
 
-
-// Query untuk mengambil data responden mahasiswa
-$query_all_respondents = "
-(
-    SELECT DISTINCT m.nama, m.username, m.role, r.responden_mahasiswa_id AS responden_id, r.responden_tanggal
-    FROM t_jawaban_mahasiswa j
-    INNER JOIN t_responden_mahasiswa r ON j.responden_mahasiswa_id = r.responden_mahasiswa_id
-    INNER JOIN m_survey s ON s.survey_id = r.survey_id
-    INNER JOIN m_user m ON s.user_id = m.user_id
-    )
-    UNION
-    (
-    SELECT DISTINCT m.nama, m.username, m.role, r.responden_alumni_id AS responden_id, r.responden_tanggal
-    FROM t_jawaban_alumni j
-    INNER JOIN t_responden_alumni r ON j.responden_alumni_id = r.responden_alumni_id
-    INNER JOIN m_survey s ON s.survey_id = r.survey_id
-    INNER JOIN m_user m ON s.user_id = m.user_id
-    )
-    UNION
-    (
-    SELECT DISTINCT m.nama, m.username, m.role, r.responden_ortu_id AS responden_id, r.responden_tanggal
-    FROM t_jawaban_ortu j
-    INNER JOIN t_responden_ortu r ON j.responden_ortu_id = r.responden_ortu_id
-    INNER JOIN m_survey s ON s.survey_id = r.survey_id
-    INNER JOIN m_user m ON s.user_id = m.user_id
-    )
-    UNION
-    (
-    SELECT DISTINCT m.nama, m.username, m.role, r.responden_tendik_id AS responden_id, r.responden_tanggal
-    FROM t_jawaban_tendik j
-    INNER JOIN t_responden_tendik r ON j.responden_tendik_id = r.responden_tendik_id
-    INNER JOIN m_survey s ON s.survey_id = r.survey_id
-    INNER JOIN m_user m ON s.user_id = m.user_id
-    )
-    UNION
-    (
-    SELECT DISTINCT m.nama, m.username, m.role, r.responden_dosen_id AS responden_id, r.responden_tanggal
-    FROM t_jawaban_dosen j
-    INNER JOIN t_responden_dosen r ON j.responden_dosen_id = r.responden_dosen_id
-    INNER JOIN m_survey s ON s.survey_id = r.survey_id
-    INNER JOIN m_user m ON s.user_id = m.user_id
-    )
-    UNION
-    (
-    SELECT DISTINCT m.nama, m.username, m.role, r.responden_industri_id AS responden_id, r.responden_tanggal
-    FROM t_jawaban_industri j
-    INNER JOIN t_responden_industri r ON j.responden_industri_id = r.responden_industri_id
-    INNER JOIN m_survey s ON s.survey_id = r.survey_id
-    INNER JOIN m_user m ON s.user_id = m.user_id
-    )
-";
-
-// Execute the query
-$result_all_respondents = mysqli_query($kon, $query_all_respondents);
-
-
+// Query untuk mengambil data dari m_registrasi
+$query = "SELECT * FROM m_registrasi";
+$result = mysqli_query($kon, $query);
 ?>
+
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -103,9 +68,13 @@ $result_all_respondents = mysqli_query($kon, $query_all_respondents);
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://kit.fontawesome.com/96cfbc074b.js" crossorigin="anonymous"></script>
      <link rel="stylesheet" href="../header.css">
-    <script src="https://code.jquery.com/jquery-3.4.1.js"></script>
 
     <style>
+
+        h2{
+            font-weight: bold;
+
+        }
         .table {
             width: 1020px;
             border-radius: 10px; /* Menambahkan radius */
@@ -123,10 +92,34 @@ $result_all_respondents = mysqli_query($kon, $query_all_respondents);
         height: 273px;
     }
 
+    .fa-regular.fa-circle-xmark {
+        color: #E87818;
+        margin-right: 15px;
+        font-size: 20px;
+    }
+
+    .fa-regular.fa-circle-check {
+        color: #2D1B6B;
+        font-size: 20px;
+
+    }
+    
+    .btn-circle {
+        border: none;
+        background: none;
+        padding: 0;
+        font-size: inherit;
+        cursor: pointer;
+    }
+
+    .btn-circle:active {
+    }
+
     .message {
             width: 5px;
             margin-left: 885px
         }
+
     </style>
 </head>
 <body>
@@ -183,11 +176,10 @@ $result_all_respondents = mysqli_query($kon, $query_all_respondents);
     </nav>
     <section>
         <div class="content">
-        <h2>Responden Survey</h2>
+        <h2>Permintaan User</h2>
             <!-- Tabel responden survey -->
             <table class="table">
                     <tr>
-                        <th>Tanggal</th>
                         <th>Nama</th>
                         <th>Username</th>
                         <th>Role</th>
@@ -198,37 +190,20 @@ $result_all_respondents = mysqli_query($kon, $query_all_respondents);
                 <tbody>
                 <?php
                     // Loop untuk menampilkan data responden mahasiswa
-                    while($row = mysqli_fetch_assoc($result_all_respondents)) {                
+                    while($row = mysqli_fetch_assoc($result)) {                
                     ?>
                     <tr>
-                        <td><?php echo date('d-m-Y', strtotime($row['responden_tanggal'])); ?></td>
                         <td><?php echo $row['nama']; ?></td>
                         <td><?php echo $row['username']; ?></td>
                         <td><?php echo $row['role']; ?></td>
                         <td>
-                            <?php 
-                                // Mengecek role responden dan mengatur responden_id
-                                if ($row['role'] == 'mahasiswa') {
-                                    $responden_id = $row['responden_id'];
-                                } elseif ($row['role'] == 'alumni') {
-                                    $responden_id = $row['responden_id'];
-                                } elseif ($row['role'] == 'dosen') {
-                                    $responden_id = $row['responden_id'];
-                                } elseif ($row['role'] == 'industri') {
-                                    $responden_id = $row['responden_id'];
-                                } elseif ($row['role'] == 'ortu') {
-                                    $responden_id = $row['responden_id'];
-                                } elseif ($row['role'] == 'tendik') {
-                                    $responden_id = $row['responden_id'];
-                                } else {
-                                    // Jika tidak ada kunci yang cocok, atur nilai responden_id ke sesuatu yang sesuai
-                                    $responden_id = ''; // Atau sesuaikan dengan kebutuhan Anda
-                                }
-                                // Membuat tautan detail dengan parameter yang sesuai
-                                echo "<a href=\"detail-responden.php?responden_id=$responden_id&role={$row['role']}&username={$row['username']}\" class=\"btn btn-light btn-outline-dark button-edit\">Detail</a>";
-                            ?>
+                            <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
+                                <input type="hidden" name="id" value="<?php echo $row['id']; ?>">
+                                <button type="submit" name="status" value="declined" class="btn-circle delete-btn"><i class="fa-regular fa-circle-xmark"></i></button>
+                                <button type="submit" name="status" value="accepted" class="btn-circle accept-btn"><i class="fa-regular fa-circle-check"></i></button>
+                            </form>
                         </td>
-
+                  
                     </tr>
                     <?php
                     }
@@ -238,16 +213,32 @@ $result_all_respondents = mysqli_query($kon, $query_all_respondents);
         </div>
         <div class="kosong"></div>
     </section>
+    <div class="kosong"></div>
 
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.4.1.js"></script>
+
     <script>
         $('nav ul li').click(function(){
              $(this).addClass("active").siblings().removeClass("active");
-        });    
+        });     
+        
+        const btnEl = document.querySelectorAll('.btn-circle');
 
-        
-        
+        btnElList.foreach(btnEl => {
+            btnEl.addEventListener('click', () => {
+                document.querySelector('.special')?.classList.remove('active');
+                btnEl.classList.add('active');
+            });
+        });
+
+        $('.accept-btn').click(function() {
+            // Sembunyikan tombol dengan id deleteButton
+            $('.delete-btn').hide();
+        });
+
+       
     </script>
 </body>
 </html>

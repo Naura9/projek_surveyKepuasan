@@ -4,7 +4,7 @@ include '../koneksi.php';
 
 // Data untuk disimpan ke dalam tabel m_survey_soal
 $soal_nama = $_POST['question']; // Ambil pertanyaan dari formulir
-$kategori_id = 2; // Kategori untuk fasilitas
+$kategori_id = 1; 
 $soal_jenis = "skala"; // Jenis pertanyaan
 
 // Persiapkan query SQL untuk mendapatkan semua survey_id yang ada di tabel m_survey_soal
@@ -43,9 +43,9 @@ if ($result_survey_ids) {
 
             // Eksekusi statement
             if ($stmt->execute()) {
-                echo "Pertanyaan fasilitas berhasil ditambahkan untuk survey_id: $survey_id <br>";
+                echo "Pertanyaan kualitas pendidikan berhasil ditambahkan untuk survey_id: $survey_id <br>";
             } else {
-                echo "Gagal menambahkan pertanyaan fasilitas untuk survey_id: $survey_id <br>";
+                echo "Gagal menambahkan pertanyaan kualitas pendidikan untuk survey_id: $survey_id <br>";
             }
 
             // Tutup statement
@@ -55,8 +55,7 @@ if ($result_survey_ids) {
         }
     }
 
-    // Arahkan pengguna ke halaman soal-fasilitas setelah selesai
-    header("Location: soal-fasilitas.php");
+    header("Location: soal-pendidikan.php");
     exit();
 } else {
     // Jika query untuk mendapatkan survey_id gagal, tampilkan pesan error

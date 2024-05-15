@@ -18,7 +18,7 @@
         JOIN m_survey ON m_survey_soal.survey_id = m_survey.survey_id
         JOIN m_kategori ON m_survey_soal.kategori_id = m_kategori.kategori_id
         JOIN m_user ON m_survey.user_id = m_user.user_id
-        WHERE m_kategori.kategori_id = 2
+        WHERE m_kategori.kategori_id = 1
         AND m_user.role = 'mahasiswa'
         AND (m_survey_soal.soal_nama, m_survey_soal.soal_id) IN (
             SELECT soal_nama, MIN(soal_id)
@@ -26,16 +26,16 @@
             JOIN m_survey ON m_survey_soal.survey_id = m_survey.survey_id
             JOIN m_kategori ON m_survey_soal.kategori_id = m_kategori.kategori_id
             JOIN m_user ON m_survey.user_id = m_user.user_id
-            WHERE m_kategori.kategori_id = 2
+            WHERE m_kategori.kategori_id = 1
             AND m_user.role = 'mahasiswa'
             GROUP BY soal_nama
         )";
 
     $result = mysqli_query($kon, $query);
 
-    $fasilitas = array();
+    $pendidikan = array();
 	while ($data = mysqli_fetch_assoc($result)) {
-		$fasilitas[] = $data;
+		$pendidikan[] = $data;
 	}
     
     
@@ -127,14 +127,14 @@
         }
 
         hr {
-                    border: none;
-                    border-top: 2px solid #ccc;
-                }
-
-                .message {
+            border: none;
+            border-top: 2px solid #ccc;
+        }
+        .message {
             width: 5px;
             margin-left: 885px
         }
+
     </style>
 </head>
 <body>
@@ -191,13 +191,13 @@
     </nav>
     <section>
     <div class="content">
-        <h2>Survey Fasilitas Polinema</h2>
+        <h2>Survey Kualitas Pendidikan Polinema</h2>
         <?php
             $no = 1;
-            foreach ($fasilitas as $p) {
+            foreach ($pendidikan as $p) {
                 ?>
                     <div class="survey-question">
-                    <form action="hapus-fasilitas.php?id=<?php echo $p['soal_id']; ?>" method="post" id="hapusForm">
+                    <form action="hapus-pendidikan.php?id=<?php echo $p['soal_id']; ?>" method="post" id="hapusForm">
 
                         <label for="jawaban_<?php echo $p['soal_id']; ?>"><?php echo $p['soal_nama']; ?></label>
                         <div class="pilihan-container">
@@ -215,7 +215,7 @@
                                     <input type="submit" class="btn button-hapus" name="hapus" value="Hapus" onclick="return confirm('Apakah Anda yakin ingin menghapus?');">
                                     <!-- Tambahkan input hidden untuk menyimpan ID -->
                                     <input type="hidden" name="soal_id" value="<?php echo $p['soal_id']; ?>">
-                                <a href="edit-fasilitas.php?id=<?php echo $p['soal_id']; ?>" class="btn button-edit">Edit</a>
+                                <a href="edit-pendidikan.php?id=<?php echo $p['soal_id']; ?>" class="btn button-edit">Edit</a>
 
                             </div>
                             
@@ -233,7 +233,7 @@
         
         <!-- Button container -->
         <div class="button-container">
-            <a href="tambah-fasilitas.php" class="btn button-tambah">Tambah</a>
+            <a href="tambah-pendidikan.php" class="btn button-tambah">Tambah</a>
         </div>    
     </div>
 </section>

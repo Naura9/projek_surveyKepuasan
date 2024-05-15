@@ -25,7 +25,7 @@ if(isset($_POST['simpan'])) {
                       JOIN m_survey ON m_survey_soal.survey_id = m_survey.survey_id
                       JOIN m_kategori ON m_survey_soal.kategori_id = m_kategori.kategori_id
                       JOIN m_user ON m_survey.user_id = m_user.user_id
-                      WHERE m_kategori.kategori_id = 1
+                      WHERE m_kategori.kategori_id = 3
                       AND m_user.role = 'mahasiswa'";
     $result_soal_id = mysqli_query($kon, $query_soal_id);
 
@@ -51,10 +51,13 @@ if(isset($_POST['simpan'])) {
     $query_update_tanggal = "UPDATE t_responden_mahasiswa SET responden_tanggal = CURDATE() WHERE responden_mahasiswa_id = '$responden_mahasiswa_id'";
     $result_update_tanggal = mysqli_query($kon, $query_update_tanggal);
 
+    $query_update_tanggal_survey = "UPDATE m_survey SET survey_tanggal = CURDATE() WHERE survey_id = '$survey_id'";
+    $result_update_tanggal_survey = mysqli_query($kon, $query_update_tanggal_survey);
+
 
     // Setelah semua jawaban disimpan, Anda dapat mengarahkan pengguna ke halaman lain atau menampilkan pesan sukses.
     // Misalnya:
-    header("Location: dashboard-user.php");
+    header("Location: dashboard-mahasiswa.php");
     exit;
 }
 

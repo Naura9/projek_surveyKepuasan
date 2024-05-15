@@ -41,7 +41,6 @@ $nama = $_SESSION['nama'];
             background-color: white; /* Tambahkan background color merah */
             padding: 10px; /* Tambahkan padding untuk memberi jarak antara konten dan border */
             width : 1000px;
-
         }
 
         .question1 {
@@ -158,12 +157,11 @@ $nama = $_SESSION['nama'];
             </li>
         </ul>
     </nav>
-
     <section>
     <div class="content">
-        <h2>Survey Fasilitas Polinema</h2>
+        <h2>Survey Kualitas Pendidikan Polinema</h2>
         <div class="survey-question">
-            <form action="proses-tambah-fasilitas.php" method="POST">
+            <form action="proses-tambah-pendidikan.php" method="POST">
                 <label for="question1">Pertanyaan</label>
                 <input type="text" class="form-control form-custom" name="question" id="question" placeholder="Masukkan Pertanyaan" required>
                 <label for="question1">Keterangan</label>
@@ -182,9 +180,8 @@ $nama = $_SESSION['nama'];
                     </div>        
                 </div>
         </div>
-
             <div class="button-container">
-                <a href="soal-fasilitas.php" class="btn button-kembali">Kembali</a>
+                <a href="soal-pendidikan.php" class="btn button-kembali">Kembali</a>
                 <button type="submit" class="btn button-simpan" name="simpan">Simpan</button>
             </div>    
         </form>

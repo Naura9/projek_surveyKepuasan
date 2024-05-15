@@ -1,7 +1,6 @@
 <?php
-// Include file koneksi
 session_start();
-include '../koneksi.php'; // Menghubungkan ke file koneksi.php
+include '../koneksi.php';
 
 if (!isset($_SESSION['username'])) {
     // Jika belum, redirect pengguna ke halaman login
@@ -9,11 +8,35 @@ if (!isset($_SESSION['username'])) {
     exit(); // Pastikan untuk keluar dari skrip setelah redirect
 }
 
+// Ambil nilai username dan role dari sesi
 $username = $_SESSION['username'];
 $role = $_SESSION['role'];
 $nama = $_SESSION['nama'];
 
+// Check if 'id' parameter is set in the URL
+if(isset($_GET['id'])) {
+    $soal_id = $_GET['id'];
+    
+    // Query to fetch the details of the question based on ID
+    $query = "SELECT soal_id, soal_nama FROM m_survey_soal WHERE soal_id = $soal_id";
+    $result = mysqli_query($kon, $query);
+
+    // Check if the question is found
+    if(mysqli_num_rows($result) > 0) {
+        // Fetch question details
+        $data = mysqli_fetch_assoc($result);
+        $soal_id = $data['soal_id'];
+        $soal_nama = $data['soal_nama'];
+    } else {
+        // Handle if question is not found
+        echo "Pertanyaan tidak ditemukan.";
+    }
+} else {
+    // Handle if 'id' parameter is not set in the URL
+    echo "ID parameter is not set.";
+}
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -88,7 +111,7 @@ $nama = $_SESSION['nama'];
         }
 
         .button-simpan {
-            margin-left: 840px; 
+            margin-left: 750px; 
             background-color: #2d1b6b;
             color: white;
             border: 1px solid black;
@@ -99,7 +122,6 @@ $nama = $_SESSION['nama'];
             background: #ececed;
 
         }
-
         .message {
             width: 5px;
             margin-left: 885px
@@ -161,12 +183,12 @@ $nama = $_SESSION['nama'];
 
     <section>
     <div class="content">
-        <h2>Survey Fasilitas Polinema</h2>
-        <div class="survey-question">
-            <form action="proses-tambah-fasilitas.php" method="POST">
-                <label for="question1">Pertanyaan</label>
-                <input type="text" class="form-control form-custom" name="question" id="question" placeholder="Masukkan Pertanyaan" required>
-                <label for="question1">Keterangan</label>
+        <h2>Survey Kualitas Pendidikan Polinema</h2>
+        <form action="proses-edit-pendidikan.php?id=<?php echo $soal_id; ?>" method="post" >
+            <div class="survey-question">
+            <label for="question1">Pertanyaan</label>
+            <input type="text" class="form-control form-custom" name="soal_nama" id="soal_nama" value="<?php echo $soal_nama; ?>" required>                
+            <label for="question1">Keterangan</label>
                 <div class="pilihan-container">
                     <div class="pilihan1">
                         <input type="radio" id="question1_kurang" name="question1" value="kurang">
@@ -179,16 +201,18 @@ $nama = $_SESSION['nama'];
                         <label for="question1_baik">Baik</label><br>
                         <input type="radio" id="question1_sangat_baik" name="question1" value="sangat_baik">
                         <label for="question1_sangat_baik">Sangat Baik</label>
-                    </div>        
-                </div>
-        </div>
-
-            <div class="button-container">
-                <a href="soal-fasilitas.php" class="btn button-kembali">Kembali</a>
-                <button type="submit" class="btn button-simpan" name="simpan">Simpan</button>
-            </div>    
+                    </div>
+                </div>             
+            </div>
+        <div class="button-container">
+            <a href="soal-pendidikan.php" class="btn button-kembali">Kembali</a>
+            <button type="submit" class="btn button-simpan" name="simpan">Simpan</button>
+        </div>    
         </form>
-        <div class="kosong"></div>
+    </div>
+
+        <div class="kosong">
+    </div>
 </section>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"></script>

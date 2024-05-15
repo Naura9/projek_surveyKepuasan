@@ -37,7 +37,7 @@ if(isset($_POST['simpan'])){
     $stmt->close();
 
     // Jika penyimpanan berhasil, arahkan kembali ke halaman soal-fasilitas.php
-    header("Location: soal-fasilitas.php");
+    header("Location: soal-lulusan.php");
     exit(); // Pastikan tidak ada kode yang dieksekusi setelah header
 }
 

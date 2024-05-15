@@ -3,15 +3,25 @@ session_start();
 // Koneksi ke database
 include '../koneksi.php';
 
+if (!isset($_SESSION['username'])) {
+    // Jika belum, redirect pengguna ke halaman login
+    header("Location: ../login/login.php");
+    exit(); // Pastikan untuk keluar dari skrip setelah redirect
+}
+
 // Ambil nama pengguna dari sesi
 $username = $_SESSION['username'];
 $role = $_SESSION['role'];
 $nama = $_SESSION['nama'];
 
+$query_get_profil_image = "SELECT image FROM t_responden_dosen WHERE responden_nama = '$nama'";
+$result_get_profil_image = mysqli_query($kon, $query_get_profil_image);
+$row_get_profil_image = mysqli_fetch_assoc($result_get_profil_image);
+$profil_image = $row_get_profil_image['image'];
 
-// Query untuk mengambil data dari t_responden_mahasiswa berdasarkan nama pengguna
-$query_profil = "SELECT * FROM t_responden_mahasiswa 
-JOIN m_survey ON m_survey.survey_id = t_responden_mahasiswa.survey_id
+// Query untuk mengambil data dari t_responden_dosen berdasarkan nama pengguna
+$query_profil = "SELECT * FROM t_responden_dosen 
+JOIN m_survey ON m_survey.survey_id = t_responden_dosen.survey_id
 JOIN m_user ON m_user.user_id = m_survey.user_id
 WHERE responden_nama = '$nama'
 ";
@@ -32,7 +42,7 @@ if(mysqli_num_rows($result_profil) > 0) {
     <link href="https://cdn.lineicons.com/4.0/lineicons.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="path/to/font-awesome/css/font-awesome.min.css">   
+    <script src="https://kit.fontawesome.com/96cfbc074b.js" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="../header.css">
     <style>
         /* CSS untuk menyesuaikan tata letak radio button */
@@ -50,6 +60,10 @@ if(mysqli_num_rows($result_profil) > 0) {
             border-radius: 10px;
         }
 
+        .username img {
+            margin-left: 795px;
+        }
+
         .card-body {
             background-color: #ececed;
         }
@@ -57,6 +71,12 @@ if(mysqli_num_rows($result_profil) > 0) {
         .bg-custom {
             background-color: #ececed;
         }
+
+        .profile-image {
+    width: 150px; /* Lebar gambar */
+    height: 150px; /* Tinggi gambar */
+}
+
 
         .button-container {
             display: flex;
@@ -93,14 +113,17 @@ if(mysqli_num_rows($result_profil) > 0) {
     </style>
 </head>
 <body>
-    <div class="container">
+<div class="container">
         <nav class="navbar">
             <div class="logo">
                 <img src="img/logo-nama.png" alt="Logo" width="100">
             </div>
             <div class="username">
-                <span><?php echo $nama; ?> | <?php echo $role; ?></span>
-                <img src="img/profile.png" alt="User" width="30" height="30">
+                <span><?php echo $nama; ?> | Dosen</span>
+                <img src="img/<?php echo $profil_image; ?>" alt="User" width="35" height="35" style="border-radius: 50%;">
+                <a href="../login/logout.php" class="logout">
+                    <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                </a>
             </div>
         </nav>
     </div>
@@ -108,43 +131,37 @@ if(mysqli_num_rows($result_profil) > 0) {
     <nav class="sidebar">
         <ul class="sidebar-nav">
             <li class="">
-                <a href="dashboard-user.php" class="">
-                    <i class="lni lni-user"></i>
+                <a href="dashboard-dosen.php" class="">
+                    <i class="fa-solid fa-house"></i>
                     Dashboard
                 </a>
             </li>
             <li class="">
                 <a href="#" class="" data-bs-toggle="collapse" data-bs-target="#auth" aria-expanded="false" aria-controls="auth">
-                    <i class="lni lni-layout"></i> Survey
+                    <i class="fa-solid fa-list-ol"></i> Survey
                     <span class="lni lni-chevron-down"></span>
                 </a>
                 <ul id="auth" class="" data-bs-parent="#sidebar">
-                    <li><a href="#">Kualitas Pendidikan</a></li>
-                    <li><a href="survey_fasilitas.php" onclick="loadContent(this)">Fasilitas</a></li>                    
-                    <li><a href="#">Pelayanan</a></li>
-                    <li><a href="#">Lulusan</a></li>
+                    <li><a href="survey-pendidikan.php"><i class="fa-solid fa-medal"></i> Kualitas Pendidikan</a></li>
+                    <li><a href="survey-fasilitas.php"><i class="fa-solid fa-layer-group"></i>     Fasilitas</a></li>                    
+                    <li><a href="survey-pelayanan.php"><i class="fa-solid fa-handshake"></i>  Pelayanan</a></li>
                 </ul>
             </li>
             <li class="">
-                <a href="profil-user.php" class="">
-                    <i class="lni lni-user"></i>
+                <a href="profil.php" class="">
+                    <i class="fa-solid fa-user"></i>
                      Profile
                 </a>
             </li>
-
-            <li>
-                <a href="login.php" class="btn logout-btn">Logout</a>
-
-            </li>
         </ul>
-    </nav>
+    </nav>    
     <section>
         <div class="content">
             <h2>Profil</h2>
             <div class="form-profile">
                 <tr>
                     <div class="profile-label">Foto Profil</div>
-                    <img src="../img/profil-kotak.jfif" alt="Foto Profil">
+                    <img src="img/<?php echo $mhs['image']; ?>" alt="Foto Profil" class="profile-image">
                 </tr>
                 <tr>
                     <div class="profile-label">NIM</div>
@@ -160,7 +177,7 @@ if(mysqli_num_rows($result_profil) > 0) {
                 </tr>
                 <tr>
                     <div class="profile-label">Password</div>
-                    <div class="profile-value"><?php echo $mhs['password']; ?></div>
+                    <div class="profile-value">*********</div>                
                 </tr>
                 <tr>
                     <div class="profile-label">Email</div>

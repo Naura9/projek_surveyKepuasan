@@ -158,12 +158,11 @@ $nama = $_SESSION['nama'];
             </li>
         </ul>
     </nav>
-
     <section>
     <div class="content">
-        <h2>Survey Fasilitas Polinema</h2>
+        <h2>Survey Pelayanan Polinema</h2>
         <div class="survey-question">
-            <form action="proses-tambah-fasilitas.php" method="POST">
+            <form action="proses-tambah-pelayanan.php" method="POST">
                 <label for="question1">Pertanyaan</label>
                 <input type="text" class="form-control form-custom" name="question" id="question" placeholder="Masukkan Pertanyaan" required>
                 <label for="question1">Keterangan</label>
@@ -183,8 +182,14 @@ $nama = $_SESSION['nama'];
                 </div>
         </div>
 
+        <!-- Tambahkan pertanyaan lainnya sesuai kebutuhan -->
+       
+        <!-- Tambahkan pertanyaan lainnya sesuai kebutuhan -->
+        
+        
+        <!-- Button container -->
             <div class="button-container">
-                <a href="soal-fasilitas.php" class="btn button-kembali">Kembali</a>
+                <a href="soal-pelayanan.php" class="btn button-kembali">Kembali</a>
                 <button type="submit" class="btn button-simpan" name="simpan">Simpan</button>
             </div>    
         </form>
