@@ -1,8 +1,11 @@
 
 <?php
     session_start();
-    include '../koneksi.php';
 
+    include '../Koneksi.php';
+    $koneksi = new Koneksi();
+    $kon = $koneksi->kon;// Ambil data dari form
+    
     if (!isset($_SESSION['username'])) {
         // Jika belum, redirect pengguna ke halaman login
         header("Location: ../login/login.php");
@@ -51,9 +54,65 @@
 		$fasilitas[] = $data;
 	}
     
+    if(isset($_POST['simpan'])) {
+        // Ambil informasi responden saat login
+        $username = $_SESSION['username']; // Ambil username dari sesi, sesuaikan dengan mekanisme login Anda
+        $nama = $_SESSION['nama']; // Ambil nama dari sesi, sesuaikan dengan mekanisme login Anda
+        // Lakukan query untuk mendapatkan informasi responden dengan nama yang sesuai
+        $query_responden = "SELECT responden_mahasiswa_id FROM t_responden_mahasiswa WHERE responden_nama = '$nama'";
+        $result_responden = mysqli_query($kon, $query_responden);
+        if(mysqli_num_rows($result_responden) > 0) {
+            $data_responden = mysqli_fetch_assoc($result_responden);
+            $responden_mahasiswa_id = $data_responden['responden_mahasiswa_id'];
+        } else {
+            // Jika tidak ada data responden yang sesuai, lakukan penanganan yang sesuai.
+            echo "Data responden tidak ditemukan.";
+            exit; // Hentikan proses lebih lanjut
+        }
     
-?>
+        // Ambil daftar soal_id
+        $query_soal_id = "SELECT m_survey_soal.soal_id
+                          FROM m_survey_soal
+                          JOIN m_survey ON m_survey_soal.survey_id = m_survey.survey_id
+                          JOIN m_kategori ON m_survey_soal.kategori_id = m_kategori.kategori_id
+                          JOIN m_user ON m_survey.user_id = m_user.user_id
+                          WHERE m_kategori.kategori_id = 2
+                          AND m_user.role = 'mahasiswa'";
+        $result_soal_id = mysqli_query($kon, $query_soal_id);
+    
+        // Loop melalui setiap soal_id untuk menyimpan jawaban
+        while ($row = mysqli_fetch_assoc($result_soal_id)) {
+            $soal_id = $row['soal_id'];
+            $jawaban = mysqli_real_escape_string($kon, $_POST['jawaban_' . $soal_id]);
+    
+            // Siapkan kueri SQL untuk menyimpan jawaban ke database
+            $query_insert_jawaban = "INSERT INTO t_jawaban_mahasiswa (responden_mahasiswa_id, soal_id, jawaban) 
+                                     VALUES ('$responden_mahasiswa_id', '$soal_id', '$jawaban')";
+            
+            // Lakukan eksekusi kueri SQL
+            $result = mysqli_query($kon, $query_insert_jawaban);
+            
+            
+            // Periksa apakah eksekusi kueri berhasil
+            if (!$result) {
+                // Jika gagal, tampilkan pesan kesalahan
+                echo "Gagal menyimpan jawaban untuk soal $soal_id: " . mysqli_error($kon);
+            }
+        }
+        $query_update_tanggal = "UPDATE t_responden_mahasiswa SET responden_tanggal = CURDATE() WHERE responden_mahasiswa_id = '$responden_mahasiswa_id'";
+        $result_update_tanggal = mysqli_query($kon, $query_update_tanggal);
+    
+        $query_update_tanggal_survey = "UPDATE m_survey SET survey_tanggal = CURDATE() WHERE survey_id = '$survey_id'";
+        $result_update_tanggal_survey = mysqli_query($kon, $query_update_tanggal_survey);
+    
+    
+        // Setelah semua jawaban disimpan, Anda dapat mengarahkan pengguna ke halaman lain atau menampilkan pesan sukses.
+        // Misalnya:
+        header("Location: dashboard-mahasiswa.php");
+        exit;
+    }
 
+?>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -78,7 +137,7 @@
             margin-right: 100px;
             background-color: white; /* Tambahkan background color merah */
             padding: 10px; /* Tambahkan padding untuk memberi jarak antara konten dan border */
-            width : 1000px;
+            width : 1050px;
 
         }
 
@@ -119,7 +178,7 @@
         }
 
         .button-simpan {
-            margin-left: 810px; 
+            margin-left: 875px; 
             background-color: #2d1b6b;
             color: white;
 
@@ -180,51 +239,11 @@
 
 <body>
 <div class="container">
-        <nav class="navbar">
-            <div class="logo">
-                <img src="img/logo-nama.png" alt="Logo" width="100">
-            </div>
-            <div class="username">
-                <span><?php echo $nama; ?> | Mahasiswa</span>
-                <img src="img/<?php echo $profil_image; ?>" alt="User" width="35" height="35" style="border-radius: 50%;">
-                <a href="../login/logout.php" class="logout">
-                    <i class="fa-solid fa-arrow-right-from-bracket"></i>
-                </a>
-            </div>
-        </nav>
-    </div>
-
-    <nav class="sidebar">
-        <ul class="sidebar-nav">
-            <li class="">
-                <a href="dashboard-mahasiswa.php" class="">
-                    <i class="fa-solid fa-house"></i>
-                    Dashboard
-                </a>
-            </li>
-            <li class="">
-                <a href="#" class="" data-bs-toggle="collapse" data-bs-target="#auth" aria-expanded="false" aria-controls="auth">
-                    <i class="fa-solid fa-list-ol"></i> Survey
-                    <span class="lni lni-chevron-down"></span>
-                </a>
-                <ul id="auth" class="" data-bs-parent="#sidebar">
-                    <li><a href="survey-pendidikan.php"><i class="fa-solid fa-medal"></i> Kualitas Pendidikan</a></li>
-                    <li><a href="survey-fasilitas.php"><i class="fa-solid fa-layer-group"></i>     Fasilitas</a></li>                    
-                    <li><a href="survey-pelayanan.php"><i class="fa-solid fa-handshake"></i>  Pelayanan</a></li>
-                </ul>
-            </li>
-            <li class="">
-                <a href="profil.php" class="">
-                    <i class="fa-solid fa-user"></i>
-                     Profile
-                </a>
-            </li>
-        </ul>
-    </nav>
+    <?php include '../header.php'; ?>
     <section>
     <div class="content">
         <h2>Survey Fasilitas</h2>
-        <form action="jawaban-fasilitas-mahasiswa.php" method="post" >
+        <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="POST">
         <?php
             $no = 1;
             foreach ($fasilitas as $p) {
@@ -283,12 +302,5 @@
     </script>
 
 </section>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"></script>
-    <script>
-        $('nav ul li').click(function(){
-             $(this).addClass("active").siblings().removeClass("active");
-        });    
-    </script>
 </body>
 </html>

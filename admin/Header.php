@@ -11,13 +11,8 @@ $nama = $_SESSION['nama'];
             text-decoration: none;
             display: flex;
             align-items: center;
-            padding: 10px 8px;
+            padding: 10px 15px;
             transition: background-color 0.3s, color 0.3s;
-        }
-
-        .sidebar-nav li a:hover, .sidebar-nav li.active a {
-            background-color: rgba(190, 184, 209, 0.5);
-            border-radius: 4px;
         }
 
         .sidebar-nav li a i {
@@ -28,10 +23,22 @@ $nama = $_SESSION['nama'];
             margin-bottom: 10px;
         }
 
+        .sidebar-nav .collapse li a:hover, .sidebar-nav .collapse li.active > a {
+            background-color: grey;
+            border-radius: 4px;
+        }
+
+        .username span {
+            margin-left: 45px;
+        }
         .message {
             width: 5px;
-            margin-left: 900px;
+            margin-left: 800px;
 
+        }
+        .logout {
+            margin-left: ;
+            margin-right: 30px;
         }
 
 </style>
@@ -90,12 +97,16 @@ $nama = $_SESSION['nama'];
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"></script>
     <script>
         document.addEventListener("DOMContentLoaded", function() {
-            var sidebarItems = document.querySelectorAll('.sidebar-nav li');
+            var sidebarItems = document.querySelectorAll('.sidebar-nav > li');
+            var subSidebarItems = document.querySelectorAll('.sidebar-nav .collapse li');
 
             sidebarItems.forEach(function(item) {
                 item.addEventListener('click', function() {
                     // Remove active class from all items
                     sidebarItems.forEach(function(el) {
+                        el.classList.remove('active');
+                    });
+                    subSidebarItems.forEach(function(el) {
                         el.classList.remove('active');
                     });
 
@@ -107,11 +118,37 @@ $nama = $_SESSION['nama'];
                 });
             });
 
+            subSidebarItems.forEach(function(item) {
+                item.addEventListener('click', function(event) {
+                    event.stopPropagation();
+                    // Remove active class from all items
+                    subSidebarItems.forEach(function(el) {
+                        el.classList.remove('active');
+                    });
+
+                    // Add active class to the clicked item
+                    this.classList.add('active');
+
+                    // Store the active item in localStorage
+                    localStorage.setItem('activeSubSidebarItem', this.querySelector('a').getAttribute('href'));
+                });
+            });
+
             // Set the active item based on localStorage
             var activeItem = localStorage.getItem('activeSidebarItem');
+            var activeSubItem = localStorage.getItem('activeSubSidebarItem');
+
             if (activeItem) {
                 sidebarItems.forEach(function(item) {
                     if (item.querySelector('a').getAttribute('href') === activeItem) {
+                        item.classList.add('active');
+                    }
+                });
+            }
+
+            if (activeSubItem) {
+                subSidebarItems.forEach(function(item) {
+                    if (item.querySelector('a').getAttribute('href') === activeSubItem) {
                         item.classList.add('active');
                     }
                 });

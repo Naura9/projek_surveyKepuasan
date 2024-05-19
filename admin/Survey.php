@@ -4,7 +4,7 @@ class Survey {
     private $db;
 
     public function __construct($db_connection) {
-        $this->db = new Database();
+        $this->db = new Koneksi();
         $this->db = $db_connection;
     }
 

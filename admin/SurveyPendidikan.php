@@ -1,7 +1,7 @@
 <?php
 session_start();
-require_once 'database.php';
-require_once 'Survey.php';
+include '../Koneksi.php';
+include 'Survey.php';
 
 class SurveyPendidikan {
     private $db;
@@ -10,7 +10,7 @@ class SurveyPendidikan {
     public $nama;
     
     public function __construct() {
-        $this->db = new Database();
+        $this->db = new Koneksi();
         $this->survey = new Survey($this->db);
          // Set session variables to class properties
          if (isset($_SESSION['username'])) {

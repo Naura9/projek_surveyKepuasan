@@ -1,6 +1,9 @@
 <?php
 session_start();
-include '../koneksi.php';
+require_once '../Koneksi.php';
+
+$koneksi = new Koneksi();
+$kon = $koneksi->kon;// Ambil data dari form
 
 if (!isset($_SESSION['username'])) {
     // Jika belum, redirect pengguna ke halaman login

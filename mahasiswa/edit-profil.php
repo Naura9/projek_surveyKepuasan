@@ -1,6 +1,9 @@
 <?php
 session_start();
-include '../koneksi.php';
+
+include '../Koneksi.php';
+$koneksi = new Koneksi();
+$kon = $koneksi->kon;// Ambil data dari form
 
 if (!isset($_SESSION['username'])) {
     // Jika belum, redirect pengguna ke halaman login
@@ -12,6 +15,10 @@ if (!isset($_SESSION['username'])) {
 $nama = $_SESSION['nama'];
 $username = $_GET['username'];
 
+if (!isset($_GET['username'])) {
+    echo "Username tidak ditemukan.";
+    exit();
+}
 
 // Query untuk mengambil data profil berdasarkan username
 $query = "SELECT * FROM t_responden_mahasiswa 
@@ -46,6 +53,63 @@ if(mysqli_num_rows($res) > 0) {
     $row_get_profil_image = mysqli_fetch_assoc($result_get_profil_image);
     $profil_image = $row_get_profil_image['image'];
     
+    if(isset($_POST['simpan'])){
+    // Ambil data dari form
+    $responden_nim     = $_POST['responden_nim'];
+    $responden_nama    = $_POST['responden_nama'];
+    $username          = $_POST['username'];
+    $responden_email   = $_POST['responden_email'];
+    $responden_prodi   = $_POST['responden_prodi'];
+    $responden_hp      = $_POST['responden_hp'];
+    $tahun_masuk       = $_POST['tahun_masuk'];
+
+    // Perbarui data berdasarkan NIM
+    // Buat query untuk memperbarui data responden
+    $sql_responden = "UPDATE t_responden_mahasiswa 
+                      SET 
+                        responden_nama = '$responden_nama',
+                        responden_email = '$responden_email',
+                        responden_prodi = '$responden_prodi',
+                        responden_hp = '$responden_hp',
+                        tahun_masuk = '$tahun_masuk'
+                      WHERE responden_nim = '$responden_nim'";
+
+    // Jalankan query untuk memperbarui data responden
+    $res_responden = mysqli_query($kon, $sql_responden);
+
+    // Jika pengguna memasukkan password baru, update password
+    if (!empty($_POST['password'])) {
+        $password = $_POST['password'];
+        // Hash password baru
+        $password_hashed = md5($password);
+        
+        // Buat query untuk memperbarui password pada tabel pengguna
+        $sql_password = "UPDATE m_user 
+                         SET password = '$password_hashed'
+                         WHERE username = '$username'";
+
+        // Jalankan query untuk memperbarui password
+        $res_password = mysqli_query($kon, $sql_password);
+        
+        // Periksa apakah perbaruan password berhasil
+        if (!$res_password) {
+            // Jika gagal, tampilkan pesan error
+            echo "Gagal memperbarui password: " . mysqli_error($kon);
+            exit(); // Keluar dari skrip untuk mencegah eksekusi kode lebih lanjut
+        }
+    }
+
+    // Periksa apakah kedua perubahan berhasil
+    if($res_responden && ($res_password || empty($_POST['password']))) {
+        // Jika penyimpanan berhasil, arahkan kembali ke halaman profil
+        header("Location: profil.php");
+        exit(); // Pastikan tidak ada kode yang dieksekusi setelah header
+    } else {
+        // Jika salah satu perubahan gagal, tampilkan pesan error
+        echo "Gagal melakukan update data: " . mysqli_error($kon);
+    }
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -167,47 +231,8 @@ if(mysqli_num_rows($res) > 0) {
 </head>
 <body>
 <div class="container">
-        <nav class="navbar">
-            <div class="logo">
-                <img src="img/logo-nama.png" alt="Logo" width="100">
-            </div>
-            <div class="username">
-                <span><?php echo $nama; ?> | Mahasiswa</span>
-                <img src="img/<?php echo $profil_image; ?>" alt="User" width="35" height="35" style="border-radius: 50%;">
-                <a href="../login/logout.php" class="logout">
-                    <i class="fa-solid fa-arrow-right-from-bracket"></i>
-                </a>
-            </div>
-        </nav>
-    </div>
+<?php include '../header.php'; ?>
 
-    <nav class="sidebar">
-        <ul class="sidebar-nav">
-            <li class="">
-                <a href="dashboard-mahasiswa.php" class="">
-                <i class="fa-solid fa-house"></i>
-                    Dashboard
-                </a>
-            </li>
-            <li class="">
-                <a href="#" class="" data-bs-toggle="collapse" data-bs-target="#auth" aria-expanded="false" aria-controls="auth">
-                    <i class="fa-solid fa-list-ol"></i> Survey
-                    <span class="lni lni-chevron-down"></span>
-                </a>
-                <ul id="auth" class="" data-bs-parent="#sidebar">
-                    <li><a href="survey-pendidikan.php"><i class="fa-solid fa-medal"></i> Kualitas Pendidikan</a></li>
-                    <li><a href="survey-fasilitas.php"><i class="fa-solid fa-layer-group"></i>     Fasilitas</a></li>                    
-                    <li><a href="survey-pelayanan.php"><i class="fa-solid fa-handshake"></i>  Pelayanan</a></li>
-                </ul>
-            </li>
-            <li class="">
-                <a href="profil.php" class="">
-                    <i class="fa-solid fa-user"></i>
-                     Profile
-                </a>
-            </li>
-        </ul>
-    </nav>    
     <section>
     <div class="content">
         <h2>Edit Profil</h2>
@@ -233,7 +258,7 @@ if(mysqli_num_rows($res) > 0) {
                                 </div>
                             </div>     
                             </form>                        
-                    <form action="proses-edit.php" method="POST">
+                    <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="POST">
 
                         </div>					
                         <div class="form-group text-left font-weight-bold">
@@ -282,12 +307,6 @@ if(mysqli_num_rows($res) > 0) {
     </div>
 </section>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"></script>
-    <script>
-        $('nav ul li').click(function(){
-             $(this).addClass("active").siblings().removeClass("active");
-        });    
-    </script>
 
     
 <script type="text/javascript">

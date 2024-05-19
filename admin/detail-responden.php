@@ -1,7 +1,10 @@
 <?php
 // Masukkan file koneksi.php atau sesuaikan dengan cara Anda mengakses koneksi ke database
-include '../koneksi.php';
 session_start();
+require_once '../Koneksi.php';
+
+$koneksi = new Koneksi();
+$kon = $koneksi->kon;// Ambil data dari form
 
 $nama = $_SESSION['nama'];
 

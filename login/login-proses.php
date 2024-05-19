@@ -1,8 +1,11 @@
 <?php
 session_start();
-include '../koneksi.php';
+include '../Koneksi.php';
 
-// Ambil data dari form
+
+$koneksi = new Koneksi();
+$kon = $koneksi->kon;// Ambil data dari form
+
 $username = mysqli_real_escape_string($kon, $_POST['username']);
 $password = mysqli_real_escape_string($kon, $_POST['password']);
 $password_md5 = md5($password); // Enkripsi password menggunakan MD5

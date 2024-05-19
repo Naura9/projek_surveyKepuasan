@@ -1,29 +1,31 @@
+
 <?php
-session_start();
-include '../koneksi.php'; 
+    session_start();
 
-if (!isset($_SESSION['username'])) {
-    header("Location: ../login/login.php");
-    exit();
-}
+    include '../Koneksi.php';
+    $koneksi = new Koneksi();
+    $kon = $koneksi->kon;// Ambil data dari form
+    
+    if (!isset($_SESSION['username'])) {
+        // Jika belum, redirect pengguna ke halaman login
+        header("Location: ../login/login.php");
+        exit(); // Pastikan untuk keluar dari skrip setelah redirect
+    }
+    
+    $username = $_SESSION['username'];
+    $role = $_SESSION['role'];
+    $nama = $_SESSION['nama'];
 
-$username = $_SESSION['username'];
-$role = $_SESSION['role'];
-$nama = $_SESSION['nama'];
+    $query_get_responden_id = "SELECT responden_mahasiswa_id FROM t_responden_mahasiswa WHERE responden_nama = '$nama'";
+    $result_get_responden_id = mysqli_query($kon, $query_get_responden_id);
+    $row_get_responden_id = mysqli_fetch_assoc($result_get_responden_id);
+    $responden_mahasiswa_id = $row_get_responden_id['responden_mahasiswa_id'];
 
-$query_get_responden_id = "SELECT responden_mahasiswa_id, survey_id FROM t_responden_mahasiswa WHERE responden_nama = '$nama'";
-$result_get_responden_id = mysqli_query($kon, $query_get_responden_id);
-$row_get_responden_id = mysqli_fetch_assoc($result_get_responden_id);
-$responden_mahasiswa_id = $row_get_responden_id['responden_mahasiswa_id'];
-$survey_id = $row_get_responden_id['survey_id'];
-
-$query_get_profil_image = "SELECT image FROM t_responden_mahasiswa WHERE responden_nama = '$nama'";
-$result_get_profil_image = mysqli_query($kon, $query_get_profil_image);
-$row_get_profil_image = mysqli_fetch_assoc($result_get_profil_image);
-$profil_image = $row_get_profil_image['image'];
-
-// Handle form submission
-if(isset($_POST['simpan'])) {
+    $query_get_profil_image = "SELECT image FROM t_responden_mahasiswa WHERE responden_nama = '$nama'";
+    $result_get_profil_image = mysqli_query($kon, $query_get_profil_image);
+    $row_get_profil_image = mysqli_fetch_assoc($result_get_profil_image);
+    $profil_image = $row_get_profil_image['image'];
+    // Query untuk memeriksa apakah survei pendidikan sudah diisi oleh responden tertentu
     $query_check_survey = "SELECT COUNT(*) AS jumlah_survey FROM t_jawaban_mahasiswa
                             JOIN m_survey_soal ON t_jawaban_mahasiswa.soal_id = m_survey_soal.soal_id
                             WHERE m_survey_soal.kategori_id = 3
@@ -32,65 +34,93 @@ if(isset($_POST['simpan'])) {
     $row_check_survey = mysqli_fetch_assoc($result_check_survey);
     $jumlah_survey = $row_check_survey['jumlah_survey'];
 
-    if ($jumlah_survey > 0) {
-        // Jika survei sudah diisi, tampilkan pesan pop-up
-        echo "<script>
-                alert('Anda sudah mengisi survei pelayanan.');
-                window.location.href='dashboard-mahasiswa.php';
-              </script>";
-        exit;
-    } else {
+    // Query untuk mengambil soal survei dengan kategori_id 1
+    $query = "SELECT m_survey_soal.soal_id, m_survey_soal.soal_nama
+        FROM m_survey_soal
+        JOIN m_survey ON m_survey_soal.survey_id = m_survey.survey_id
+        JOIN m_kategori ON m_survey_soal.kategori_id = m_kategori.kategori_id
+        JOIN m_user ON m_survey.user_id = m_user.user_id
+        WHERE m_kategori.kategori_id = 3
+        AND m_user.role = 'mahasiswa'
+        AND (m_survey_soal.soal_nama, m_survey_soal.soal_id) IN (
+            SELECT soal_nama, MIN(soal_id)
+            FROM m_survey_soal
+            JOIN m_survey ON m_survey_soal.survey_id = m_survey.survey_id
+            JOIN m_kategori ON m_survey_soal.kategori_id = m_kategori.kategori_id
+            JOIN m_user ON m_survey.user_id = m_user.user_id
+            WHERE m_kategori.kategori_id = 3
+            AND m_user.role = 'mahasiswa'
+            GROUP BY soal_nama
+        )";
+
+        
+    $result = mysqli_query($kon, $query);
+
+    $pelayanan = array();
+	while ($data = mysqli_fetch_assoc($result)) {
+		$pelayanan[] = $data;
+	}
+    
+    if(isset($_POST['simpan'])) {
+        // Ambil informasi responden saat login
+        $username = $_SESSION['username']; // Ambil username dari sesi, sesuaikan dengan mekanisme login Anda
+        $nama = $_SESSION['nama']; // Ambil nama dari sesi, sesuaikan dengan mekanisme login Anda
+        // Lakukan query untuk mendapatkan informasi responden dengan nama yang sesuai
+        $query_responden = "SELECT responden_mahasiswa_id FROM t_responden_mahasiswa WHERE responden_nama = '$nama'";
+        $result_responden = mysqli_query($kon, $query_responden);
+        if(mysqli_num_rows($result_responden) > 0) {
+            $data_responden = mysqli_fetch_assoc($result_responden);
+            $responden_mahasiswa_id = $data_responden['responden_mahasiswa_id'];
+        } else {
+            // Jika tidak ada data responden yang sesuai, lakukan penanganan yang sesuai.
+            echo "Data responden tidak ditemukan.";
+            exit; // Hentikan proses lebih lanjut
+        }
+    
+        // Ambil daftar soal_id
         $query_soal_id = "SELECT m_survey_soal.soal_id
                           FROM m_survey_soal
                           JOIN m_survey ON m_survey_soal.survey_id = m_survey.survey_id
                           JOIN m_kategori ON m_survey_soal.kategori_id = m_kategori.kategori_id
+                          JOIN m_user ON m_survey.user_id = m_user.user_id
                           WHERE m_kategori.kategori_id = 3
-                          AND m_survey_soal.survey_id = '$survey_id'";
-
+                          AND m_user.role = 'mahasiswa'";
         $result_soal_id = mysqli_query($kon, $query_soal_id);
-
+    
+        // Loop melalui setiap soal_id untuk menyimpan jawaban
         while ($row = mysqli_fetch_assoc($result_soal_id)) {
             $soal_id = $row['soal_id'];
             $jawaban = mysqli_real_escape_string($kon, $_POST['jawaban_' . $soal_id]);
-
+    
+            // Siapkan kueri SQL untuk menyimpan jawaban ke database
             $query_insert_jawaban = "INSERT INTO t_jawaban_mahasiswa (responden_mahasiswa_id, soal_id, jawaban) 
                                      VALUES ('$responden_mahasiswa_id', '$soal_id', '$jawaban')";
             
+            // Lakukan eksekusi kueri SQL
             $result = mysqli_query($kon, $query_insert_jawaban);
             
+            
+            // Periksa apakah eksekusi kueri berhasil
             if (!$result) {
+                // Jika gagal, tampilkan pesan kesalahan
                 echo "Gagal menyimpan jawaban untuk soal $soal_id: " . mysqli_error($kon);
             }
         }
-
         $query_update_tanggal = "UPDATE t_responden_mahasiswa SET responden_tanggal = CURDATE() WHERE responden_mahasiswa_id = '$responden_mahasiswa_id'";
         $result_update_tanggal = mysqli_query($kon, $query_update_tanggal);
-
+    
         $query_update_tanggal_survey = "UPDATE m_survey SET survey_tanggal = CURDATE() WHERE survey_id = '$survey_id'";
         $result_update_tanggal_survey = mysqli_query($kon, $query_update_tanggal_survey);
-
+    
+    
         // Setelah semua jawaban disimpan, Anda dapat mengarahkan pengguna ke halaman lain atau menampilkan pesan sukses.
         // Misalnya:
         header("Location: dashboard-mahasiswa.php");
         exit;
     }
-}
-
-// Query untuk mengambil soal survei dengan kategori_id 3
-$query = "SELECT m_survey_soal.soal_id, m_survey_soal.soal_nama
-          FROM m_survey_soal
-          JOIN m_survey ON m_survey_soal.survey_id = m_survey.survey_id
-          JOIN m_kategori ON m_survey_soal.kategori_id = m_kategori.kategori_id
-          WHERE m_kategori.kategori_id = 3
-          AND m_survey_soal.survey_id = '$survey_id'";
-        
-$result = mysqli_query($kon, $query);
-
-$pelayanan = array();
-while ($data = mysqli_fetch_assoc($result)) {
-    $pelayanan[] = $data;
-}
+    
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -106,6 +136,7 @@ while ($data = mysqli_fetch_assoc($result)) {
      <link rel="stylesheet" href="../header.css">
     <script src="https://code.jquery.com/jquery-3.4.1.js"></script>
     <style>
+        /* CSS untuk menyesuaikan tata letak radio button */
         h2 {
             font-weight: bold;
         }
@@ -121,7 +152,9 @@ while ($data = mysqli_fetch_assoc($result)) {
         .pilihan-container {
             display: flex;
         }
-        
+        .username img {
+            margin-left: 795px;
+        }
         .pilihan1,
         .pilihan2 {
             flex: 1;
@@ -190,6 +223,7 @@ while ($data = mysqli_fetch_assoc($result)) {
             z-index: 9998;
         }
 
+        /* Tambahkan CSS untuk menengahkan pesan dan tombol */
         .popupmessage {
             text-align: center;
             margin-bottom: 20px;
@@ -212,11 +246,12 @@ while ($data = mysqli_fetch_assoc($result)) {
 
 <body>
 <div class="container">
-<?php include '../header.php'; ?>
+    <?php include '../header.php'; ?>
+
     <section>
     <div class="content">
         <h2>Survey Pelayanan</h2>
-        <form action="survey-pelayanan.php" method="post">
+        <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="POST">
         <?php
             $no = 1;
             foreach ($pelayanan as $p) {
@@ -273,14 +308,8 @@ while ($data = mysqli_fetch_assoc($result)) {
         window.location.href = "dashboard-mahasiswa.php";
     }
     </script>
-</section>
-</div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"></script>
-    <script>
-        $('nav ul li').click(function(){
-             $(this).addClass("active").siblings().removeClass("active");
-        });    
-    </script>
+
+</section>
 </body>
 </html>

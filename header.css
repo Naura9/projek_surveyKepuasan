@@ -1,171 +1,170 @@
 * {
-    margin: 0;
-    padding: 0;
-    
-  }
-
-  body {
-    margin: 0;
-    padding: 0;
-    
+  margin: 0;
+  padding: 0;
+  
 }
+
+body {
+  margin: 0;
+  padding: 0;
   
-  .container {
-    top: 0;
-    background-color: white;
-    height: 80px;
-    position: fixed;
-    border-bottom: 2px solid #a9a9ac;
+}
 
-  }
+.container {
+  top: 0;
+  background-color: white;
+  height: 80px;
+  position: fixed;
+  border-bottom: 2px solid #a9a9ac;
 
-  .navbar {
-    background-color: white;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    height: 30px;
-    padding: 0;
-    position: fixed; /* Navbar tetap berada di posisi yang sama saat menggulir halaman */
-    width: 100%; /* Menempati lebar seluruh halaman */
-    border-right: 2px solid #a9a9ac;
+}
 
-  }
+.navbar {
+  background-color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 30px;
+  padding: 0;
+  position: fixed; /* Navbar tetap berada di posisi yang sama saat menggulir halaman */
+  width: 100%; /* Menempati lebar seluruh halaman */
+  border-right: 2px solid #a9a9ac;
 
-  .logo {
-    width: 5cm;
+}
 
-  }
+.logo {
+  width: 5cm;
 
-  .logo img {
-    width: 170px; 
+}
 
-  }
+.logo img {
+  width: 170px; 
 
-  .username {
-    background-color: #ececed;
-    flex-grow: 1;
-    display: flex;
-    align-items: center; 
-    border-left: 2px solid #ccc;
-    height: 80px;
-    border-bottom: 2px solid #a9a9ac;
-    justify-content: space-between;
-  }
+}
 
-  .username i {
-    font-size: 23px;
-    color: black;
-  }
-  
-/*sidebar*/
+.username {
+  background-color: #ececed;
+  flex-grow: 1;
+  display: flex;
+  align-items: center; 
+  border-left: 2px solid #ccc;
+  height: 80px;
+  border-bottom: 2px solid #a9a9ac;
+  justify-content: space-between;
+}
+
+.username i {
+  font-size: 23px;
+  color: black;
+}
+
 .sidebar {
-    margin-top: 80px;
-    width: 203px;
-    height: 100vh;
-    border-right: 2px solid #ccc;
-    position: fixed;
-    left: 0;
+  margin-top: 80px;
+  width: 203px;
+  height: 100vh;
+  border-right: 2px solid #ccc;
+  position: fixed;
+  left: 0;
 }
 
 .sidebar .text {
-    color: #000000;
-    font-size: 25px;
-    font-weight: 600;
-    line-height: 65px;
-    text-align: center;
-    background: pink;
-    letter-spacing: 1px;
-    user-select: none;
-    
+  color: #000000;
+  font-size: 25px;
+  font-weight: 600;
+  line-height: 65px;
+  text-align: center;
+  background: pink;
+  letter-spacing: 1px;
+  user-select: none;
+  
 }
 .sidebar-nav {
-    padding: 0;
+  padding: 0;
 }
 
 
 
 
 nav ul {
-    background:white;
-    height: 100%;
-    width: 100%;
-    list-style: none;
+  background:white;
+  height: 100%;
+  width: 100%;
+  list-style: none;
 }
 nav ul li {
-    line-height: 60px;
+  line-height: 60px;
 }
 
 nav ul li a {
-    position: relative;
-    color: #000000;
-    text-decoration: none;
-    font-size: 15px;
-    padding-left: 15px;
-    font-weight: 500;
-    display: block;
-    width: 100%;
-    border-left: 3px solid transparent ;
+  position: relative;
+  color: #000000;
+  text-decoration: none;
+  font-size: 15px;
+  padding-left: 15px;
+  font-weight: 500;
+  display: block;
+  width: 100%;
+  border-left: 3px solid transparent ;
 }
-
+/* 
 nav ul li.active a {
-    color: #2d1b6b;
-    background: #BEB8D1;
-    text-decoration: none;
-    border-left-color: #2d1b6b;
-}
+  color: #2d1b6b;
+  background: #BEB8D1;
+  text-decoration: none;
+  border-left-color: #2d1b6b;
+} */
+
 nav ul li a:hover {
-    color: black;
-    background: #BEB8D1;
-    text-decoration: none;
-    border-left-color: #2d1b6b;
+  color: black;
+  background: #BEB8D1;
+  text-decoration: none;
+  border-left-color: #2d1b6b;
 }
 
 nav ul ul {
-    position: static;
-    /* display: none; */
+  position: static;
+  /* display: none; */
 }
 
 nav ul ul li {
-    line-height: 42px;
-    border-bottom: none;
+  line-height: 42px;
+  border-bottom: none;
 }
 
 nav ul ul li a {
-    font-size: 14px;
-    color: black;
-    padding-left: 0px;
+  font-size: 14px;
+  color: black;
+  padding-left: 0px;
 }
 
 nav ul li.active ul.active li a {
-    color: black;
-    background: #BEB8D1;
-    border-left-color: transparent ;
+  color: black;
+  background: #BEB8D1;
+  border-left-color: transparent ;
 }
 
 nav ul li ul li a:hover {
-    color: #2d1b6b!important;
-    background: #BEB8D1!important;
+  color: #2d1b6b!important;
+  background: #BEB8D1!important;
 }
 
 nav ul li a span{
-    position: absolute;
-    top: 50%;
-    right: 20px;
-    transform: translateY(-50%);
-    transition: transform 0.4s;
+  position: absolute;
+  top: 50%;
+  right: 20px;
+  transform: translateY(-50%);
+  transition: transform 0.4s;
 }
 
 nav ul li a:hover span {
-    transform: translateY(-50%) rotate(-180deg);
+  transform: translateY(-50%) rotate(-180deg);
 }
 
 
 .content {
-  background-color: #ececed;
-  flex: 1;
-  padding-top: 100px; /* Tetapkan padding sesuai kebutuhan Anda */
-  padding-left: 250px; /* Tetapkan padding sesuai kebutuhan Anda */
-  width: 100%; /* Memenuhi lebar layar */
+background-color: #ececed;
+flex: 1;
+padding-top: 100px; /* Tetapkan padding sesuai kebutuhan Anda */
+padding-left: 250px; /* Tetapkan padding sesuai kebutuhan Anda */
+width: 100%; /* Memenuhi lebar layar */
 }
-
