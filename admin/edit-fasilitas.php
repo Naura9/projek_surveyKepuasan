@@ -13,7 +13,6 @@ $username = $_SESSION['username'];
 $role = $_SESSION['role'];
 $nama = $_SESSION['nama'];
 
-// Check if 'id' parameter is set in the URL
 if(isset($_GET['id'])) {
     $soal_id = $_GET['id'];
     
@@ -27,6 +26,46 @@ if(isset($_GET['id'])) {
         $data = mysqli_fetch_assoc($result);
         $soal_id = $data['soal_id'];
         $soal_nama = $data['soal_nama'];
+
+        if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['simpan'])) {
+            // Mendapatkan ID pertanyaan dari URL
+            $soal_id = $_GET['id']; 
+    
+            // Mengambil nilai yang diperbarui dari form
+            $soal_nama_baru = $_POST['soal_nama'];
+    
+            // Query untuk mendapatkan soal_nama sebelumnya
+            $query_get_old = "SELECT soal_nama FROM m_survey_soal WHERE soal_id = $soal_id";
+            $result_get_old = mysqli_query($kon, $query_get_old);
+            $row = mysqli_fetch_assoc($result_get_old);
+            $soal_nama_lama = $row['soal_nama'];
+    
+            // Query untuk memperbarui pertanyaan dalam database
+            $query_update = "UPDATE m_survey_soal SET soal_nama=? WHERE soal_nama LIKE ?";
+    
+            // Persiapkan dan eksekusi statement untuk memperbarui pertanyaan yang sesuai
+            $stmt = $kon->prepare($query_update);
+    
+            // Bind parameter ke statement
+            $stmt->bind_param("ss", $soal_nama_baru, $soal_nama_lama);
+    
+            // Eksekusi statement
+            $stmt->execute();
+    
+            // Periksa apakah query berhasil dieksekusi
+            if($stmt->affected_rows > 0) {
+                echo "Pertanyaan dengan nama \"$soal_nama_lama\" berhasil diperbarui menjadi \"$soal_nama_baru\" untuk semua survey_id <br>";
+            } else {
+                echo "Gagal memperbarui pertanyaan dengan nama \"$soal_nama_lama\" <br>";
+            }
+    
+            // Tutup statement
+            $stmt->close();
+    
+            // Jika penyimpanan berhasil, arahkan kembali ke halaman soal-fasilitas.php
+            header("Location: SurveyFasilitas.php");
+            exit(); // Pastikan tidak ada kode yang dieksekusi setelah header
+        }
     } else {
         // Handle if question is not found
         echo "Pertanyaan tidak ditemukan.";
@@ -184,7 +223,7 @@ if(isset($_GET['id'])) {
     <section>
     <div class="content">
         <h2>Survey Fasilitas Polinema</h2>
-        <form action="proses-edit-fasilitas.php?id=<?php echo $soal_id; ?>" method="post" >
+        <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]) . "?id=$soal_id"; ?>" method="post" >            
             <div class="survey-question">
             <label for="question1">Pertanyaan</label>
             <input type="text" class="form-control form-custom" name="soal_nama" id="soal_nama" value="<?php echo $soal_nama; ?>" required>                

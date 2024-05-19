@@ -70,11 +70,32 @@ if ($result_survey_ditanggapi) {
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://kit.fontawesome.com/96cfbc074b.js" crossorigin="anonymous"></script>
-     <link rel="stylesheet" href="../header.css">
+    <link rel="stylesheet" href="../header.css">
     <script src="https://code.jquery.com/jquery-3.4.1.js"></script>
 
     <style>
-        /* CSS untuk kotak berwarna putih */
+        .sidebar-nav li a {
+            color: #333;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            padding: 10px 8px;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .sidebar-nav li a:hover, .sidebar-nav li.active a {
+            background-color: rgba(190, 184, 209, 0.5);
+            border-radius: 4px;
+        }
+
+        .sidebar-nav li a i {
+            margin-right: 10px;
+        }
+
+        .sidebar-nav li {
+            margin-bottom: 10px;
+        }
+
         .survey-box {
             background-color: #ffffff;
             border-radius: 8px;
@@ -87,21 +108,18 @@ if ($result_survey_ditanggapi) {
             margin-top: 40px;
         }
 
-        /* CSS untuk jumlah survey ditanggapi */
         .survey-count {
             font-size: 28px;
             font-weight: bold;
             margin-left: 50px;
-            margin-right: 16px; /* Jarak antara jumlah dan ikon */
+            margin-right: 16px;
         }
 
-        /* CSS untuk ikon di bagian kanan */
         .icon {
-            margin-left: 50px; /* Mendorong ikon ke kanan */
+            margin-left: 50px;
             font-size: 60px;
         }
 
-        /* CSS untuk tulisan "Survey telah ditanggapi" */
         .survey-text {
             font-size: 13px;
             color: #555555;
@@ -114,9 +132,8 @@ if ($result_survey_ditanggapi) {
 
         .message {
             width: 5px;
-            margin-left: 885px
+            margin-left: 885px;
         }
-
     </style>
 </head>
 <body>
@@ -139,32 +156,32 @@ if ($result_survey_ditanggapi) {
 
     <nav class="sidebar">
         <ul class="sidebar-nav">
-            <li class="">
-                <a href="dashboard-admin.php" class="">
+            <li>
+                <a href="dashboard-admin.php">
                     <i class="fa-solid fa-house"></i>
                     Dashboard
                 </a>
             </li>
-            <li class="">
-                <a href="#" class="" data-bs-toggle="collapse" data-bs-target="#auth" aria-expanded="false" aria-controls="auth">
-                <i class="fa-solid fa-list-ol"></i> Survey
+            <li>
+                <a href="#" data-bs-toggle="collapse" data-bs-target="#auth" aria-expanded="false" aria-controls="auth">
+                    <i class="fa-solid fa-list-ol"></i> Survey
                     <span class="lni lni-chevron-down"></span>
                 </a>
-                <ul id="auth" class="" data-bs-parent="#sidebar">
-                    <li><a href="soal-pendidikan.php"><i class="fa-solid fa-medal"></i> Kualitas Pendidikan</a></li>
-                    <li><a href="soal-fasilitas.php"><i class="fa-solid fa-layer-group"></i>     Fasilitas</a></li>                    
-                    <li><a href="soal-pelayanan.php"><i class="fa-solid fa-handshake"></i>  Pelayanan</a></li>
-                    <li><a href="soal-lulusan.php"><i class="fa-solid fa-graduation-cap"></i>  Lulusan</a></li>
+                <ul id="auth" class="collapse" data-bs-parent="#sidebar">
+                    <li><a href="SurveyPendidikan.php"><i class="fa-solid fa-medal"></i> Kualitas Pendidikan</a></li>
+                    <li><a href="SurveyFasilitas.php"><i class="fa-solid fa-layer-group"></i> Fasilitas</a></li>                    
+                    <li><a href="SurveyPelayanan.php"><i class="fa-solid fa-handshake"></i> Pelayanan</a></li>
+                    <li><a href="SurveyLulusan.php"><i class="fa-solid fa-graduation-cap"></i> Lulusan</a></li>
                 </ul>
             </li>
-            <li class="">
-                <a href="responden-survey.php" class="">
+            <li>
+                <a href="responden-survey.php">
                     <i class="fa-solid fa-user-group"></i>
                     Responden
                 </a>
             </li>
-            <li class="">
-                <a href="laporan-survey.php" class="">
+            <li>
+                <a href="laporan-survey.php">
                     <i class="fa-solid fa-book-open"></i>
                     Laporan
                 </a>
@@ -172,49 +189,60 @@ if ($result_survey_ditanggapi) {
         </ul>
     </nav>
     <section>
-    <div class="content">
-        <!-- Kotak berwarna putih -->
-        <div class="survey-box"> 
-            <!-- Jumlah survey ditanggapi -->
-            <div class="survey-count">
-                <span id="surveyNumber1"><?php echo $total_user; ?></span>
-                <!-- Memindahkan teks ke sini -->
-                <div class="survey-text">User melakukan survey</div>
+        <div class="content">
+            <div class="survey-box">
+                <div class="survey-count">
+                    <span id="surveyNumber1"><?php echo $total_user; ?></span>
+                    <div class="survey-text">User melakukan survey</div>
+                </div>
+                <div class="icon">
+                    <i class="fa-solid fa-user-group"></i>
+                </div>
             </div>
 
-            <div class="icon">
-                <i class="fa-solid fa-user-group"></i>
+            <div class="survey-box">
+                <div class="survey-count">
+                    <span id="surveyNumber2"><?php echo $jumlah_survey_ditanggapi; ?></span>
+                    <div class="survey-text">Survey Telah Ditanggapi</div>
+                </div>
+                <div class="icon">
+                    <i class="fa-solid fa-rectangle-list"></i>            
+                </div>            
             </div>
         </div>
-
-        <!-- Kotak berwarna putih untuk survey telah ditanggapi -->
-        <div class="survey-box">
-        <div class="survey-count">
-                <span id="surveyNumber2"><?php echo $jumlah_survey_ditanggapi; ?></span>
-                <!-- Memindahkan teks ke sini -->
-                <div class="survey-text">Survey Telah Ditanggapi</div>
-            </div>
-            <div class="icon">
-                <i class="fa-solid fa-rectangle-list"></i>            
-            </div>            
-        </div>
-    </div>
-    <div class="kosong">
-        </div>
-</section>
-
-
-
-
+        <div class="kosong"></div>
+    </section>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"></script>
     <script>
-        $('nav ul li').click(function(){
-             $(this).addClass("active").siblings().removeClass("active");
-        });    
+        document.addEventListener("DOMContentLoaded", function() {
+            var sidebarItems = document.querySelectorAll('.sidebar-nav li');
 
-        
-        
+            sidebarItems.forEach(function(item) {
+                item.addEventListener('click', function() {
+                    // Remove active class from all items
+                    sidebarItems.forEach(function(el) {
+                        el.classList.remove('active');
+                    });
+
+                    // Add active class to the clicked item
+                    this.classList.add('active');
+
+                    // Store the active item in localStorage
+                    localStorage.setItem('activeSidebarItem', this.querySelector('a').getAttribute('href'));
+                });
+            });
+
+            // Set the active item based on localStorage
+            var activeItem = localStorage.getItem('activeSidebarItem');
+            if (activeItem) {
+                sidebarItems.forEach(function(item) {
+                    if (item.querySelector('a').getAttribute('href') === activeItem) {
+                        item.classList.add('active');
+                    }
+                });
+            }
+        });
     </script>
 </body>
 </html>

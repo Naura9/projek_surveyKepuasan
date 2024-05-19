@@ -27,6 +27,46 @@ if(isset($_GET['id'])) {
         $data = mysqli_fetch_assoc($result);
         $soal_id = $data['soal_id'];
         $soal_nama = $data['soal_nama'];
+
+        if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['simpan'])) {
+            // Mendapatkan ID pertanyaan dari URL
+            $soal_id = $_GET['id']; 
+    
+            // Mengambil nilai yang diperbarui dari form
+            $soal_nama_baru = $_POST['soal_nama'];
+    
+            // Query untuk mendapatkan soal_nama sebelumnya
+            $query_get_old = "SELECT soal_nama FROM m_survey_soal WHERE soal_id = $soal_id";
+            $result_get_old = mysqli_query($kon, $query_get_old);
+            $row = mysqli_fetch_assoc($result_get_old);
+            $soal_nama_lama = $row['soal_nama'];
+    
+            // Query untuk memperbarui pertanyaan dalam database
+            $query_update = "UPDATE m_survey_soal SET soal_nama=? WHERE soal_nama LIKE ?";
+    
+            // Persiapkan dan eksekusi statement untuk memperbarui pertanyaan yang sesuai
+            $stmt = $kon->prepare($query_update);
+    
+            // Bind parameter ke statement
+            $stmt->bind_param("ss", $soal_nama_baru, $soal_nama_lama);
+    
+            // Eksekusi statement
+            $stmt->execute();
+    
+            // Periksa apakah query berhasil dieksekusi
+            if($stmt->affected_rows > 0) {
+                echo "Pertanyaan dengan nama \"$soal_nama_lama\" berhasil diperbarui menjadi \"$soal_nama_baru\" untuk semua survey_id <br>";
+            } else {
+                echo "Gagal memperbarui pertanyaan dengan nama \"$soal_nama_lama\" <br>";
+            }
+    
+            // Tutup statement
+            $stmt->close();
+    
+            // Jika penyimpanan berhasil, arahkan kembali ke halaman soal-fasilitas.php
+            header("Location: SurveyPendidikan.php");
+            exit(); // Pastikan tidak ada kode yang dieksekusi setelah header
+        }
     } else {
         // Handle if question is not found
         echo "Pertanyaan tidak ditemukan.";
@@ -64,6 +104,9 @@ if(isset($_GET['id'])) {
             background-color: white; /* Tambahkan background color merah */
             padding: 10px; /* Tambahkan padding untuk memberi jarak antara konten dan border */
             width : 1000px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+
 
         }
 
@@ -111,7 +154,7 @@ if(isset($_GET['id'])) {
         }
 
         .button-simpan {
-            margin-left: 750px; 
+            margin-left: 825px; 
             background-color: #2d1b6b;
             color: white;
             border: 1px solid black;
@@ -124,7 +167,8 @@ if(isset($_GET['id'])) {
         }
         .message {
             width: 5px;
-            margin-left: 885px
+            margin-left: 900px;
+
         }
     </style>
 </head>
@@ -160,10 +204,10 @@ if(isset($_GET['id'])) {
                     <span class="lni lni-chevron-down"></span>
                 </a>
                 <ul id="auth" class="" data-bs-parent="#sidebar">
-                    <li><a href="soal-pendidikan.php"><i class="fa-solid fa-medal"></i> Kualitas Pendidikan</a></li>
-                    <li><a href="soal-fasilitas.php"><i class="fa-solid fa-layer-group"></i>     Fasilitas</a></li>                    
-                    <li><a href="soal-pelayanan.php"><i class="fa-solid fa-handshake"></i>  Pelayanan</a></li>
-                    <li><a href="soal-lulusan.php"><i class="fa-solid fa-graduation-cap"></i>  Lulusan</a></li>
+                    <li><a href="SurveyPendidikan.php"><i class="fa-solid fa-medal"></i> Kualitas Pendidikan</a></li>
+                    <li><a href="SurveyFasilitas.php"><i class="fa-solid fa-layer-group"></i>     Fasilitas</a></li>                    
+                    <li><a href="SurveyPelayanan.php"><i class="fa-solid fa-handshake"></i>  Pelayanan</a></li>
+                    <li><a href="SurveyLulusan.php"><i class="fa-solid fa-graduation-cap"></i>  Lulusan</a></li>
                 </ul>
             </li>
             <li class="">
@@ -184,8 +228,8 @@ if(isset($_GET['id'])) {
     <section>
     <div class="content">
         <h2>Survey Kualitas Pendidikan Polinema</h2>
-        <form action="proses-edit-pendidikan.php?id=<?php echo $soal_id; ?>" method="post" >
-            <div class="survey-question">
+        <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]) . "?id=$soal_id"; ?>" method="post" >            
+        <div class="survey-question">
             <label for="question1">Pertanyaan</label>
             <input type="text" class="form-control form-custom" name="soal_nama" id="soal_nama" value="<?php echo $soal_nama; ?>" required>                
             <label for="question1">Keterangan</label>
@@ -205,7 +249,7 @@ if(isset($_GET['id'])) {
                 </div>             
             </div>
         <div class="button-container">
-            <a href="soal-pendidikan.php" class="btn button-kembali">Kembali</a>
+            <a href="SurveyPendidikan.php" class="btn button-kembali">Kembali</a>
             <button type="submit" class="btn button-simpan" name="simpan">Simpan</button>
         </div>    
         </form>

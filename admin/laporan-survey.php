@@ -222,7 +222,7 @@ if ($result_kategori_1 && $result_kategori_2 && $result_kategori_3 && $result_ka
     <script src="https://kit.fontawesome.com/96cfbc074b.js" crossorigin="anonymous"></script>
      <link rel="stylesheet" href="../header.css">
     <script src="https://code.jquery.com/jquery-3.4.1.js"></script>
-
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.min.js" integrity="sha512-L0Shl7nXXzIlBSUUPpxrokqq4ojqgZFQczTYlGjzONGTDAcLremjwaWv5A+EDLnxhQzY5xUZPWLOLqYRkY0Cbw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <style>
         /* CSS untuk kotak berwarna putih */
 .survey-box {
@@ -360,6 +360,10 @@ if ($result_kategori_1 && $result_kategori_2 && $result_kategori_3 && $result_ka
                     <div class="ratarata">Rata-rata <?php echo $rata_rata_kategori_2; ?></div>
                 </div>
             </div>
+            <div class="col">
+                <canvas id="myChart" style="height:40vh; width:40vw; margin:0 auto;"></canvas>
+            </div>
+
 
             <div class="survey-box left">
                 <div class="icon">
@@ -394,20 +398,36 @@ if ($result_kategori_1 && $result_kategori_2 && $result_kategori_3 && $result_ka
     <div class="kosong">
         </div>
 </section>
-
-
-
-
-
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"></script>
     <script>
         $('nav ul li').click(function(){
              $(this).addClass("active").siblings().removeClass("active");
         });    
-
-        
-        
     </script>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        const data = {
+            labels: ['Male', 'Female'],
+            datasets: [{
+                label: 'My First Dataset',
+                data: [2, 1], // Sample data counts
+                backgroundColor: [
+                    'rgb(255, 99, 132)',
+                    'rgb(54, 162, 235)'
+                ],
+                hoverOffset: 4
+            }]
+        };
+        const config = {
+            type: 'pie',
+            data: data,
+        };
+        const myChart = new Chart(
+            document.getElementById('myChart'),
+            config
+        );
+    </script>
+
 </body>
 </html>
 <?php

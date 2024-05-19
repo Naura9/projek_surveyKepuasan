@@ -13,7 +13,72 @@ $username = $_SESSION['username'];
 $role = $_SESSION['role'];
 $nama = $_SESSION['nama'];
 
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['simpan'])) {
+    // Data untuk disimpan ke dalam tabel m_survey_soal
+    $soal_nama = $_POST['question']; // Ambil pertanyaan dari formulir
+    $kategori_id = 1; 
+    $soal_jenis = "skala"; // Jenis pertanyaan
+
+    // Persiapkan query SQL untuk mendapatkan semua survey_id yang ada di tabel m_survey_soal
+    $sql_survey_ids = "SELECT DISTINCT survey_id FROM m_survey_soal";
+
+    // Eksekusi query untuk mendapatkan semua survey_id
+    $result_survey_ids = mysqli_query($kon, $sql_survey_ids);
+
+    // Periksa apakah query berhasil dieksekusi
+    if ($result_survey_ids) {
+        // Loop melalui setiap survey_id
+        while ($row_survey_id = mysqli_fetch_assoc($result_survey_ids)) {
+            $survey_id = $row_survey_id['survey_id'];
+
+            // Ambil nilai no_urut terakhir untuk survey_id ini
+            $sql_last_no_urut = "SELECT MAX(no_urut) AS last_no_urut FROM m_survey_soal WHERE survey_id = ?";
+            $stmt_last_no_urut = $kon->prepare($sql_last_no_urut);
+            $stmt_last_no_urut->bind_param("i", $survey_id);
+            $stmt_last_no_urut->execute();
+            $result_last_no_urut = $stmt_last_no_urut->get_result();
+
+            if ($row_last_no_urut = $result_last_no_urut->fetch_assoc()) {
+                $no_urut = $row_last_no_urut['last_no_urut'] + 1;
+            } else {
+                $no_urut = 1; // Jika belum ada pertanyaan untuk survey_id ini
+            }
+
+            // Persiapkan statement SQL untuk menyimpan pertanyaan
+            $sql = "INSERT INTO m_survey_soal (survey_id, kategori_id, no_urut, soal_jenis, soal_nama) 
+                    VALUES (?, ?, ?, ?, ?)";
+
+            // Persiapkan dan eksekusi statement
+            if ($stmt = $kon->prepare($sql)) {
+                // Bind parameter ke statement
+                $stmt->bind_param("iiiss", $survey_id, $kategori_id, $no_urut, $soal_jenis, $soal_nama);
+
+                // Eksekusi statement
+                if ($stmt->execute()) {
+                    echo "Pertanyaan kualitas pendidikan berhasil ditambahkan untuk survey_id: $survey_id <br>";
+                } else {
+                    echo "Gagal menambahkan pertanyaan kualitas pendidikan untuk survey_id: $survey_id <br>";
+                }
+
+                // Tutup statement
+                $stmt->close();
+            } else {
+                echo "Error: " . $kon->error;
+            }
+        }
+
+        header("Location: SurveyPendidikan.php");
+        exit();
+    } else {
+        // Jika query untuk mendapatkan survey_id gagal, tampilkan pesan error
+        echo "Error: " . mysqli_error($kon);
+    }
+
+    // Tutup koneksi database
+    $kon->close();
+}
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -41,6 +106,9 @@ $nama = $_SESSION['nama'];
             background-color: white; /* Tambahkan background color merah */
             padding: 10px; /* Tambahkan padding untuk memberi jarak antara konten dan border */
             width : 1000px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+
         }
 
         .question1 {
@@ -87,7 +155,7 @@ $nama = $_SESSION['nama'];
         }
 
         .button-simpan {
-            margin-left: 840px; 
+            margin-left: 825px; 
             background-color: #2d1b6b;
             color: white;
             border: 1px solid black;
@@ -101,7 +169,7 @@ $nama = $_SESSION['nama'];
 
         .message {
             width: 5px;
-            margin-left: 885px
+            margin-left: 900px
         }
     </style>
 </head>
@@ -137,10 +205,10 @@ $nama = $_SESSION['nama'];
                     <span class="lni lni-chevron-down"></span>
                 </a>
                 <ul id="auth" class="" data-bs-parent="#sidebar">
-                    <li><a href="soal-pendidikan.php"><i class="fa-solid fa-medal"></i> Kualitas Pendidikan</a></li>
-                    <li><a href="soal-fasilitas.php"><i class="fa-solid fa-layer-group"></i>     Fasilitas</a></li>                    
-                    <li><a href="soal-pelayanan.php"><i class="fa-solid fa-handshake"></i>  Pelayanan</a></li>
-                    <li><a href="soal-lulusan.php"><i class="fa-solid fa-graduation-cap"></i>  Lulusan</a></li>
+                    <li><a href="SurveyPendidikan.php"><i class="fa-solid fa-medal"></i> Kualitas Pendidikan</a></li>
+                    <li><a href="SurveyFasilitas.php"><i class="fa-solid fa-layer-group"></i>     Fasilitas</a></li>                    
+                    <li><a href="SurveyPelayanan.php"><i class="fa-solid fa-handshake"></i>  Pelayanan</a></li>
+                    <li><a href="SurveyLulusan.php"><i class="fa-solid fa-graduation-cap"></i>  Lulusan</a></li>
                 </ul>
             </li>
             <li class="">
@@ -161,7 +229,7 @@ $nama = $_SESSION['nama'];
     <div class="content">
         <h2>Survey Kualitas Pendidikan Polinema</h2>
         <div class="survey-question">
-            <form action="proses-tambah-pendidikan.php" method="POST">
+            <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="POST">
                 <label for="question1">Pertanyaan</label>
                 <input type="text" class="form-control form-custom" name="question" id="question" placeholder="Masukkan Pertanyaan" required>
                 <label for="question1">Keterangan</label>
@@ -181,7 +249,7 @@ $nama = $_SESSION['nama'];
                 </div>
         </div>
             <div class="button-container">
-                <a href="soal-pendidikan.php" class="btn button-kembali">Kembali</a>
+                <a href="SurveyPendidikan.php" class="btn button-kembali">Kembali</a>
                 <button type="submit" class="btn button-simpan" name="simpan">Simpan</button>
             </div>    
         </form>
