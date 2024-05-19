@@ -84,9 +84,7 @@
 
         }
 
-        .username img {
-            margin-left: 795px;
-    }
+        
 
         .pilihan-container {
             display: flex;
@@ -182,47 +180,8 @@
 
 <body>
 <div class="container">
-        <nav class="navbar">
-            <div class="logo">
-                <img src="img/logo-nama.png" alt="Logo" width="100">
-            </div>
-            <div class="username">
-                <span><?php echo $nama; ?> | Mahasiswa</span>
-                <img src="img/<?php echo $profil_image; ?>" alt="User" width="35" height="35" style="border-radius: 50%;">
-                <a href="../login/logout.php" class="logout">
-                    <i class="fa-solid fa-arrow-right-from-bracket"></i>
-                </a>
-            </div>
-        </nav>
-    </div>
-
-    <nav class="sidebar">
-        <ul class="sidebar-nav">
-            <li class="">
-                <a href="dashboard-mahasiswa.php" class="">
-                    <i class="fa-solid fa-house"></i>
-                    Dashboard
-                </a>
-            </li>
-            <li class="">
-                <a href="#" class="" data-bs-toggle="collapse" data-bs-target="#auth" aria-expanded="false" aria-controls="auth">
-                    <i class="fa-solid fa-list-ol"></i> Survey
-                    <span class="lni lni-chevron-down"></span>
-                </a>
-                <ul id="auth" class="" data-bs-parent="#sidebar">
-                    <li><a href="survey-pendidikan.php"><i class="fa-solid fa-medal"></i> Kualitas Pendidikan</a></li>
-                    <li><a href="survey-fasilitas.php"><i class="fa-solid fa-layer-group"></i>     Fasilitas</a></li>                    
-                    <li><a href="survey-pelayanan.php"><i class="fa-solid fa-handshake"></i>  Pelayanan</a></li>
-                </ul>
-            </li>
-            <li class="">
-                <a href="profil.php" class="">
-                    <i class="fa-solid fa-user"></i>
-                     Profile
-                </a>
-            </li>
-        </ul>
-    </nav>
+    <?php include '../header.php'; ?>
+    
     <section>
     <div class="content">
         <h2>Survey Kualitas Pendidikan</h2>
@@ -285,6 +244,7 @@
     </script>
 
 </section>
+</div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"></script>
     <script>

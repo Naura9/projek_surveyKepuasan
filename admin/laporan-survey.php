@@ -207,6 +207,49 @@ if ($result_kategori_1 && $result_kategori_2 && $result_kategori_3 && $result_ka
     $rata_rata_kategori_4 = $row_kategori_4 ? $row_kategori_4['jawaban'] : "";
 ?>
 
+<?php
+$q = $kon->query("SELECT 
+        COUNT(*) AS jumlah_cukup
+    FROM (
+        SELECT jawaban
+        FROM t_jawaban_mahasiswa
+        JOIN m_survey_soal ON t_jawaban_mahasiswa.soal_id = m_survey_soal.soal_id
+        WHERE m_survey_soal.kategori_id = 2 AND jawaban = 'cukup'
+        UNION ALL
+        SELECT jawaban
+        FROM t_jawaban_alumni
+        JOIN m_survey_soal ON t_jawaban_alumni.soal_id = m_survey_soal.soal_id
+        WHERE m_survey_soal.kategori_id = 2 AND jawaban = 'cukup'
+        UNION ALL
+        SELECT jawaban
+        FROM t_jawaban_dosen
+        JOIN m_survey_soal ON t_jawaban_dosen.soal_id = m_survey_soal.soal_id
+        WHERE m_survey_soal.kategori_id = 2 AND jawaban = 'cukup'
+        UNION ALL
+        SELECT jawaban
+        FROM t_jawaban_ortu
+        JOIN m_survey_soal ON t_jawaban_ortu.soal_id = m_survey_soal.soal_id
+        WHERE m_survey_soal.kategori_id = 2 AND jawaban = 'cukup'
+        UNION ALL
+        SELECT jawaban
+        FROM t_jawaban_industri
+        JOIN m_survey_soal ON t_jawaban_industri.soal_id = m_survey_soal.soal_id
+        WHERE m_survey_soal.kategori_id = 2 AND jawaban = 'cukup'
+        UNION ALL
+        SELECT jawaban
+        FROM t_jawaban_tendik
+        JOIN m_survey_soal ON t_jawaban_tendik.soal_id = m_survey_soal.soal_id
+        WHERE m_survey_soal.kategori_id = 2 AND jawaban = 'cukup'
+    ) AS combined_tables;
+    ");
+
+if ($q) {
+    $result = mysqli_fetch_assoc($q);
+    $jumlah_cukup = $result ? $result['jumlah_cukup'] : 0;
+} else {
+    echo "Gagal mengambil data dari database";
+}
+?>
 
 
 <!DOCTYPE html>
@@ -360,8 +403,8 @@ if ($result_kategori_1 && $result_kategori_2 && $result_kategori_3 && $result_ka
                     <div class="ratarata">Rata-rata <?php echo $rata_rata_kategori_2; ?></div>
                 </div>
             </div>
-            <div class="col">
-                <canvas id="myChart" style="height:40vh; width:40vw; margin:0 auto;"></canvas>
+            <div class="">
+                <canvas id="myChart" style="height:300px; width:300px; margin:0 auto;"></canvas>
             </div>
 
 
@@ -407,13 +450,76 @@ if ($result_kategori_1 && $result_kategori_2 && $result_kategori_3 && $result_ka
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         const data = {
-            labels: ['Male', 'Female'],
+            labels: ['Kurang', 'Cukup', 'Baik', 'Sangat Baik'],
             datasets: [{
-                label: 'My First Dataset',
-                data: [2, 1], // Sample data counts
+                label: '',
+                data: [
+                    <?php
+                        $qry_kurang = $kon->query("SELECT jawaban FROM t_jawaban_mahasiswa WHERE jawaban='kurang' AND soal_id IN (SELECT soal_id FROM m_survey_soal WHERE kategori_id = 2)
+                            UNION ALL
+                            SELECT jawaban FROM t_jawaban_alumni WHERE jawaban='kurang' AND soal_id IN (SELECT soal_id FROM m_survey_soal WHERE kategori_id = 2)
+                            UNION ALL
+                            SELECT jawaban FROM t_jawaban_tendik WHERE jawaban='kurang' AND soal_id IN (SELECT soal_id FROM m_survey_soal WHERE kategori_id = 2)
+                            UNION ALL
+                            SELECT jawaban FROM t_jawaban_dosen WHERE jawaban='kurang' AND soal_id IN (SELECT soal_id FROM m_survey_soal WHERE kategori_id = 2)
+                            UNION ALL
+                            SELECT jawaban FROM t_jawaban_ortu WHERE jawaban='kurang' AND soal_id IN (SELECT soal_id FROM m_survey_soal WHERE kategori_id = 2)
+                            UNION ALL
+                            SELECT jawaban FROM t_jawaban_industri WHERE jawaban='kurang' AND soal_id IN (SELECT soal_id FROM m_survey_soal WHERE kategori_id = 2)");
+                        $resF_kurang = $qry_kurang->num_rows;
+                        echo $resF_kurang;
+                    ?>,
+                    <?php
+                        $qry_cukup = $kon->query("SELECT jawaban FROM t_jawaban_mahasiswa WHERE jawaban='cukup' AND soal_id IN (SELECT soal_id FROM m_survey_soal WHERE kategori_id = 2)
+                                                UNION ALL
+                                                SELECT jawaban FROM t_jawaban_alumni WHERE jawaban='cukup' AND soal_id IN (SELECT soal_id FROM m_survey_soal WHERE kategori_id = 2)
+                                                UNION ALL
+                                                SELECT jawaban FROM t_jawaban_tendik WHERE jawaban='cukup' AND soal_id IN (SELECT soal_id FROM m_survey_soal WHERE kategori_id = 2)
+                                                UNION ALL
+                                                SELECT jawaban FROM t_jawaban_dosen WHERE jawaban='cukup' AND soal_id IN (SELECT soal_id FROM m_survey_soal WHERE kategori_id = 2)
+                                                UNION ALL
+                                                SELECT jawaban FROM t_jawaban_ortu WHERE jawaban='cukup' AND soal_id IN (SELECT soal_id FROM m_survey_soal WHERE kategori_id = 2)
+                                                UNION ALL
+                                                SELECT jawaban FROM t_jawaban_industri WHERE jawaban='cukup' AND soal_id IN (SELECT soal_id FROM m_survey_soal WHERE kategori_id = 2)");
+                        $resF_cukup = $qry_cukup->num_rows;
+                        echo $resF_cukup;
+                    ?>,
+                    <?php
+                        $qry_baik = $kon->query("SELECT jawaban FROM t_jawaban_mahasiswa WHERE jawaban='baik' AND soal_id IN (SELECT soal_id FROM m_survey_soal WHERE kategori_id = 2)
+                                                UNION ALL
+                                                SELECT jawaban FROM t_jawaban_alumni WHERE jawaban='baik' AND soal_id IN (SELECT soal_id FROM m_survey_soal WHERE kategori_id = 2)
+                                                UNION ALL
+                                                SELECT jawaban FROM t_jawaban_tendik WHERE jawaban='baik' AND soal_id IN (SELECT soal_id FROM m_survey_soal WHERE kategori_id = 2)
+                                                UNION ALL
+                                                SELECT jawaban FROM t_jawaban_dosen WHERE jawaban='baik' AND soal_id IN (SELECT soal_id FROM m_survey_soal WHERE kategori_id = 2)
+                                                UNION ALL
+                                                SELECT jawaban FROM t_jawaban_ortu WHERE jawaban='baik' AND soal_id IN (SELECT soal_id FROM m_survey_soal WHERE kategori_id = 2)
+                                                UNION ALL
+                                                SELECT jawaban FROM t_jawaban_industri WHERE jawaban='baik' AND soal_id IN (SELECT soal_id FROM m_survey_soal WHERE kategori_id = 2)");
+                        $resF_baik = $qry_baik->num_rows;
+                        echo $resF_baik;
+                    ?>,
+                    <?php
+                        $qry_sangat_baik = $kon->query("SELECT jawaban FROM t_jawaban_mahasiswa WHERE jawaban='sangat_baik' AND soal_id IN (SELECT soal_id FROM m_survey_soal WHERE kategori_id = 2)
+                                                        UNION ALL
+                                                        SELECT jawaban FROM t_jawaban_alumni WHERE jawaban='sangat_baik' AND soal_id IN (SELECT soal_id FROM m_survey_soal WHERE kategori_id = 2)
+                                                        UNION ALL
+                                                        SELECT jawaban FROM t_jawaban_tendik WHERE jawaban='sangat_baik' AND soal_id IN (SELECT soal_id FROM m_survey_soal WHERE kategori_id = 2)
+                                                        UNION ALL
+                                                        SELECT jawaban FROM t_jawaban_dosen WHERE jawaban='sangat_baik' AND soal_id IN (SELECT soal_id FROM m_survey_soal WHERE kategori_id = 2)
+                                                        UNION ALL
+                                                        SELECT jawaban FROM t_jawaban_ortu WHERE jawaban='sangat_baik' AND soal_id IN (SELECT soal_id FROM m_survey_soal WHERE kategori_id = 2)
+                                                        UNION ALL
+                                                        SELECT jawaban FROM t_jawaban_industri WHERE jawaban='sangat_baik' AND soal_id IN (SELECT soal_id FROM m_survey_soal WHERE kategori_id = 2)");
+                        $resF_sangat_baik = $qry_sangat_baik->num_rows;
+                        echo $resF_sangat_baik;
+                    ?>
+                ], // Sample data counts
                 backgroundColor: [
                     'rgb(255, 99, 132)',
-                    'rgb(54, 162, 235)'
+                    'rgb(54, 162, 235)',
+                    'rgb(75, 192, 192)',
+                    'rgb(255, 205, 86)'
                 ],
                 hoverOffset: 4
             }]
