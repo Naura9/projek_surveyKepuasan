@@ -1,14 +1,19 @@
 <?php
+session_start();
+include '../koneksi.php';
+
+// Periksa apakah pengguna telah login
+if (!isset($_SESSION['username'])) {
+    // Jika belum, redirect pengguna ke halaman login
+    header("Location: ../login/login.php");
+    exit(); // Pastikan untuk keluar dari skrip setelah redirect
+}
 
 class Survey {
-    private $db;
-
-    public function __construct($db_connection) {
-        $this->db = new Koneksi();
-        $this->db = $db_connection;
-    }
-
     public function getSurveyQuestions($kategori_id) {
+        // Establish the database connection
+        $kon = mysqli_connect("localhost", "root", "", "tp_survey");
+        
         $query = "SELECT m_survey_soal.soal_id, m_survey_soal.soal_nama
             FROM m_survey_soal
             JOIN m_survey ON m_survey_soal.survey_id = m_survey.survey_id
@@ -24,20 +29,26 @@ class Survey {
                 WHERE m_kategori.kategori_id = $kategori_id
                 GROUP BY soal_nama
             )";
-        $result = mysqli_query($this->db->kon, $query);
-    
+        $result = mysqli_query($kon, $query);
+
         $questions = array();
         while ($row = mysqli_fetch_assoc($result)) {
             $questions[] = $row;
         }
-    
+
+        // Close the database connection
+        mysqli_close($kon);
+
         return $questions;
     }
 
     public function hapusPertanyaan($soal_id) {
+        // Establish the database connection
+        $kon = mysqli_connect("localhost", "root", "", "tp_survey");
+
         // Dapatkan soal_nama dari soal_id
         $query_get_soal_nama = "SELECT soal_nama FROM m_survey_soal WHERE soal_id = $soal_id";
-        $result_soal_nama = mysqli_query($this->db->kon, $query_get_soal_nama);
+        $result_soal_nama = mysqli_query($kon, $query_get_soal_nama);
         
         if ($result_soal_nama && mysqli_num_rows($result_soal_nama) > 0) {
             $row = mysqli_fetch_assoc($result_soal_nama);
@@ -45,14 +56,20 @@ class Survey {
             
             // Query untuk menghapus pertanyaan dengan soal_nama yang sama
             $query_delete = "DELETE FROM m_survey_soal WHERE soal_nama = '$soal_nama'";
-            $result_delete = mysqli_query($this->db->kon, $query_delete);
+            $result_delete = mysqli_query($kon, $query_delete);
         
             if($result_delete) {
+                // Close the database connection
+                mysqli_close($kon);
                 return "Semua pertanyaan dengan kalimat \"$soal_nama\" berhasil dihapus.";
             } else {
+                // Close the database connection
+                mysqli_close($kon);
                 return "Gagal menghapus pertanyaan.";
             }
         } else {
+            // Close the database connection
+            mysqli_close($kon);
             return "Gagal mendapatkan soal_nama.";
         }
     }
@@ -61,7 +78,7 @@ class Survey {
         foreach ($questions as $question) {
             echo '<div class="survey-question">';
             echo '<form action="' . $hapus_soal . '?id=' . $question['soal_id'] . '" method="POST">';
-
+    
             echo '<h3>' . $question['soal_nama'] . '</h3>';
             echo '<div class="rating">';
             echo '<input type="radio" id="jawaban_' . $question['soal_id'] . '_kurang" name="jawaban_' . $question['soal_id'] . '" value="kurang" class="label-kurang">';
@@ -76,15 +93,15 @@ class Survey {
             echo '<input type="radio" id="jawaban_' . $question['soal_id'] . '_sangat_baik" name="jawaban_' . $question['soal_id'] . '" value="sangat_baik" class="label-sangat-baik">';
             echo '<label for="jawaban_' . $question['soal_id'] . '_sangat_baik"> Sangat Baik</label>';
             echo '<input type="hidden" name="soal_id" value="' . $question['soal_id'] . '">';
-            echo '<input type="submit" class="btn button-hapus" name="hapus" value="Hapus" onclick="return confirm(\'Apakah Anda yakin ingin menghapus?\');">';
-            echo '<a href="' . $edit_soal . '?id=' . $question['soal_id'] . '&kategori_id=' . $kategori_id . '" class="btn button-edit">Edit</a>';
+            echo '<input type="submit" class="button-hapus" name="hapus" value="Hapus" onclick="return confirm(\'Apakah Anda yakin ingin menghapus?\');">';
+            echo '<a href="' . $edit_soal . '?id=' . $question['soal_id'] . '&kategori_id=' . $kategori_id . '" class="button-edit">Edit</a>';
             echo '</div>';
             
             echo '<hr>';
             echo '</form>';
-
+    
             echo '</div>';
         }
     }
-        }
+}
 ?>

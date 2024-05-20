@@ -3,28 +3,25 @@ session_start();
 include '../Koneksi.php';
 
 if (!isset($_SESSION['username'])) {
-    // Jika belum, redirect pengguna ke halaman login
     header("Location: ../login/login.php");
-    exit(); // Pastikan untuk keluar dari skrip setelah redirect
+    exit(); 
 }
 
-// Ambil parameter dari URL
 $nama = $_SESSION['nama'];
 $username = $_GET['username'];
 
-// Query untuk mengambil data profil berdasarkan username
-$query = "SELECT * FROM t_responden_mahasiswa 
-        JOIN m_survey ON m_survey.survey_id = t_responden_mahasiswa.survey_id
+$query = "SELECT * FROM t_responden_ortu 
+        JOIN m_survey ON m_survey.survey_id = t_responden_ortu.survey_id
         JOIN m_user ON m_user.user_id = m_survey.user_id
         WHERE responden_nama = '$nama'";
 
-$res = mysqli_query($kon, $query); // Add this line to execute the query
+$res = mysqli_query($kon, $query); 
 
 if(mysqli_num_rows($res) > 0) {
-    $mhs = mysqli_fetch_assoc($res);
+    $ortu = mysqli_fetch_assoc($res);
 
     if(isset($_FILES["fileImg"]["name"])){ 
-        $id = $_POST["responden_mahasiswa_id"];
+        $id = $_POST["responden_ortu_id"];
 
         $src = $_FILES["fileImg"]["tmp_name"];
         $imageName = uniqid() . $_FILES["fileImg"]["name"]; 
@@ -33,13 +30,13 @@ if(mysqli_num_rows($res) > 0) {
 
         move_uploaded_file($src, $target);
 
-        $query = "UPDATE t_responden_mahasiswa SET image = '$imageName' WHERE responden_mahasiswa_id = $id"; 
+        $query = "UPDATE t_responden_ortu SET image = '$imageName' WHERE responden_ortu_id = $id"; 
         mysqli_query($kon, $query);
 
         header("Location: profil.php");
     }
 
-    $query_get_profil_image = "SELECT image FROM t_responden_mahasiswa WHERE responden_nama = '$nama'";
+    $query_get_profil_image = "SELECT image FROM t_responden_ortu WHERE responden_nama = '$nama'";
     $result_get_profil_image = mysqli_query($kon, $query_get_profil_image);
     $row_get_profil_image = mysqli_fetch_assoc($result_get_profil_image);
     $profil_image = $row_get_profil_image['image'];
@@ -165,13 +162,13 @@ if(mysqli_num_rows($res) > 0) {
                     <div class="form-group text-left font-weight-bold">
                         <div class="profile-label">Foto Profil</div>
                             <form class="form" id="form" action="" enctype="multipart/form-data" method="post">
-                            <input type="hidden" name="responden_mahasiswa_id" value="<?php echo $mhs['responden_mahasiswa_id']; ?>">
+                            <input type="hidden" name="responden_ortu_id" value="<?php echo $ortu['responden_ortu_id']; ?>">
                             <div class="upload">
                             <div class="rightRound" id="upload">
                                     <input type="file" name="fileImg" id="fileImg" accept=".jpg, .jpeg, .png">
                                     <i class="fa fa-camera"></i>
                                 </div>
-                                <img src="img/<?php echo $mhs['image']; ?>" id="image">
+                                <img src="img/<?php echo $ortu['image']; ?>" id="image">
 
                                 <div class="leftRound" id="cancel" style="display: none;">
                                     <i class="fa fa-times"></i>
@@ -186,37 +183,58 @@ if(mysqli_num_rows($res) > 0) {
 
                         </div>					
                         <div class="form-group text-left font-weight-bold">
-                            <label for="responden_nim">NIM</label>
-                            <input type="text" class="form-control bg-custom" name="responden_nim" id="responden_nim" value="<?php echo $mhs['responden_nim']; ?>">
-                        </div>					
-                        <div class="form-group text-left font-weight-bold">
 						    <label for="respinden_nama">Nama Lengkap</label>
-							<input type="text" class="form-control bg-custom" name="responden_nama" id="responden_nama" value="<?php echo $mhs['responden_nama']; ?>">
+							<input type="text" class="form-control bg-custom" name="responden_nama" id="responden_nama" value="<?php echo $ortu['responden_nama']; ?>">
 						</div>						
                         <div class="form-group text-left font-weight-bold">
                             <label for="username">Username</label>
-							<input type="text" class="form-control bg-custom" name="username" id="username" value="<?php echo $mhs['username']; ?>">
+							<input type="text" class="form-control bg-custom" name="username" id="username" value="<?php echo $ortu['username']; ?>">
 						</div>						
                         <div class="form-group text-left font-weight-bold">
                             <label for="password">Password</label>
 							<input type="text" class="form-control bg-custom" name="password" id="password" value="xxxxxxxx">
 						</div>						
                         <div class="form-group text-left font-weight-bold">
-                            <label for="responden_email">Email</label>
-							<input type="text" class="form-control bg-custom" name="responden_email" id="responden_email" value="<?php echo $mhs['responden_email']; ?>">
+                            <label for="email">Email</label>
+							<input type="text" class="form-control bg-custom" name="email" id="email" value="<?php echo $ortu['email']; ?>">
 						</div>						
                         <div class="form-group text-left font-weight-bold">
-                            <label for="responden_prodi">Program Studi</label>
-                            <input type="text" class="form-control bg-custom" name="responden_prodi" id="responden_prodi" value="<?php echo $mhs['responden_prodi']; ?>">
+                            <label for="responden_jk">Jenis Kelamin</label>
+                            <input type="text" class="form-control bg-custom" name="responden_jk" id="responden_jk" value="<?php echo $ortu['responden_jk']; ?>">
                         </div>						
                         <div class="form-group text-left font-weight-bold">
-							<label for="responden_hp">No. Hp</label>
-							<input type="text" class="form-control bg-custom" name="responden_hp" id="responden_hp" value="<?php echo $mhs['responden_hp']; ?>">
-						</div>						
+                            <label for="responden_umur">Umur</label>
+                            <input type="text" class="form-control bg-custom" name="responden_umur" id="responden_umur" value="<?php echo $ortu['responden_umur']; ?>">
+                        </div>	
                         <div class="form-group text-left font-weight-bold">
-							<label for="tahun_masuk">Tahun Masuk</label>
-							<input type="text" class="form-control bg-custom" name="tahun_masuk" id="tahun_masuk" value="<?php echo $mhs['tahun_masuk']; ?>">
-						</div>	
+                            <label for="responden_hp">No. Hp</label>
+                            <input type="text" class="form-control bg-custom" name="responden_hp" id="responden_hp" value="<?php echo $ortu['responden_hp']; ?>">
+                        </div>	
+
+                        <div class="form-group text-left font-weight-bold">
+                            <label for="responden_pendidikan">Pendidikan Terakhir</label>
+                            <input type="text" class="form-control bg-custom" name="responden_pendidikan" id="responden_pendidikan" value="<?php echo $ortu['responden_pendidikan']; ?>">
+                        </div>	
+
+                        <div class="form-group text-left font-weight-bold">
+                            <label for="responden_penghasilan">Penghasilan</label>
+                            <input type="text" class="form-control bg-custom" name="responden_penghasilan" id="responden_penghasilan" value="<?php echo $ortu['responden_penghasilan']; ?>">
+                        </div>
+
+                        <div class="form-group text-left font-weight-bold">
+                            <label for="mahasiswa_nim">NIM Mahasiswa</label>
+                            <input type="text" class="form-control bg-custom" name="mahasiswa_nim" id="mahasiswa_nim" value="<?php echo $ortu['mahasiswa_nim']; ?>">
+                        </div>	
+
+                        <div class="form-group text-left font-weight-bold">
+                            <label for="mahasiswa_nama">Nama Mahasiswa</label>
+                            <input type="text" class="form-control bg-custom" name="mahasiswa_nama" id="mahasiswa_nama" value="<?php echo $ortu['mahasiswa_nama']; ?>">
+                        </div>	
+
+                        <div class="form-group text-left font-weight-bold">
+                            <label for="mahasiswa_prodi">Program Studi Mahasiswa</label>
+                            <input type="text" class="form-control bg-custom" name="mahasiswa_prodi" id="mahasiswa_prodi" value="<?php echo $ortu['mahasiswa_prodi']; ?>">
+                        </div>
                     </div>					
                 </table>
             </div>

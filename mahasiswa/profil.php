@@ -1,17 +1,12 @@
 <?php
 session_start();
-
 include '../Koneksi.php';
-$koneksi = new Koneksi();
-$kon = $koneksi->kon;// Ambil data dari form
 
 if (!isset($_SESSION['username'])) {
-    // Jika belum, redirect pengguna ke halaman login
     header("Location: ../login/login.php");
-    exit(); // Pastikan untuk keluar dari skrip setelah redirect
+    exit(); 
 }
 
-// Ambil nama pengguna dari sesi
 $username = $_SESSION['username'];
 $role = $_SESSION['role'];
 $nama = $_SESSION['nama'];
@@ -21,7 +16,6 @@ $result_get_profil_image = mysqli_query($kon, $query_get_profil_image);
 $row_get_profil_image = mysqli_fetch_assoc($result_get_profil_image);
 $profil_image = $row_get_profil_image['image'];
 
-// Query untuk mengambil data dari t_responden_mahasiswa berdasarkan nama pengguna
 $query_profil = "SELECT * FROM t_responden_mahasiswa 
 JOIN m_survey ON m_survey.survey_id = t_responden_mahasiswa.survey_id
 JOIN m_user ON m_user.user_id = m_survey.user_id
@@ -34,6 +28,7 @@ if(mysqli_num_rows($result_profil) > 0) {
     // Tampilkan data profil
     while($mhs = mysqli_fetch_array($result_profil)){
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -47,7 +42,6 @@ if(mysqli_num_rows($result_profil) > 0) {
     <script src="https://kit.fontawesome.com/96cfbc074b.js" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="../header.css">
     <style>
-        /* CSS untuk menyesuaikan tata letak radio button */
         h2 {
             font-weight: bold;
         }
@@ -56,8 +50,8 @@ if(mysqli_num_rows($result_profil) > 0) {
             margin-top: 20px;
             margin-bottom: 20px;
             margin-right: 100px;
-            background-color: white; /* Tambahkan background color merah */
-            padding: 10px; /* Tambahkan padding untuk memberi jarak antara konten dan border */
+            background-color: white; 
+            padding: 10px; 
             width : 1000px;
             border-radius: 10px;
         }
@@ -75,10 +69,9 @@ if(mysqli_num_rows($result_profil) > 0) {
         }
 
         .profile-image {
-    width: 150px; /* Lebar gambar */
-    height: 150px; /* Tinggi gambar */
-}
-
+            width: 150px; 
+            height: 150px;
+        }
 
         .button-container {
             display: flex;
@@ -101,17 +94,16 @@ if(mysqli_num_rows($result_profil) > 0) {
         .profile-label {
             width: 30%;
             font-weight: bold;
-            margin-bottom: 5px; /* Jarak di bawah label */
+            margin-bottom: 5px; 
         }
 
         .profile-value {
             width: 65%;
             background-color: #ececed;
-            border: 1px solid #ced4da; /* Grey border */
+            border: 1px solid #ced4da;
             padding: 5px 10px;
             border-radius: 5px;
         }
-
     </style>
 </head>
 <body>
@@ -159,13 +151,11 @@ if(mysqli_num_rows($result_profil) > 0) {
                     <div class="profile-value"><?php echo $mhs['tahun_masuk']; ?></div>
                 </tr>
             </div>
-            <!-- Button container -->
             <div class="button-container">
                 <a href="edit-profil.php?username=<?php echo $username; ?>" class="btn btn-light btn-outline-dark button-edit">Edit</a>
             </div>
         </div>
     </section>
-
 </body>
 </html>
 <?php
@@ -174,6 +164,5 @@ if(mysqli_num_rows($result_profil) > 0) {
     echo "Data profil tidak ditemukan.";
 }
 
-// Tutup koneksi
 mysqli_close($kon);
 ?>

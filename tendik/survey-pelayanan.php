@@ -13,48 +13,58 @@
     $role = $_SESSION['role'];
     $nama = $_SESSION['nama'];
 
-    $query_get_responden_id = "SELECT responden_dosen_id FROM t_responden_dosen WHERE responden_nama = '$nama'";
+    $query_get_responden_id = "SELECT responden_tendik_id FROM t_responden_tendik WHERE responden_nama = '$nama'";
     $result_get_responden_id = mysqli_query($kon, $query_get_responden_id);
     $row_get_responden_id = mysqli_fetch_assoc($result_get_responden_id);
-    $responden_dosen_id = $row_get_responden_id['responden_dosen_id'];
+    $responden_tendik_id = $row_get_responden_id['responden_tendik_id'];
 
-    $query_get_profil_image = "SELECT image FROM t_responden_dosen WHERE responden_nama = '$nama'";
+    $query_get_profil_image = "SELECT image FROM t_responden_tendik WHERE responden_nama = '$nama'";
     $result_get_profil_image = mysqli_query($kon, $query_get_profil_image);
     $row_get_profil_image = mysqli_fetch_assoc($result_get_profil_image);
     $profil_image = $row_get_profil_image['image'];
 
-    $query_check_survey = "SELECT COUNT(*) AS jumlah_survey FROM t_jawaban_dosen
-                            JOIN m_survey_soal ON t_jawaban_dosen.soal_id = m_survey_soal.soal_id
-                            WHERE m_survey_soal.kategori_id = 2
-                            AND t_jawaban_dosen.responden_dosen_id = '$responden_dosen_id'";
+    $query_check_survey = "SELECT COUNT(*) AS jumlah_survey FROM t_jawaban_tendik
+                            JOIN m_survey_soal ON t_jawaban_tendik.soal_id = m_survey_soal.soal_id
+                            WHERE m_survey_soal.kategori_id = 3
+                            AND t_jawaban_tendik.responden_tendik_id = '$responden_tendik_id'";
     $result_check_survey = mysqli_query($kon, $query_check_survey);
     $row_check_survey = mysqli_fetch_assoc($result_check_survey);
     $jumlah_survey = $row_check_survey['jumlah_survey'];
 
-
     $query = "SELECT m_survey_soal.soal_id, m_survey_soal.soal_nama
-    FROM m_survey_soal
-    JOIN m_survey ON m_survey_soal.survey_id = m_survey.survey_id
-    JOIN m_kategori ON m_survey_soal.kategori_id = m_kategori.kategori_id
-    WHERE m_kategori.kategori_id = 2
-    AND m_survey_soal.survey_id = '$survey_id'";
+        FROM m_survey_soal
+        JOIN m_survey ON m_survey_soal.survey_id = m_survey.survey_id
+        JOIN m_kategori ON m_survey_soal.kategori_id = m_kategori.kategori_id
+        JOIN m_user ON m_survey.user_id = m_user.user_id
+        WHERE m_kategori.kategori_id = 3
+        AND m_user.role = 'tendik'
+        AND (m_survey_soal.soal_nama, m_survey_soal.soal_id) IN (
+            SELECT soal_nama, MIN(soal_id)
+            FROM m_survey_soal
+            JOIN m_survey ON m_survey_soal.survey_id = m_survey.survey_id
+            JOIN m_kategori ON m_survey_soal.kategori_id = m_kategori.kategori_id
+            JOIN m_user ON m_survey.user_id = m_user.user_id
+            WHERE m_kategori.kategori_id = 3
+            AND m_user.role = 'tendik'
+            GROUP BY soal_nama
+        )";
 
-    
+        
     $result = mysqli_query($kon, $query);
 
-    $fasilitas = array();
+    $pelayanan = array();
 	while ($data = mysqli_fetch_assoc($result)) {
-		$fasilitas[] = $data;
+		$pelayanan[] = $data;
 	}
     
     if(isset($_POST['simpan'])) {
         $username = $_SESSION['username']; 
-        $nama = $_SESSION['nama'];
-        $query_responden = "SELECT responden_dosen_id FROM t_responden_dosen WHERE responden_nama = '$nama'";
+        $nama = $_SESSION['nama']; 
+        $query_responden = "SELECT responden_tendik_id FROM t_responden_tendik WHERE responden_nama = '$nama'";
         $result_responden = mysqli_query($kon, $query_responden);
         if(mysqli_num_rows($result_responden) > 0) {
             $data_responden = mysqli_fetch_assoc($result_responden);
-            $responden_dosen_id = $data_responden['responden_dosen_id'];
+            $responden_tendik_id = $data_responden['responden_tendik_id'];
         } else {
             echo "Data responden tidak ditemukan.";
             exit; 
@@ -65,32 +75,30 @@
                           JOIN m_survey ON m_survey_soal.survey_id = m_survey.survey_id
                           JOIN m_kategori ON m_survey_soal.kategori_id = m_kategori.kategori_id
                           JOIN m_user ON m_survey.user_id = m_user.user_id
-                          WHERE m_kategori.kategori_id = 2
-                          AND m_user.role = 'dosen'";
+                          WHERE m_kategori.kategori_id = 3
+                          AND m_user.role = 'tendik'";
         $result_soal_id = mysqli_query($kon, $query_soal_id);
     
         while ($row = mysqli_fetch_assoc($result_soal_id)) {
             $soal_id = $row['soal_id'];
             $jawaban = mysqli_real_escape_string($kon, $_POST['jawaban_' . $soal_id]);
     
-            $query_insert_jawaban = "INSERT INTO t_jawaban_dosen (responden_dosen_id, soal_id, jawaban) 
-                                     VALUES ('$responden_dosen_id', '$soal_id', '$jawaban')";
+            $query_insert_jawaban = "INSERT INTO t_jawaban_tendik (responden_tendik_id, soal_id, jawaban) 
+                                     VALUES ('$responden_tendik_id', '$soal_id', '$jawaban')";
             
             $result = mysqli_query($kon, $query_insert_jawaban);
-            
             
             if (!$result) {
                 echo "Gagal menyimpan jawaban untuk soal $soal_id: " . mysqli_error($kon);
             }
         }
-        $query_update_tanggal = "UPDATE t_responden_dosen SET responden_tanggal = CURDATE() WHERE responden_dosen_id = '$responden_dosen_id'";
+        $query_update_tanggal = "UPDATE t_responden_tendik SET responden_tanggal = CURDATE() WHERE responden_tendik_id = '$responden_tendik_id'";
         $result_update_tanggal = mysqli_query($kon, $query_update_tanggal);
     
         $query_update_tanggal_survey = "UPDATE m_survey SET survey_tanggal = CURDATE() WHERE survey_id = '$survey_id'";
         $result_update_tanggal_survey = mysqli_query($kon, $query_update_tanggal_survey);
     
-    
-        header("Location: dashboard-dosen.php");
+        header("Location: dashboard-tendik.php");
         exit;
     }
 ?>
@@ -115,19 +123,18 @@
 
         .survey-question {
             margin-right: 100px;
-            background-color: white;
+            background-color: white; 
             padding: 10px; 
             width : 1000px;
 
         }
 
-        .username img {
-            margin-left: 795px;
-        }
         .pilihan-container {
             display: flex;
         }
-
+        .username img {
+            margin-left: 795px;
+        }
         .pilihan1,
         .pilihan2 {
             flex: 1;
@@ -217,13 +224,14 @@
 <body>
 <div class="container">
     <?php include '../header.php'; ?>
+
     <section>
     <div class="content">
-        <h2>Survey Fasilitas</h2>
+        <h2>Survey Pelayanan</h2>
         <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="POST">
         <?php
             $no = 1;
-            foreach ($fasilitas as $p) {
+            foreach ($pelayanan as $p) {
                 ?>
                     <div class="survey-question">
                         <label for="jawaban_<?php echo $p['soal_id']; ?>"><?php echo $p['soal_nama']; ?></label>
@@ -245,7 +253,7 @@
                     </div>
 
                 <?php
-                        $no++;
+                        $no++; 
                     }
                 ?>
             <div class="button-container">
@@ -256,7 +264,7 @@
     </div>
     <div class="popup-overlay"></div>
     <div class="popup-container">
-        <p class="popupmessage">Survey Fasilitas Telah Diisi</p>
+        <p class="popupmessage">Survey Pelayanan Telah Diisi</p>
         <button class="popupbutton" onclick="closePopup()">Lanjut</button>
     </div>
 
@@ -268,10 +276,12 @@
 
         function closePopup() {
             document.querySelector('.popup-overlay').style.display = 'none';
-            document.querySelector('.popup-container').style.display = 'none';
-            window.location.href = "dashboard-dosen.php";
+            document.querySelector('.popup-container').style.display = 'none';  
+            window.location.href = "dashboard-tendik.php";
         }
     </script>
+
+
 </section>
 </body>
 </html>

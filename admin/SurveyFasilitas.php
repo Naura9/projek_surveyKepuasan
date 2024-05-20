@@ -1,28 +1,21 @@
 <?php
-session_start();
 include '../Koneksi.php';
 include 'Survey.php';
-class SurveyFasilitas {
-    private $db;
-    public $username;
-    public $role;
-    public $nama;
-    
-    public function __construct() {
-        $this->db = new Koneksi();
-        $this->survey = new Survey($this->db);
 
-         // Set session variables to class properties
-         if (isset($_SESSION['username'])) {
-            $this->username = $_SESSION['username'];
-            $this->role = $_SESSION['role'];
-            $this->nama = $_SESSION['nama'];
-        } else {
-            header("Location: ../login/login.php");
-            exit();
-        }
+// Periksa apakah pengguna telah login
+if (!isset($_SESSION['username'])) {
+    // Jika belum, redirect pengguna ke halaman login
+    header("Location: ../login/login.php");
+    exit(); // Pastikan untuk keluar dari skrip setelah redirect
+}
+
+class SurveyFasilitas {
+    private $survey;
+
+    public function __construct() {
+        $this->survey = new Survey(); // Instantiate the Survey class
     }
-    
+
     public function renderSurveyFasilitas() {
         if(isset($_POST['hapus']) && isset($_POST['soal_id'])) {
             $soal_id = $_POST['soal_id'];
@@ -34,12 +27,9 @@ class SurveyFasilitas {
         $questions = $this->survey->getSurveyQuestions($kategori_id);
         $this->survey->renderSurveyQuestions($questions, $kategori_id, $edit_soal, $_SERVER['PHP_SELF']);
     }
-     
 }
 
 $surveyFasilitas = new SurveyFasilitas();
-
-
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -55,33 +45,32 @@ $surveyFasilitas = new SurveyFasilitas();
     <link rel="stylesheet" href="../header.css">
     <script src="https://code.jquery.com/jquery-3.4.1.js"></script>
     <style>
-        /* CSS untuk menyesuaikan tata letak radio button */
+        /* Updated CSS */
         h2 {
             font-weight: bold;
             margin-bottom: 15px;
         }
 
         .survey-card {
-            background-color: white; /* Tambahkan background color merah */
-            padding: 20px; /* Tambahkan padding untuk memberi jarak antara konten dan border */
-            width: 1000px; /* Sesuaikan dengan lebar yang diinginkan */
+            background-color: white;
+            padding: 20px;
+            width: 1100px;
             border-radius: 10px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             margin-bottom: 0;
         }
 
         .survey-question h3 {
-            font-size: 16px; /* Ubah ukuran font menjadi 16px */
+            font-size: 16px;
             color: #333;
         }
     
-
         .pilihan-container {
             display: flex;
             justify-content: space-between;
         }
 
-        .rating {
+        .rating, .rating2 {
             display: flex;
         }
 
@@ -91,7 +80,6 @@ $surveyFasilitas = new SurveyFasilitas();
         .label-sangat-baik {
             margin-right: 10px; 
         }
-
 
         .label-baik {
             margin-left: 150px; 
@@ -113,46 +101,47 @@ $surveyFasilitas = new SurveyFasilitas();
         }
 
         .button-hapus {
-            padding: 0;
-            border: #2d1b6b;
+            padding: 5px 10px;
+            border: none;
             font-size: 12px;
-            align-items: center;
-            height: 20px;
-            width: 50px;
-            background-color: #e87818;
+            height: auto;
+            background-color: orange; /* Change to orange */
             color: white;
-            margin-left: 500px;
+            margin-left: auto;
+            border-radius: 10px;
         }
 
         .button-tambah {
             margin-top: 10px;
-            margin-left: 1170px;
-            background-color: white;
+            margin-left: auto;
+            background-color: #2d1b6b;
             border: 1px solid black;
+            text-decoration: none;
+            color: white;
+            border-radius: 10px;
         }
 
         .button-edit {
-            padding: 0;
-            border: #2d1b6b;
+            padding: 5px 10px;
+            border: none;
             font-size: 12px;
-            align-items: center;
-            height: 20px;
-            width: 50px;
+            height: auto;
             margin-left: 10px;
             background-color: #2d1b6b;
             color: white;
+            border-radius: 10px;
+            text-decoration: none;
         }
 
         hr {
             border: none;
-            border-top: 2px solid #ccc;        
+            border-top: 2px solid #ccc;
         }
-    
+
         .kosong {
             background: #ececed;
             height: 70px;
         }
-
     </style>
 </head>
 <body>
@@ -167,7 +156,7 @@ $surveyFasilitas = new SurveyFasilitas();
     </section>
     <div class="kosong">
         <div class="button-container">
-            <a href="tambah-fasilitas.php" class="btn button-tambah">Tambah</a>
+            <a href="tambah-fasilitas.php" class="button-tambah">Tambah</a>
         </div>
     </div>
 </body>

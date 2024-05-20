@@ -1,12 +1,12 @@
 
 <?php
     session_start();
-    include '../koneksi.php'; 
 
+    include '../Koneksi.php';
+    
     if (!isset($_SESSION['username'])) {
-        // Jika belum, redirect pengguna ke halaman login
         header("Location: ../login/login.php");
-        exit(); // Pastikan untuk keluar dari skrip setelah redirect
+        exit(); 
     }
     
     $username = $_SESSION['username'];
@@ -22,7 +22,7 @@
     $result_get_profil_image = mysqli_query($kon, $query_get_profil_image);
     $row_get_profil_image = mysqli_fetch_assoc($result_get_profil_image);
     $profil_image = $row_get_profil_image['image'];
-    // Query untuk memeriksa apakah survei pendidikan sudah diisi oleh responden tertentu
+
     $query_check_survey = "SELECT COUNT(*) AS jumlah_survey FROM t_jawaban_industri
                             JOIN m_survey_soal ON t_jawaban_industri.soal_id = m_survey_soal.soal_id
                             WHERE m_survey_soal.kategori_id = 3
@@ -31,7 +31,6 @@
     $row_check_survey = mysqli_fetch_assoc($result_check_survey);
     $jumlah_survey = $row_check_survey['jumlah_survey'];
 
-    // Query untuk mengambil soal survei dengan kategori_id 1
     $query = "SELECT m_survey_soal.soal_id, m_survey_soal.soal_nama
         FROM m_survey_soal
         JOIN m_survey ON m_survey_soal.survey_id = m_survey.survey_id
@@ -58,9 +57,51 @@
 		$pelayanan[] = $data;
 	}
     
+    if(isset($_POST['simpan'])) {
+        $username = $_SESSION['username']; 
+        $nama = $_SESSION['nama']; 
+        $query_responden = "SELECT responden_industri_id FROM t_responden_industri WHERE responden_nama = '$nama'";
+        $result_responden = mysqli_query($kon, $query_responden);
+        if(mysqli_num_rows($result_responden) > 0) {
+            $data_responden = mysqli_fetch_assoc($result_responden);
+            $responden_industri_id = $data_responden['responden_industri_id'];
+        } else {
+            echo "Data responden tidak ditemukan.";
+            exit; 
+        }
     
+        $query_soal_id = "SELECT m_survey_soal.soal_id
+                          FROM m_survey_soal
+                          JOIN m_survey ON m_survey_soal.survey_id = m_survey.survey_id
+                          JOIN m_kategori ON m_survey_soal.kategori_id = m_kategori.kategori_id
+                          JOIN m_user ON m_survey.user_id = m_user.user_id
+                          WHERE m_kategori.kategori_id = 3
+                          AND m_user.role = 'industri'";
+        $result_soal_id = mysqli_query($kon, $query_soal_id);
+    
+        while ($row = mysqli_fetch_assoc($result_soal_id)) {
+            $soal_id = $row['soal_id'];
+            $jawaban = mysqli_real_escape_string($kon, $_POST['jawaban_' . $soal_id]);
+    
+            $query_insert_jawaban = "INSERT INTO t_jawaban_industri (responden_industri_id, soal_id, jawaban) 
+                                     VALUES ('$responden_industri_id', '$soal_id', '$jawaban')";
+            
+            $result = mysqli_query($kon, $query_insert_jawaban);
+            
+            if (!$result) {
+                echo "Gagal menyimpan jawaban untuk soal $soal_id: " . mysqli_error($kon);
+            }
+        }
+        $query_update_tanggal = "UPDATE t_responden_industri SET responden_tanggal = CURDATE() WHERE responden_industri_id = '$responden_industri_id'";
+        $result_update_tanggal = mysqli_query($kon, $query_update_tanggal);
+    
+        $query_update_tanggal_survey = "UPDATE m_survey SET survey_tanggal = CURDATE() WHERE survey_id = '$survey_id'";
+        $result_update_tanggal_survey = mysqli_query($kon, $query_update_tanggal_survey);
+    
+        header("Location: dashboard-industri.php");
+        exit;
+    }
 ?>
-
 
 <!DOCTYPE html>
 <html lang="en">
@@ -76,25 +117,26 @@
      <link rel="stylesheet" href="../header.css">
     <script src="https://code.jquery.com/jquery-3.4.1.js"></script>
     <style>
-        /* CSS untuk menyesuaikan tata letak radio button */
         h2 {
             font-weight: bold;
         }
 
         .survey-question {
             margin-right: 100px;
-            background-color: white; /* Tambahkan background color merah */
-            padding: 10px; /* Tambahkan padding untuk memberi jarak antara konten dan border */
-            width : 1000px;
+            background-color: white; 
+            padding: 10px; 
+            width : 1045px;
 
         }
 
         .pilihan-container {
             display: flex;
         }
+        
         .username img {
             margin-left: 795px;
         }
+
         .pilihan1,
         .pilihan2 {
             flex: 1;
@@ -125,13 +167,12 @@
         }
 
         .button-simpan {
-            margin-left: 810px; 
+            margin-left: 875px; 
             background-color: #2d1b6b;
             color: white;
 
         }
 
-        /* CSS untuk garis pembatas */
         hr {
             border: none;
             border-top: 2px solid #ccc;
@@ -163,7 +204,6 @@
             z-index: 9998;
         }
 
-        /* Tambahkan CSS untuk menengahkan pesan dan tombol */
         .popupmessage {
             text-align: center;
             margin-bottom: 20px;
@@ -180,57 +220,17 @@
             cursor: pointer;
             border-radius: 10px;
         }
-
     </style>
 </head>
 
 <body>
 <div class="container">
-        <nav class="navbar">
-            <div class="logo">
-                <img src="img/logo-nama.png" alt="Logo" width="100">
-            </div>
-            <div class="username">
-                <span><?php echo $nama; ?> | Industri</span>
-                <img src="img/<?php echo $profil_image; ?>" alt="User" width="35" height="35" style="border-radius: 50%;">
-                <a href="../login/logout.php" class="logout">
-                    <i class="fa-solid fa-arrow-right-from-bracket"></i>
-                </a>
-            </div>
-        </nav>
-    </div>
-
-    <nav class="sidebar">
-        <ul class="sidebar-nav">
-            <li class="">
-                <a href="dashboard-industri.php" class="">
-                <i class="fa-solid fa-house"></i>
-                    Dashboard
-                </a>
-            </li>
-            <li class="">
-                <a href="#" class="" data-bs-toggle="collapse" data-bs-target="#auth" aria-expanded="false" aria-controls="auth">
-                    <i class="fa-solid fa-list-ol"></i> Survey
-                    <span class="lni lni-chevron-down"></span>
-                </a>
-                <ul id="auth" class="" data-bs-parent="#sidebar">
-                    <li><a href="survey-pelayanan.php"><i class="fa-solid fa-handshake"></i>  Pelayanan</a></li>
-                    <li><a href="survey-lulusan.php"><i class="fa-solid fa-graduation-cap"></i>  Lulusan</a></li>
-                </ul>
-            </li>
-            <li class="">
-                <a href="profil.php" class="">
-                    <i class="fa-solid fa-user"></i>
-                     Profile
-                </a>
-            </li>
-        </ul>
-    </nav>
+    <?php include '../header.php'; ?>
 
     <section>
     <div class="content">
         <h2>Survey Pelayanan</h2>
-        <form action="jawaban-pelayanan-industri.php" method="post" >
+        <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="POST">
         <?php
             $no = 1;
             foreach ($pelayanan as $p) {
@@ -251,14 +251,13 @@
                                 <label for="jawaban_<?php echo $p['soal_id']; ?>_sangat_baik">Sangat Baik</label>
                             </div>
                         </div>
-                        <hr> <!-- Garis pembatas -->
+                        <hr> 
                     </div>
 
                 <?php
-                        $no++; // Increment the counter
+                        $no++; 
                     }
                 ?>
-            <!-- Button container -->
             <div class="button-container">
                 <button class="button-kembali">Kembali</button>
                 <input type="submit" class="btn btn-outline-light button-simpan" name="simpan" value="Simpan">
@@ -272,30 +271,19 @@
     </div>
 
     <script>
-    // Tambahkan skrip JavaScript di sini
-    <?php if ($jumlah_survey > 0): ?>
-        // Jika survei pendidikan sudah diisi, tampilkan pesan pop-up
-        document.querySelector('.popup-overlay').style.display = 'block';
-        document.querySelector('.popup-container').style.display = 'block';
-    <?php endif; ?>
+        <?php if ($jumlah_survey > 0): ?>
+            document.querySelector('.popup-overlay').style.display = 'block';
+            document.querySelector('.popup-container').style.display = 'block';
+        <?php endif; ?>
 
-    // Fungsi untuk menutup pesan pop-up
-    function closePopup() {
-        document.querySelector('.popup-overlay').style.display = 'none';
-        document.querySelector('.popup-container').style.display = 'none';
-        // Alihkan pengguna kembali ke dashboard-industri setelah mengklik OK pada pesan pop-up
-        window.location.href = "dashboard-industri.php";
-    }
+        function closePopup() {
+            document.querySelector('.popup-overlay').style.display = 'none';
+            document.querySelector('.popup-container').style.display = 'none';  
+            window.location.href = "dashboard-industri.php";
+        }
     </script>
 
 
 </section>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"></script>
-    <script>
-        $('nav ul li').click(function(){
-             $(this).addClass("active").siblings().removeClass("active");
-        });    
-    </script>
 </body>
 </html>

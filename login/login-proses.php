@@ -2,10 +2,6 @@
 session_start();
 include '../Koneksi.php';
 
-
-$koneksi = new Koneksi();
-$kon = $koneksi->kon;// Ambil data dari form
-
 $username = mysqli_real_escape_string($kon, $_POST['username']);
 $password = mysqli_real_escape_string($kon, $_POST['password']);
 $password_md5 = md5($password); // Enkripsi password menggunakan MD5
@@ -25,9 +21,12 @@ if(mysqli_num_rows($result) == 1) {
 
     $_SESSION['username'] = $username;
     $_SESSION['nama'] = $nama;
-
     $_SESSION['role'] = $role; // Simpan peran (role) dalam sesi
 
+    setcookie('username', $username, time() + 3600, '/'); // Cookie berlaku selama 1 jam (3600 detik)
+    setcookie('nama', $nama, time() + 3600, '/');
+    setcookie('role', $role, time() + 3600, '/');
+    
     switch ($role) {
         // Redireksi sesuai dengan peran pengguna
         case 'admin':

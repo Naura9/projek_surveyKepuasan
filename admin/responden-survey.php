@@ -1,10 +1,8 @@
 <?php
 session_start();
-require_once '../Koneksi.php';
+include '../koneksi.php';
 
-$koneksi = new Koneksi();
-$kon = $koneksi->kon;// Ambil data dari form
-
+// Periksa apakah pengguna telah login
 if (!isset($_SESSION['username'])) {
     // Jika belum, redirect pengguna ke halaman login
     header("Location: ../login/login.php");
@@ -15,6 +13,7 @@ if (!isset($_SESSION['username'])) {
 $username = $_SESSION['username'];
 $role = $_SESSION['role'];
 $nama = $_SESSION['nama'];
+
 
 // Query to fetch user information from m_user table based on username
 $query_user = "SELECT nama, role FROM m_user WHERE username = '$username'";

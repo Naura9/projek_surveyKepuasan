@@ -53,35 +53,32 @@ $surveyPendidikan = new SurveyPendidikan();
     <link rel="stylesheet" href="../header.css">
     <script src="https://code.jquery.com/jquery-3.4.1.js"></script>
     <style>
-        /* CSS untuk menyesuaikan tata letak radio button */
+        /* Updated CSS */
         h2 {
             font-weight: bold;
             margin-bottom: 15px;
         }
 
         .survey-card {
-            background-color: white; /* Tambahkan background color merah */
-            padding: 20px; /* Tambahkan padding untuk memberi jarak antara konten dan border */
-            width: 1000px; /* Sesuaikan dengan lebar yang diinginkan */
+            background-color: white;
+            padding: 20px;
+            width: 1000px;
             border-radius: 10px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             margin-bottom: 0;
         }
 
-        
-
         .survey-question h3 {
-            font-size: 16px; /* Ubah ukuran font menjadi 16px */
+            font-size: 16px;
             color: #333;
         }
     
-
         .pilihan-container {
             display: flex;
             justify-content: space-between;
         }
 
-        .rating {
+        .rating, .rating2 {
             display: flex;
         }
 
@@ -89,16 +86,15 @@ $surveyPendidikan = new SurveyPendidikan();
         .label-baik,
         .label-kurang,
         .label-sangat-baik {
-            margin-right: 10px; /* Tambahkan margin kanan pada label */
+            margin-right: 10px; 
         }
 
-
         .label-baik {
-            margin-left: 150px; /* Tambahkan margin kiri pada label "Baik" */
+            margin-left: 150px; 
         }
 
         .label-sangat-baik {
-            margin-left: 157px; /* Tambahkan margin kiri pada label "Sangat Baik" */
+            margin-left: 157px;
         }
 
         .button-container {
@@ -113,46 +109,48 @@ $surveyPendidikan = new SurveyPendidikan();
         }
 
         .button-hapus {
-            padding: 0;
-            border: #2d1b6b;
+            padding: 5px 10px;
+            border: none;
             font-size: 12px;
-            align-items: center;
-            height: 20px;
-            width: 50px;
-            background-color: #e87818;
+            height: auto;
+            background-color: orange; /* Change to orange */
             color: white;
-            margin-left: 500px;
+            margin-left: auto;
+            border-radius: 10px;
         }
 
         .button-tambah {
             margin-top: 10px;
-            margin-left: 1170px;
-            background-color: white;
+            margin-left: auto;
+            background-color: #2d1b6b;
             border: 1px solid black;
+            text-decoration: none;
+            color: white;
+            border-radius: 10px;
         }
 
         .button-edit {
-            padding: 0;
-            border: #2d1b6b;
+            padding: 5px 10px;
+            border: none;
             font-size: 12px;
-            align-items: center;
-            height: 20px;
-            width: 50px;
+            height: auto;
             margin-left: 10px;
             background-color: #2d1b6b;
             color: white;
+            border-radius: 10px;
+            text-decoration: none;
+
         }
 
         hr {
             border: none;
-            border-top: 2px solid #ccc;        
+            border-top: 2px solid #ccc;
         }
-    
+
         .kosong {
             background: #ececed;
             height: 70px;
         }
-
     </style>
 </head>
 <body>
@@ -169,7 +167,7 @@ $surveyPendidikan = new SurveyPendidikan();
     </section>
     <div class="kosong">
             <div class="button-container">
-                <a href="tambah-pendidikan.php" class="btn button-tambah">Tambah</a>
+                <a href="tambah-pendidikan.php" class=" button-tambah">Tambah</a>
             </div>
         </div>
 </body>

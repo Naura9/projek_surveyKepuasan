@@ -3,13 +3,10 @@
     session_start();
 
     include '../Koneksi.php';
-    $koneksi = new Koneksi();
-    $kon = $koneksi->kon;// Ambil data dari form
     
     if (!isset($_SESSION['username'])) {
-        // Jika belum, redirect pengguna ke halaman login
         header("Location: ../login/login.php");
-        exit(); // Pastikan untuk keluar dari skrip setelah redirect
+        exit(); 
     }
     
     $username = $_SESSION['username'];
@@ -28,8 +25,6 @@
     $row_get_profil_image = mysqli_fetch_assoc($result_get_profil_image);
     $profil_image = $row_get_profil_image['image'];
 
-
-    // Query untuk memeriksa apakah survei pendidikan sudah diisi oleh responden tertentu
     $query_check_survey = "SELECT COUNT(*) AS jumlah_survey FROM t_jawaban_mahasiswa
                             JOIN m_survey_soal ON t_jawaban_mahasiswa.soal_id = m_survey_soal.soal_id
                             WHERE m_survey_soal.kategori_id = 2
@@ -38,8 +33,6 @@
     $row_check_survey = mysqli_fetch_assoc($result_check_survey);
     $jumlah_survey = $row_check_survey['jumlah_survey'];
 
-
-    // Query untuk mengambil soal survei dengan kategori_id 2 dan survey_id yang sesuai dengan user_id
     $query = "SELECT m_survey_soal.soal_id, m_survey_soal.soal_nama
     FROM m_survey_soal
     JOIN m_survey ON m_survey_soal.survey_id = m_survey.survey_id
@@ -55,22 +48,18 @@
 	}
     
     if(isset($_POST['simpan'])) {
-        // Ambil informasi responden saat login
-        $username = $_SESSION['username']; // Ambil username dari sesi, sesuaikan dengan mekanisme login Anda
-        $nama = $_SESSION['nama']; // Ambil nama dari sesi, sesuaikan dengan mekanisme login Anda
-        // Lakukan query untuk mendapatkan informasi responden dengan nama yang sesuai
+        $username = $_SESSION['username']; 
+        $nama = $_SESSION['nama'];
         $query_responden = "SELECT responden_mahasiswa_id FROM t_responden_mahasiswa WHERE responden_nama = '$nama'";
         $result_responden = mysqli_query($kon, $query_responden);
         if(mysqli_num_rows($result_responden) > 0) {
             $data_responden = mysqli_fetch_assoc($result_responden);
             $responden_mahasiswa_id = $data_responden['responden_mahasiswa_id'];
         } else {
-            // Jika tidak ada data responden yang sesuai, lakukan penanganan yang sesuai.
             echo "Data responden tidak ditemukan.";
-            exit; // Hentikan proses lebih lanjut
+            exit; 
         }
     
-        // Ambil daftar soal_id
         $query_soal_id = "SELECT m_survey_soal.soal_id
                           FROM m_survey_soal
                           JOIN m_survey ON m_survey_soal.survey_id = m_survey.survey_id
@@ -80,22 +69,17 @@
                           AND m_user.role = 'mahasiswa'";
         $result_soal_id = mysqli_query($kon, $query_soal_id);
     
-        // Loop melalui setiap soal_id untuk menyimpan jawaban
         while ($row = mysqli_fetch_assoc($result_soal_id)) {
             $soal_id = $row['soal_id'];
             $jawaban = mysqli_real_escape_string($kon, $_POST['jawaban_' . $soal_id]);
     
-            // Siapkan kueri SQL untuk menyimpan jawaban ke database
             $query_insert_jawaban = "INSERT INTO t_jawaban_mahasiswa (responden_mahasiswa_id, soal_id, jawaban) 
                                      VALUES ('$responden_mahasiswa_id', '$soal_id', '$jawaban')";
             
-            // Lakukan eksekusi kueri SQL
             $result = mysqli_query($kon, $query_insert_jawaban);
             
             
-            // Periksa apakah eksekusi kueri berhasil
             if (!$result) {
-                // Jika gagal, tampilkan pesan kesalahan
                 echo "Gagal menyimpan jawaban untuk soal $soal_id: " . mysqli_error($kon);
             }
         }
@@ -106,12 +90,9 @@
         $result_update_tanggal_survey = mysqli_query($kon, $query_update_tanggal_survey);
     
     
-        // Setelah semua jawaban disimpan, Anda dapat mengarahkan pengguna ke halaman lain atau menampilkan pesan sukses.
-        // Misalnya:
         header("Location: dashboard-mahasiswa.php");
         exit;
     }
-
 ?>
 
 <!DOCTYPE html>
@@ -128,16 +109,15 @@
      <link rel="stylesheet" href="../header.css">
     <script src="https://code.jquery.com/jquery-3.4.1.js"></script>
     <style>
-        /* CSS untuk menyesuaikan tata letak radio button */
         h2 {
             font-weight: bold;
         }
 
         .survey-question {
             margin-right: 100px;
-            background-color: white; /* Tambahkan background color merah */
-            padding: 10px; /* Tambahkan padding untuk memberi jarak antara konten dan border */
-            width : 1050px;
+            background-color: white;
+            padding: 10px; 
+            width : 1000px;
 
         }
 
@@ -216,7 +196,6 @@
             z-index: 9998;
         }
 
-        /* Tambahkan CSS untuk menengahkan pesan dan tombol */
         .popupmessage {
             text-align: center;
             margin-bottom: 20px;
@@ -264,14 +243,13 @@
                                 <label for="jawaban_<?php echo $p['soal_id']; ?>_sangat_baik">Sangat Baik</label>
                             </div>
                         </div>
-                        <hr> <!-- Garis pembatas -->
+                        <hr> 
                     </div>
 
                 <?php
-                        $no++; // Increment the counter
+                        $no++; 
                     }
                 ?>
-            <!-- Button container -->
             <div class="button-container">
                 <button class="button-kembali">Kembali</button>
                 <input type="submit" class="btn btn-outline-light button-simpan" name="simpan" value="Simpan">
@@ -285,22 +263,17 @@
     </div>
 
     <script>
-    // Tambahkan skrip JavaScript di sini
     <?php if ($jumlah_survey > 0): ?>
-        // Jika survei pendidikan sudah diisi, tampilkan pesan pop-up
         document.querySelector('.popup-overlay').style.display = 'block';
         document.querySelector('.popup-container').style.display = 'block';
     <?php endif; ?>
 
-    // Fungsi untuk menutup pesan pop-up
     function closePopup() {
         document.querySelector('.popup-overlay').style.display = 'none';
         document.querySelector('.popup-container').style.display = 'none';
-        // Alihkan pengguna kembali ke dashboard-mahasiswa setelah mengklik OK pada pesan pop-up
         window.location.href = "dashboard-mahasiswa.php";
     }
     </script>
-
 </section>
 </body>
 </html>

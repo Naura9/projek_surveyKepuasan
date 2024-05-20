@@ -1,12 +1,9 @@
 <?php
 session_start();
-require_once '../Koneksi.php';
+include '../Koneksi.php';
 
-$koneksi = new Koneksi();
-$kon = $koneksi->kon;// Ambil data dari form
 
 if (!isset($_SESSION['username'])) {
-    // Jika belum, redirect pengguna ke halaman login
     header("Location: ../login/login.php");
     exit(); // Pastikan untuk keluar dari skrip setelah redirect
 }
@@ -79,48 +76,44 @@ $result = mysqli_query($kon, $query);
 
         }
         .table {
-            width: 1020px;
+            width: 500px;
             border-radius: 10px; /* Menambahkan radius */
             overflow: hidden;
-            margin-bottom: 0;
         }
 
         .table th {
-        padding-top: 15px; /* Menambahkan jarak di bagian atas */
-        padding-bottom: 15px; /* Menambahkan jarak di bagian bawah */
-    }
+            width: 10px;
+            padding-top: 15px; /* Menambahkan jarak di bagian atas */
+        }
 
-    .kosong {
-        background-color: #ececed; /* Memberi warna latar belakang */
-        height: 273px;
-    }
+        .kosong {
+            background-color: #ececed; /* Memberi warna latar belakang */
+            height: 380px;
+        }
 
-    .fa-regular.fa-circle-xmark {
-        color: #E87818;
-        margin-right: 15px;
-        font-size: 20px;
-    }
+        .fa-regular.fa-circle-xmark {
+            color: #E87818;
+            margin-right: 15px;
+            font-size: 20px;
+        }
 
-    .fa-regular.fa-circle-check {
-        color: #2D1B6B;
-        font-size: 20px;
+        .fa-regular.fa-circle-check {
+            color: #2D1B6B;
+            font-size: 20px;
 
-    }
-    
-    .btn-circle {
-        border: none;
-        background: none;
-        padding: 0;
-        font-size: inherit;
-        cursor: pointer;
-    }
+        }
+        
+        .btn-circle {
+            border: none;
+            background: none;
+            padding: 0;
+            font-size: inherit;
+            cursor: pointer;
+        }
 
-    .btn-circle:active {
-    }
-
-    .message {
-            width: 5px;
-            margin-left: 885px
+        .message {
+                width: 5px;
+                margin-left: 885px
         }
 
     </style>
@@ -165,8 +158,8 @@ $result = mysqli_query($kon, $query);
             </table>
         </div>
         <div class="kosong"></div>
+
     </section>
-    <div class="kosong"></div>
 
 
 </body>

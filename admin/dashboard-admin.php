@@ -1,21 +1,19 @@
 <?php
 session_start();
-require_once '../Koneksi.php';
+include '../koneksi.php';
 
-$koneksi = new Koneksi();
-$kon = $koneksi->kon;// Ambil data dari form
-
+// Periksa apakah pengguna telah login
 if (!isset($_SESSION['username'])) {
     // Jika belum, redirect pengguna ke halaman login
     header("Location: ../login/login.php");
     exit(); // Pastikan untuk keluar dari skrip setelah redirect
 }
 
-
 // Ambil nilai username dan role dari sesi
 $username = $_SESSION['username'];
 $role = $_SESSION['role'];
 $nama = $_SESSION['nama'];
+
 
 $query_user_survey = "SELECT 
                             (SELECT COUNT(DISTINCT responden_mahasiswa_id) FROM t_jawaban_mahasiswa) AS mahasiswa_count,
@@ -77,68 +75,7 @@ if ($result_survey_ditanggapi) {
     <link rel="stylesheet" href="../header.css">
     <script src="https://code.jquery.com/jquery-3.4.1.js"></script>
 
-    <style>
-        .sidebar-nav li a {
-            color: #333;
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            padding: 10px 8px;
-            transition: background-color 0.3s, color 0.3s;
-        }
-
-        .sidebar-nav li a:hover, .sidebar-nav li.active a {
-            background-color: rgba(190, 184, 209, 0.5);
-            border-radius: 4px;
-        }
-
-        .sidebar-nav li a i {
-            margin-right: 10px;
-        }
-
-        .sidebar-nav li {
-            margin-bottom: 10px;
-        }
-
-        .survey-box {
-            background-color: #ffffff;
-            border-radius: 8px;
-            padding: 30px;
-            display: flex;
-            align-items: center;
-            width: 400px;
-            height: 200px;
-            margin-left: 300px;
-            margin-top: 40px;
-        }
-
-        .survey-count {
-            font-size: 28px;
-            font-weight: bold;
-            margin-left: 50px;
-            margin-right: 16px;
-        }
-
-        .icon {
-            margin-left: 50px;
-            font-size: 60px;
-        }
-
-        .survey-text {
-            font-size: 13px;
-            color: #555555;
-        }
-
-        .kosong {
-            background: #ececed;
-            height: 70px;
-        }
-
-        .message {
-            width: 5px;
-            margin-left: 885px;
-        }
-    </style>
+    
 </head>
 <body>
 <?php include 'Header.php'; ?>

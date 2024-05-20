@@ -1,37 +1,34 @@
 <?php
-session_start();
-include '../Koneksi.php';
+    session_start();
 
-// Periksa apakah pengguna telah login
-if (!isset($_SESSION['username'])) {
-    // Jika belum, redirect pengguna ke halaman login
-    header("Location: ../login/login.php");
-    exit(); // Pastikan untuk keluar dari skrip setelah redirect
-}
+    include '../Koneksi.php';
+    
+    if (!isset($_SESSION['username'])) {
+        header("Location: ../login/login.php");
+        exit(); 
+    }
+    
+    $username = $_SESSION['username'];
+    $role = $_SESSION['role'];
+    $nama = $_SESSION['nama'];
 
-// Ambil nilai username dan role dari sesi
-$username = $_SESSION['username'];
-$role = $_SESSION['role'];
-$nama = $_SESSION['nama'];
+    $query_get_responden_id = "SELECT responden_tendik_id FROM t_responden_tendik WHERE responden_nama = '$nama'";
+    $result_get_responden_id = mysqli_query($kon, $query_get_responden_id);
+    $row_get_responden_id = mysqli_fetch_assoc($result_get_responden_id);
+    $responden_tendik_id = $row_get_responden_id['responden_tendik_id'];
 
-$query_get_responden_id = "SELECT responden_industri_id FROM t_responden_industri WHERE responden_nama = '$nama'";
-$result_get_responden_id = mysqli_query($kon, $query_get_responden_id);
-$row_get_responden_id = mysqli_fetch_assoc($result_get_responden_id);
-$responden_industri_id = $row_get_responden_id['responden_industri_id'];
+    $query_get_profil_image = "SELECT image FROM t_responden_tendik WHERE responden_nama = '$nama'";
+    $result_get_profil_image = mysqli_query($kon, $query_get_profil_image);
+    $row_get_profil_image = mysqli_fetch_assoc($result_get_profil_image);
+    $profil_image = $row_get_profil_image['image'];
 
-$query_get_profil_image = "SELECT image FROM t_responden_industri WHERE responden_nama = '$nama'";
-$result_get_profil_image = mysqli_query($kon, $query_get_profil_image);
-$row_get_profil_image = mysqli_fetch_assoc($result_get_profil_image);
-$profil_image = $row_get_profil_image['image'];
-
-// Query untuk menghitung jumlah kategori survei yang telah ditanggapi oleh responden tertentu
-$query_jumlah_survey = "SELECT COUNT(DISTINCT m_survey_soal.kategori_id) AS jumlah_survey
-                        FROM t_jawaban_industri
-                        INNER JOIN m_survey_soal ON t_jawaban_industri.soal_id = m_survey_soal.soal_id
-                        WHERE t_jawaban_industri.responden_industri_id = '$responden_industri_id'";
-$result_jumlah_survey = mysqli_query($kon, $query_jumlah_survey);
-$row_jumlah_survey = mysqli_fetch_assoc($result_jumlah_survey);
-$jumlah_survey_ditanggapi = $row_jumlah_survey['jumlah_survey'];
+    $query_jumlah_survey = "SELECT COUNT(DISTINCT m_survey_soal.kategori_id) AS jumlah_survey
+                            FROM t_jawaban_tendik
+                            INNER JOIN m_survey_soal ON t_jawaban_tendik.soal_id = m_survey_soal.soal_id
+                            WHERE t_jawaban_tendik.responden_tendik_id = '$responden_tendik_id'";
+    $result_jumlah_survey = mysqli_query($kon, $query_jumlah_survey);
+    $row_jumlah_survey = mysqli_fetch_assoc($result_jumlah_survey);
+    $jumlah_survey_ditanggapi = $row_jumlah_survey['jumlah_survey'];
 
 ?>
 
@@ -90,18 +87,15 @@ $jumlah_survey_ditanggapi = $row_jumlah_survey['jumlah_survey'];
     </style>
 </head>
 <body>
-<div class="container">
+    <div class="container">
         <?php include '../header.php'; ?>
         <section>
             <div class="content">
-                <!-- Kotak berwarna putih -->
                 <div class="survey-box">
                     <div class="icon">
                         <i class="fa-solid fa-list-check"></i>
                     </div>
-
-
-                    <!-- Jumlah survey ditanggapi -->
+                    
                     <div class="survey-count">
                         <span id="surveyNumber"><?php echo $jumlah_survey_ditanggapi; ?></span>
                         <div class="survey-text">Survey Telah Ditanggapi</div>

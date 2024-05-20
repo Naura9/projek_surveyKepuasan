@@ -126,9 +126,12 @@ $surveyLulusan = new SurveyLulusan();
 
         .button-tambah {
             margin-top: 10px;
-            margin-left: 1170px;
-            background-color: white;
+            margin-left: auto;
+            background-color: #2d1b6b;
             border: 1px solid black;
+            text-decoration: none;
+            color: white;
+            border-radius: 10px;
         }
 
         .button-edit {
@@ -141,6 +144,10 @@ $surveyLulusan = new SurveyLulusan();
             margin-left: 10px;
             background-color: #2d1b6b;
             color: white;
+            border-radius: 10px;
+            text-decoration: none;
+
+
         }
 
         hr {
@@ -169,7 +176,7 @@ $surveyLulusan = new SurveyLulusan();
     </section>
     <div class="kosong">
             <div class="button-container">
-                <a href="tambah-lulusan.php" class="btn button-tambah">Tambah</a>
+                <a href="tambah-lulusan.php" class="button-tambah">Tambah</a>
             </div>
         </div>
 </body>

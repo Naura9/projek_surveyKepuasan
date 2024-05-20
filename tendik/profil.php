@@ -11,13 +11,13 @@ $username = $_SESSION['username'];
 $role = $_SESSION['role'];
 $nama = $_SESSION['nama'];
 
-$query_get_profil_image = "SELECT image FROM t_responden_dosen WHERE responden_nama = '$nama'";
+$query_get_profil_image = "SELECT image FROM t_responden_tendik WHERE responden_nama = '$nama'";
 $result_get_profil_image = mysqli_query($kon, $query_get_profil_image);
 $row_get_profil_image = mysqli_fetch_assoc($result_get_profil_image);
 $profil_image = $row_get_profil_image['image'];
 
-$query_profil = "SELECT * FROM t_responden_dosen 
-JOIN m_survey ON m_survey.survey_id = t_responden_dosen.survey_id
+$query_profil = "SELECT * FROM t_responden_tendik 
+JOIN m_survey ON m_survey.survey_id = t_responden_tendik.survey_id
 JOIN m_user ON m_user.user_id = m_survey.user_id
 WHERE responden_nama = '$nama'
 ";
@@ -26,8 +26,9 @@ $result_profil = mysqli_query($kon, $query_profil);
 // Periksa apakah data ditemukan
 if(mysqli_num_rows($result_profil) > 0) {
     // Tampilkan data profil
-    while($dosen = mysqli_fetch_array($result_profil)){
+    while($tendik = mysqli_fetch_array($result_profil)){
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -107,45 +108,46 @@ if(mysqli_num_rows($result_profil) > 0) {
 </head>
 <body>
 <div class="container">
-    <?php include '../header.php'; ?>
-        <section>
-            <div class="content">
-                <h2>Profil</h2>
-                <div class="form-profile">
-                    <tr>
-                        <div class="profile-label">Foto Profil</div>
-                        <img src="img/<?php echo $dosen['image']; ?>" alt="Foto Profil" class="profile-image">
-                    </tr>
-                    <tr>
-                        <div class="profile-label">NIP</div>
-                        <div class="profile-value"><?php echo $dosen['responden_nip']; ?></div>
-                    </tr>
-                    <tr>
-                        <div class="profile-label">Nama Lengkap</div>
-                        <div class="profile-value"><?php echo $dosen['responden_nama']; ?></div>
-                    </tr>
-                    <tr>
-                        <div class="profile-label">Username</div>
-                        <div class="profile-value"><?php echo $dosen['username']; ?></div>
-                    </tr>
-                    <tr>
-                        <div class="profile-label">Password</div>
-                        <div class="profile-value">*********</div>                
-                    </tr>
-                    <tr>
-                        <div class="profile-label">Email</div>
-                        <div class="profile-value"><?php echo $dosen['email']; ?></div>
-                    </tr>
-                    <tr>
-                        <div class="profile-label">Unit</div>
-                        <div class="profile-value"><?php echo $dosen['responden_unit']; ?></div>
-                    </tr>
-                </div>
-                <div class="button-container">
-                    <a href="edit-profil.php?username=<?php echo $username; ?>" class="btn btn-light btn-outline-dark button-edit">Edit</a>
-                </div>
+<?php include '../header.php'; ?>
+
+    <section>
+        <div class="content">
+            <h2>Profil</h2>
+            <div class="form-profile">
+                <tr>
+                    <div class="profile-label">Foto Profil</div>
+                    <img src="img/<?php echo $tendik['image']; ?>" alt="Foto Profil" class="profile-image">
+                </tr>
+                <tr>
+                    <div class="profile-label">No. Pegawai</div>
+                    <div class="profile-value"><?php echo $tendik['responden_nopeg']; ?></div>
+                </tr>
+                <tr>
+                    <div class="profile-label">Nama Lengkap</div>
+                    <div class="profile-value"><?php echo $tendik['responden_nama']; ?></div>
+                </tr>
+                <tr>
+                    <div class="profile-label">Username</div>
+                    <div class="profile-value"><?php echo $tendik['username']; ?></div>
+                </tr>
+                <tr>
+                    <div class="profile-label">Password</div>
+                    <div class="profile-value">*********</div>                
+                </tr>
+                <tr>
+                    <div class="profile-label">Email</div>
+                    <div class="profile-value"><?php echo $tendik['email']; ?></div>
+                </tr>
+                <tr>
+                    <div class="profile-label">Unit</div>
+                    <div class="profile-value"><?php echo $tendik['responden_unit']; ?></div>
+                </tr>
             </div>
-        </section>
+            <div class="button-container">
+                <a href="edit-profil.php?username=<?php echo $username; ?>" class="btn btn-light btn-outline-dark button-edit">Edit</a>
+            </div>
+        </div>
+    </section>
 </body>
 </html>
 <?php
