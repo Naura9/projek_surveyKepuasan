@@ -69,7 +69,7 @@ if(mysqli_num_rows($res) > 0) {
             margin-right: 100px;
             background-color: white; 
             padding: 10px;
-            width : 1000px;
+            width : 1050px;
             border-radius: 10px;
         }
 
@@ -101,7 +101,7 @@ if(mysqli_num_rows($res) > 0) {
         }
 
         .button-simpan {
-            margin-left: 835px; 
+            margin-left: 890px; 
             background-color: #2d1b6b;
             color: white;
         }
@@ -118,6 +118,8 @@ if(mysqli_num_rows($res) > 0) {
             border: 2px solid #DCDCDC;
             width: 150px;
             height: 150px;
+            display: flex;
+
         }
         .upload .rightRound {
             background: #00B4FF;

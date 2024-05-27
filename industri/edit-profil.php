@@ -3,17 +3,14 @@ session_start();
 include '../Koneksi.php';
 
 if (!isset($_SESSION['username'])) {
-    // Jika belum, redirect pengguna ke halaman login
     header("Location: ../login/login.php");
-    exit(); // Pastikan untuk keluar dari skrip setelah redirect
+    exit(); 
 }
 
-// Ambil parameter dari URL
 $nama = $_SESSION['nama'];
 $username = $_GET['username'];
 
 
-// Query untuk mengambil data profil berdasarkan username
 $query = "SELECT * FROM t_responden_industri 
           JOIN m_survey ON m_survey.survey_id = t_responden_industri.survey_id
           JOIN m_user ON m_user.user_id = m_survey.user_id
@@ -21,21 +18,20 @@ $query = "SELECT * FROM t_responden_industri
 
 $res = mysqli_query($kon, $query);
 
-// Pastikan data ditemukan sebelum menampilkan form edit
 if(mysqli_num_rows($res) > 0) {
     $industri = mysqli_fetch_assoc($res);
 
-    if(isset($_FILES["fileImg"]["name"])){ // Change this line
+    if(isset($_FILES["fileImg"]["name"])){ 
         $id = $_POST["responden_industri_id"];
     
         $src = $_FILES["fileImg"]["tmp_name"];
-        $imageName = uniqid() . $_FILES["fileImg"]["name"]; // Change this line
+        $imageName = uniqid() . $_FILES["fileImg"]["name"]; 
     
         $target = "img/" . $imageName;
     
         move_uploaded_file($src, $target);
     
-        $query = "UPDATE t_responden_industri SET image = '$imageName' WHERE responden_industri_id = $id"; // Change this line
+        $query = "UPDATE t_responden_industri SET image = '$imageName' WHERE responden_industri_id = $id"; 
         mysqli_query($kon, $query);
     
         header("Location: profil.php");
@@ -72,7 +68,7 @@ if(mysqli_num_rows($res) > 0) {
             margin-right: 100px;
             background-color: white; 
             padding: 10px;
-            width : 1000px;
+            width : 1050px;
             border-radius: 10px;
         }
 
@@ -104,7 +100,7 @@ if(mysqli_num_rows($res) > 0) {
         }
 
         .button-simpan {
-            margin-left: 835px; 
+            margin-left: 890px; 
             background-color: #2d1b6b;
             color: white;
         }

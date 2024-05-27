@@ -73,22 +73,18 @@ $result = mysqli_query($kon, $query);
 
         h2{
             font-weight: bold;
-
         }
-        .table {
-            width: 500px;
-            border-radius: 10px; /* Menambahkan radius */
-            overflow: hidden;
+
+        table {
+            width: 50px;
+            border-radius: 10px;
+            margin-right: 100px;
         }
 
         .table th {
             width: 10px;
-            padding-top: 15px; /* Menambahkan jarak di bagian atas */
-        }
-
-        .kosong {
-            background-color: #ececed; /* Memberi warna latar belakang */
-            height: 380px;
+            padding-top: 15px;
+            width: 10px;
         }
 
         .fa-regular.fa-circle-xmark {
@@ -100,7 +96,6 @@ $result = mysqli_query($kon, $query);
         .fa-regular.fa-circle-check {
             color: #2D1B6B;
             font-size: 20px;
-
         }
         
         .btn-circle {
@@ -116,6 +111,9 @@ $result = mysqli_query($kon, $query);
                 margin-left: 885px
         }
 
+        .content {
+            height: 630px;
+        }
     </style>
 </head>
 <body>
@@ -123,44 +121,38 @@ $result = mysqli_query($kon, $query);
     <section>
         <div class="content">
         <h2>Permintaan User</h2>
-            <!-- Tabel responden survey -->
-            <table class="table">
+            <div style="margin-right: 50px;">
+                <table class="table">
                     <tr>
                         <th>Nama</th>
                         <th>Username</th>
                         <th>Role</th>
                         <th></th>
                     </tr>
-                </thead>
-                
-                <tbody>
-                <?php
-                    // Loop untuk menampilkan data responden mahasiswa
-                    while($row = mysqli_fetch_assoc($result)) {                
-                    ?>
-                    <tr>
-                        <td><?php echo $row['nama']; ?></td>
-                        <td><?php echo $row['username']; ?></td>
-                        <td><?php echo $row['role']; ?></td>
-                        <td>
-                            <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
-                                <input type="hidden" name="id" value="<?php echo $row['id']; ?>">
-                                <button type="submit" name="status" value="declined" class="btn-circle delete-btn"><i class="fa-regular fa-circle-xmark"></i></button>
-                                <button type="submit" name="status" value="accepted" class="btn-circle accept-btn"><i class="fa-regular fa-circle-check"></i></button>
-                            </form>
-                        </td>
-                  
-                    </tr>
+                    </thead>
+                    <tbody>
                     <?php
-                    }
-                    ?>
-                </tbody>
-            </table>
+                        while($row = mysqli_fetch_assoc($result)) {                
+                        ?>
+                        <tr>
+                            <td><?php echo $row['nama']; ?></td>
+                            <td><?php echo $row['username']; ?></td>
+                            <td><?php echo $row['role']; ?></td>
+                            <td>
+                                <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
+                                    <input type="hidden" name="id" value="<?php echo $row['id']; ?>">
+                                    <button type="submit" name="status" value="declined" class="btn-circle delete-btn"><i class="fa-regular fa-circle-xmark"></i></button>
+                                    <button type="submit" name="status" value="accepted" class="btn-circle accept-btn"><i class="fa-regular fa-circle-check"></i></button>
+                                </form>
+                            </td>
+                        </tr>
+                        <?php
+                        }
+                        ?>
+                    </tbody>
+                </table>
+            </div>
         </div>
-        <div class="kosong"></div>
-
     </section>
-
-
 </body>
 </html>

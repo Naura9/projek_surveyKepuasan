@@ -1,26 +1,19 @@
 <?php
-session_start();
 include '../Koneksi.php';
 include 'Survey.php';
 
+// Periksa apakah pengguna telah login
+if (!isset($_SESSION['username'])) {
+    // Jika belum, redirect pengguna ke halaman login
+    header("Location: ../login/login.php");
+    exit(); // Pastikan untuk keluar dari skrip setelah redirect
+}
+
 class SurveyPendidikan {
-    private $db;
-    public $username;
-    public $role;
-    public $nama;
-    
+    private $survey;
+
     public function __construct() {
-        $this->db = new Koneksi();
-        $this->survey = new Survey($this->db);
-         // Set session variables to class properties
-         if (isset($_SESSION['username'])) {
-            $this->username = $_SESSION['username'];
-            $this->role = $_SESSION['role'];
-            $this->nama = $_SESSION['nama'];
-        } else {
-            header("Location: ../login/login.php");
-            exit();
-        }
+        $this->survey = new Survey(); // Instantiate the Survey class
     }
 
     public function renderSurveyPendidikan() {
@@ -29,14 +22,13 @@ class SurveyPendidikan {
             $pesan = $this->survey->hapusPertanyaan($soal_id); // Panggil metode hapusPertanyaan langsung
         }
 
-        $kategori_id = 1; // Asumsikan kategori ID untuk fasilitas adalah 2
+        $kategori_id = 1; // Asumsikan kategori ID untuk pendidikan  adalah 2
         $edit_soal = "edit-pendidikan.php";
         $questions = $this->survey->getSurveyQuestions($kategori_id);
         $this->survey->renderSurveyQuestions($questions, $kategori_id, $edit_soal, $_SERVER['PHP_SELF']);
     }
-
 }
-     
+
 $surveyPendidikan = new SurveyPendidikan();
 ?>
 <!DOCTYPE html>
@@ -62,10 +54,11 @@ $surveyPendidikan = new SurveyPendidikan();
         .survey-card {
             background-color: white;
             padding: 20px;
-            width: 1000px;
+            width: 1050px;
             border-radius: 10px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             margin-bottom: 0;
+
         }
 
         .survey-question h3 {
@@ -113,20 +106,23 @@ $surveyPendidikan = new SurveyPendidikan();
             border: none;
             font-size: 12px;
             height: auto;
-            background-color: orange; /* Change to orange */
+            background-color: #E87818; 
             color: white;
             margin-left: auto;
             border-radius: 10px;
+            text-decoration: none;
         }
 
         .button-tambah {
+            padding: 5px 10px;
+            font-size: 15px;
             margin-top: 10px;
-            margin-left: auto;
+            margin-left: 1230px;
             background-color: #2d1b6b;
-            border: 1px solid black;
+            border: none;
             text-decoration: none;
             color: white;
-            border-radius: 10px;
+            border-radius: 8px;
         }
 
         .button-edit {
@@ -139,7 +135,6 @@ $surveyPendidikan = new SurveyPendidikan();
             color: white;
             border-radius: 10px;
             text-decoration: none;
-
         }
 
         hr {
@@ -155,20 +150,18 @@ $surveyPendidikan = new SurveyPendidikan();
 </head>
 <body>
 <?php include 'Header.php'; ?>
-
     <section>
         <div class="content">
-            <h2>Survey Kualitas Pendidikan Polinema</h2>
+            <h2 style="font-weight: bold;">Survey Kualitas Pendidikan Polinema</h2>
             <div class="survey-card">
                 <?php $surveyPendidikan->renderSurveyPendidikan(); ?>
             </div>
-        </div>
-        
+        </div>   
     </section>
     <div class="kosong">
-            <div class="button-container">
-                <a href="tambah-pendidikan.php" class=" button-tambah">Tambah</a>
-            </div>
+        <div class="button-container">
+            <a href="tambah-pendidikan.php" class="button-tambah">Tambah</a>
         </div>
+    </div>
 </body>
 </html>

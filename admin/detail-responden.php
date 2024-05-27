@@ -1,20 +1,21 @@
 <?php
-// Masukkan file koneksi.php atau sesuaikan dengan cara Anda mengakses koneksi ke database
 session_start();
-require_once '../Koneksi.php';
+include '../Koneksi.php';
 
-$koneksi = new Koneksi();
-$kon = $koneksi->kon;// Ambil data dari form
+if (!isset($_SESSION['username'])) {
+    header("Location: ../login/login.php");
+    exit(); 
+}
 
+$username = $_SESSION['username'];
+$role = $_SESSION['role'];
 $nama = $_SESSION['nama'];
 
-// Ambil ID responden dari parameter URL
 if(isset($_GET['responden_id']) && isset($_GET['role']) && isset($_GET['username'])) {
     $responden_id = $_GET['responden_id'];
     $role = $_GET['role'];
     $username = $_GET['username'];
 
-    // Sesuaikan query berdasarkan role responden
     switch ($role) {
         case 'mahasiswa':
             $query_detail_responden = "SELECT * FROM t_responden_mahasiswa WHERE responden_mahasiswa_id = $responden_id";
@@ -39,12 +40,9 @@ if(isset($_GET['responden_id']) && isset($_GET['role']) && isset($_GET['username
             exit;
     }
 
-    // Eksekusi query
     $result_detail_responden = mysqli_query($kon, $query_detail_responden);
 
-    // Periksa apakah query berhasil dieksekusi dan apakah data responden ditemukan
     if($result_detail_responden && mysqli_num_rows($result_detail_responden) > 0) {
-        // Ambil data responden dari hasil query
         $detail_responden = mysqli_fetch_assoc($result_detail_responden);
 ?>
 <!DOCTYPE html>
@@ -64,7 +62,6 @@ if(isset($_GET['responden_id']) && isset($_GET['role']) && isset($_GET['username
         h2 {
             font-weight: bold;
         }
-        /* CSS */
         .profile-img {
             width: 150px; /* Atur lebar gambar */
             height: 150px; /* Atur tinggi gambar */
@@ -81,9 +78,6 @@ if(isset($_GET['responden_id']) && isset($_GET['role']) && isset($_GET['username
             border-radius: 10px;
         }
 
-
-
-        /* CSS untuk menyesuaikan tata letak radio button */
         .form-profile {
             margin-top: 20px;
             margin-bottom: 20px;
@@ -94,15 +88,14 @@ if(isset($_GET['responden_id']) && isset($_GET['role']) && isset($_GET['username
             border-radius: 10px;
         }
 
-
         .table-bordered {
             margin-top: 20px;
             border-color: black;
         }
 
         .table-bordered td, .table-bordered th {
-            border-right-color: black; /* Ubah warna garis vertikal menjadi merah */
-            border-left-color: black; /* Ubah warna garis vertikal menjadi merah */
+            border-right-color: black; 
+            border-left-color: black;
             width: 50%;
             height: 30px;
     }
@@ -111,7 +104,7 @@ if(isset($_GET['responden_id']) && isset($_GET['role']) && isset($_GET['username
             margin-bottom: 10px;
         }
         .kosong {
-            height: 18px;
+            height: 20px;
             background: #ececed;
         }
         .message {

@@ -3,12 +3,10 @@ session_start();
 include '../Koneksi.php';
 
 if (!isset($_SESSION['username'])) {
-    // Jika belum, redirect pengguna ke halaman login
     header("Location: ../login/login.php");
-    exit(); // Pastikan untuk keluar dari skrip setelah redirect
+    exit(); 
 }
 
-// Ambil nama pengguna dari sesi
 $username = $_SESSION['username'];
 $role = $_SESSION['role'];
 $nama = $_SESSION['nama'];
@@ -18,7 +16,6 @@ $result_get_profil_image = mysqli_query($kon, $query_get_profil_image);
 $row_get_profil_image = mysqli_fetch_assoc($result_get_profil_image);
 $profil_image = $row_get_profil_image['image'];
 
-// Query untuk mengambil data dari t_responden_industri berdasarkan nama pengguna
 $query_profil = "SELECT * FROM t_responden_industri 
 JOIN m_survey ON m_survey.survey_id = t_responden_industri.survey_id
 JOIN m_user ON m_user.user_id = m_survey.user_id
@@ -26,9 +23,7 @@ WHERE responden_nama = '$nama'
 ";
 $result_profil = mysqli_query($kon, $query_profil);
 
-// Periksa apakah data ditemukan
 if(mysqli_num_rows($result_profil) > 0) {
-    // Tampilkan data profil
     while($industri = mysqli_fetch_array($result_profil)){
 ?>
 
@@ -55,7 +50,7 @@ if(mysqli_num_rows($result_profil) > 0) {
             margin-right: 100px;
             background-color: white; 
             padding: 10px; 
-            width : 1000px;
+            width : 1050px;
             border-radius: 10px;
         }
 
@@ -74,6 +69,7 @@ if(mysqli_num_rows($result_profil) > 0) {
         .profile-image {
             width: 150px; 
             height: 150px;
+            margin-left: 10px;
         }
 
         .button-container {
@@ -89,7 +85,7 @@ if(mysqli_num_rows($result_profil) > 0) {
         }
 
         .button-edit {
-            margin-left: 945px; 
+            margin-left: 1000px; 
             background-color: #2d1b6b;
             color: white;
         }
@@ -98,6 +94,8 @@ if(mysqli_num_rows($result_profil) > 0) {
             width: 30%;
             font-weight: bold;
             margin-bottom: 5px; 
+            margin-top: 15px;
+            margin-left: 10px;
         }
 
         .profile-value {
@@ -105,7 +103,9 @@ if(mysqli_num_rows($result_profil) > 0) {
             background-color: #ececed;
             border: 1px solid #ced4da;
             padding: 5px 10px;
-            border-radius: 5px;
+            border-radius: 5px;            
+            margin-left: 10px;
+
         }
     </style>
 </head>

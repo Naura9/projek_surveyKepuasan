@@ -20,7 +20,6 @@
         <h2>Survey Kepuasan Polinema</h2>
         <h4>Selamat Datang! Silahkan Masukkan Detail Akun Anda.</h4>
         <?php
-        // Periksa apakah ada parameter login_error pada URL
         if(isset($_GET['login_error']) && $_GET['login_error'] == 'true') {
             echo '<p class="error-message">Username atau password salah. Silakan coba lagi.</p>';
         }
@@ -34,15 +33,10 @@
                 <label for="password">Password</label>
                 <input type="password" id="password" name="password" class="form-control" placeholder="Masukkan Password Anda" required>
             </div>
-            <!-- <div class="forgot">
-                <a href="#" class="link"> Forgot Your Password?</a>
-            </div> -->
-
             <button type="submit" class="btn btn-primary btn-block btn-login">Masuk</button>        
         </form>
         <br>
         <h4>Belum Memiliki Akun? <a href="profil-form.php" class="link"> Register</h4>
-
     </div>
 </body>
 </html>

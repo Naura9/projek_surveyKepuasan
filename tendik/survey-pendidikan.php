@@ -61,12 +61,12 @@
         }
     
         $query_soal_id = "SELECT m_survey_soal.soal_id
-                          FROM m_survey_soal
-                          JOIN m_survey ON m_survey_soal.survey_id = m_survey.survey_id
-                          JOIN m_kategori ON m_survey_soal.kategori_id = m_kategori.kategori_id
-                          JOIN m_user ON m_survey.user_id = m_user.user_id
-                          WHERE m_kategori.kategori_id = 1
-                          AND m_user.role = 'tendik'";
+        FROM m_survey_soal
+        JOIN m_survey ON m_survey_soal.survey_id = m_survey.survey_id
+        JOIN m_kategori ON m_survey_soal.kategori_id = m_kategori.kategori_id
+        JOIN m_user ON m_survey.user_id = m_user.user_id
+        WHERE m_kategori.kategori_id = 1
+        AND m_survey_soal.survey_id = '$survey_id'";
         $result_soal_id = mysqli_query($kon, $query_soal_id);
     
         while ($row = mysqli_fetch_assoc($result_soal_id)) {
@@ -116,7 +116,8 @@
             margin-right: 100px;
             background-color: white; 
             padding: 10px; 
-            width : 1000px;
+            width : 1050px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
 
         .pilihan-container {
@@ -156,7 +157,7 @@
             margin-left: 875px; 
             background-color: #2d1b6b;
             color: white;
-
+            border: none;
         }
 
         hr {

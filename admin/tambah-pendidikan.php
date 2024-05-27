@@ -1,19 +1,16 @@
 <?php
-session_start();
-require_once '../Koneksi.php';
+    session_start();
 
-$koneksi = new Koneksi();
-$kon = $koneksi->kon;// Ambil data dari form
-
-if (!isset($_SESSION['username'])) {
-    // Jika belum, redirect pengguna ke halaman login
-    header("Location: ../login/login.php");
-    exit(); // Pastikan untuk keluar dari skrip setelah redirect
-}
-
-$username = $_SESSION['username'];
-$role = $_SESSION['role'];
-$nama = $_SESSION['nama'];
+    include '../Koneksi.php';
+    
+    if (!isset($_SESSION['username'])) {
+        header("Location: ../login/login.php");
+        exit(); 
+    }
+    
+    $username = $_SESSION['username'];
+    $role = $_SESSION['role'];
+    $nama = $_SESSION['nama'];
 
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['simpan'])) {
     // Data untuk disimpan ke dalam tabel m_survey_soal

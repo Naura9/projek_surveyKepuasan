@@ -74,7 +74,46 @@ if ($result_survey_ditanggapi) {
     <script src="https://kit.fontawesome.com/96cfbc074b.js" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="../header.css">
     <script src="https://code.jquery.com/jquery-3.4.1.js"></script>
+<style>
+    .survey-box {
+            background-color: #ffffff;
+            border-radius: 8px;
+            padding: 30px;
+            display: flex;
+            align-items: center;
+            width: 400px;
+            height: 200px;
+            margin-left: 300px;
+            margin-top: 40px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 
+        }
+
+        .survey-count {
+            font-size: 28px;
+            font-weight: bold;
+            margin-left: 20px;
+            margin-right: 16px;
+        }
+
+        .icon {
+            margin-left: 50px;
+            margin-right: 10px;
+            font-size: 60px;
+
+        }
+
+        .survey-text {
+            font-size: 15px;
+            color: #555555;
+        }
+
+        .kosong {
+            height: 53px;
+            background-color: #ececed;
+
+        }
+</style>
     
 </head>
 <body>

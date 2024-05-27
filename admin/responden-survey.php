@@ -2,41 +2,29 @@
 session_start();
 include '../koneksi.php';
 
-// Periksa apakah pengguna telah login
 if (!isset($_SESSION['username'])) {
-    // Jika belum, redirect pengguna ke halaman login
     header("Location: ../login/login.php");
-    exit(); // Pastikan untuk keluar dari skrip setelah redirect
+    exit();
 }
 
-// Ambil nilai username dan role dari sesi
 $username = $_SESSION['username'];
 $role = $_SESSION['role'];
 $nama = $_SESSION['nama'];
 
-
-// Query to fetch user information from m_user table based on username
 $query_user = "SELECT nama, role FROM m_user WHERE username = '$username'";
 
-// Execute the query
 $result_user = mysqli_query($kon, $query_user);
 
-// Check if the query executed successfully
 if ($result_user) {
-    // Fetch the user's information
     $user_info = mysqli_fetch_assoc($result_user);
 
-    // Store the user's name and role in variables
     $nama = $user_info['nama'];
     $role = $user_info['role'];
 } else {
-    // Handle the case where the query fails
     $nama = "Nama Pengguna";
     $role = "Role";
 }
 
-
-// Query untuk mengambil data responden mahasiswa
 $query_all_respondents = "
 (
     SELECT DISTINCT m.nama, m.username, m.role, r.responden_mahasiswa_id AS responden_id, r.responden_tanggal
@@ -87,7 +75,6 @@ $query_all_respondents = "
     )
 ";
 
-// Execute the query
 $result_all_respondents = mysqli_query($kon, $query_all_respondents);
 
 
@@ -108,26 +95,20 @@ $result_all_respondents = mysqli_query($kon, $query_all_respondents);
     <script src="https://code.jquery.com/jquery-3.4.1.js"></script>
 
     <style>
-        .table {
-            width: 1020px;
-            border-radius: 10px; /* Menambahkan radius */
-            overflow: hidden;
-            margin-bottom: 0;
+        .content {
+            height: 650px;
         }
 
-        .table th {
-        padding-top: 15px; /* Menambahkan jarak di bagian atas */
-        padding-bottom: 15px; /* Menambahkan jarak di bagian bawah */
-    }
-
-    .kosong {
-        background-color: #ececed; /* Memberi warna latar belakang */
-        height: 273px;
-    }
-
-    .message {
-            width: 5px;
-            margin-left: 885px
+        .table {
+            width: 1020px;
+            border-radius: 10px; 
+            overflow: hidden;
+            margin-bottom: 0;
+            margin-right: 50px;
+        }
+            .table th {
+            padding-top: 15px;
+            padding-bottom: 15px; 
         }
     </style>
 </head>
@@ -135,58 +116,55 @@ $result_all_respondents = mysqli_query($kon, $query_all_respondents);
 <?php include 'Header.php'; ?>
     <section>
         <div class="content">
-        <h2>Responden Survey</h2>
-            <!-- Tabel responden survey -->
-            <table class="table">
-                    <tr>
-                        <th>Tanggal</th>
-                        <th>Nama</th>
-                        <th>Username</th>
-                        <th>Role</th>
-                        <th></th>
-                    </tr>
-                </thead>
-                
-                <tbody>
-                <?php
-                    // Loop untuk menampilkan data responden mahasiswa
-                    while($row = mysqli_fetch_assoc($result_all_respondents)) {                
-                    ?>
-                    <tr>
-                        <td><?php echo date('d-m-Y', strtotime($row['responden_tanggal'])); ?></td>
-                        <td><?php echo $row['nama']; ?></td>
-                        <td><?php echo $row['username']; ?></td>
-                        <td><?php echo $row['role']; ?></td>
-                        <td>
-                            <?php 
-                                // Mengecek role responden dan mengatur responden_id
-                                if ($row['role'] == 'mahasiswa') {
-                                    $responden_id = $row['responden_id'];
-                                } elseif ($row['role'] == 'alumni') {
-                                    $responden_id = $row['responden_id'];
-                                } elseif ($row['role'] == 'dosen') {
-                                    $responden_id = $row['responden_id'];
-                                } elseif ($row['role'] == 'industri') {
-                                    $responden_id = $row['responden_id'];
-                                } elseif ($row['role'] == 'ortu') {
-                                    $responden_id = $row['responden_id'];
-                                } elseif ($row['role'] == 'tendik') {
-                                    $responden_id = $row['responden_id'];
-                                } else {
-                                    // Jika tidak ada kunci yang cocok, atur nilai responden_id ke sesuatu yang sesuai
-                                    $responden_id = ''; // Atau sesuaikan dengan kebutuhan Anda
-                                }
-                                // Membuat tautan detail dengan parameter yang sesuai
-                                echo "<a href=\"detail-responden.php?responden_id=$responden_id&role={$row['role']}&username={$row['username']}\" class=\"btn btn-light btn-outline-dark button-edit\">Detail</a>";
-                            ?>
-                        </td>
-
-                    </tr>
+        <h2 style="font-weight: bold;">Responden Survey</h2>
+                <div style="margin-right: 50px;">
+                <table class="table">
+                        <tr>
+                            <th>Tanggal</th>
+                            <th>Nama</th>
+                            <th>Username</th>
+                            <th>Role</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    
+                    <tbody>
                     <?php
-                    }
-                    ?>
-                </tbody>
-            </table>
+                        while($row = mysqli_fetch_assoc($result_all_respondents)) {                
+                        ?>
+                        <tr>
+                            <td><?php echo date('d-m-Y', strtotime($row['responden_tanggal'])); ?></td>
+                            <td><?php echo $row['nama']; ?></td>
+                            <td><?php echo $row['username']; ?></td>
+                            <td><?php echo $row['role']; ?></td>
+                            <td>
+                                <?php 
+                                    if ($row['role'] == 'mahasiswa') {
+                                        $responden_id = $row['responden_id'];
+                                    } elseif ($row['role'] == 'alumni') {
+                                        $responden_id = $row['responden_id'];
+                                    } elseif ($row['role'] == 'dosen') {
+                                        $responden_id = $row['responden_id'];
+                                    } elseif ($row['role'] == 'industri') {
+                                        $responden_id = $row['responden_id'];
+                                    } elseif ($row['role'] == 'ortu') {
+                                        $responden_id = $row['responden_id'];
+                                    } elseif ($row['role'] == 'tendik') {
+                                        $responden_id = $row['responden_id'];
+                                    } else {
+                                        $responden_id = ''; 
+                                    }
+                                    echo "<a href=\"detail-responden.php?responden_id=$responden_id&role={$row['role']}&username={$row['username']}\" class=\"btn btn-light btn-outline-dark button-edit\">Detail</a>";
+                                ?>
+                            </td>
+
+                        </tr>
+                        <?php
+                        }
+                        ?>
+                    </tbody>
+                </table>
+            </div>
         </div>
         <div class="kosong"></div>
     </section>

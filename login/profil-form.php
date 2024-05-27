@@ -1,8 +1,7 @@
 <?php
 session_start();
-@include '../koneksi.php';  // Assume koneksi.php correctly sets up the database konection
+@include '../koneksi.php';  
 
-// Load roles from the database
 $roleOptions = array();
 $enumQuery = "SHOW COLUMNS FROM m_registrasi LIKE 'role'";
 $result = mysqli_query($kon, $enumQuery);
@@ -15,19 +14,17 @@ if ($result) {
     }
 }
 
-// Handle role selection
 if (isset($_POST['choose_role'])) {
     $_SESSION['role'] = $_POST['role'];
-    header("Location: ".$_SERVER['PHP_SELF']); // Redirect to refresh session state
+    header("Location: ".$_SERVER['PHP_SELF']);
     exit;
 }
 
-// Handle form submission for Mahasiswa
 if (isset($_POST['submit_mahasiswa']) && $_SESSION['role'] === 'Mahasiswa') {
     $_SESSION['responden_nama'] = $_POST['responden_nama'];
 
     $survey_id = NULL;
-    $responden_tanggal = NULL; // Automatically set the date
+    $responden_tanggal = NULL; 
     $responden_nim = mysqli_real_escape_string($kon, $_POST['responden_nim']);
     $responden_nama = mysqli_real_escape_string($kon, $_POST['responden_nama']);
     $responden_prodi = mysqli_real_escape_string($kon, $_POST['responden_prodi']);
@@ -49,25 +46,23 @@ if (isset($_POST['submit_mahasiswa']) && $_SESSION['role'] === 'Mahasiswa') {
     mysqli_stmt_close($stmt);
 }
 
-// Handle form submission for Dosen
 if (isset($_POST['submit_dosen']) && $_SESSION['role'] === 'Dosen') {
     $_SESSION['responden_nama'] = $_POST['responden_nama'];
 
     $survey_id = NULL;
-    $responden_tanggal = NULL; // Automatically set the date
+    $responden_tanggal = NULL; 
     $responden_nip = mysqli_real_escape_string($kon, $_POST['responden_nip']);
     $responden_nama = mysqli_real_escape_string($kon, $_POST['responden_nama']);
     $email = mysqli_real_escape_string($kon, $_POST['email']);
     $responden_unit = mysqli_real_escape_string($kon, $_POST['responden_unit']);
     $image_path = "noprofil.jpg";
 
-
     $query = "INSERT INTO t_responden_dosen (survey_id, responden_tanggal, responden_nip, responden_nama, email, responden_unit, image)
               VALUES (?, ?, ?, ?, ?, ?, ?)";
     $stmt = mysqli_prepare($kon, $query);
     mysqli_stmt_bind_param($stmt, 'issssss', $survey_id, $responden_tanggal, $responden_nip, $responden_nama, $email, $responden_unit, $image_path);
     if (mysqli_stmt_execute($stmt)) {
-        header("refresh:2;url=register-form.php"); // Redirect after success
+        header("refresh:2;url=register-form.php"); 
         exit;
     } else {
         echo "Error saving data: " . mysqli_stmt_error($stmt);
@@ -75,12 +70,11 @@ if (isset($_POST['submit_dosen']) && $_SESSION['role'] === 'Dosen') {
     mysqli_stmt_close($stmt);
 }
 
-// Handle form submission for Alumni
 if (isset($_POST['submit_alumni']) && $_SESSION['role'] === 'Alumni') {
     $_SESSION['responden_nama'] = $_POST['responden_nama'];
 
     $survey_id = NULL;
-    $responden_tanggal = NULL; // Automatically set the date
+    $responden_tanggal = NULL;
     $responden_nip = mysqli_real_escape_string($kon, $_POST['responden_nip']);
     $responden_nama = mysqli_real_escape_string($kon, $_POST['responden_nama']);
     $responden_prodi = mysqli_real_escape_string($kon, $_POST['responden_prodi']);
@@ -95,7 +89,7 @@ if (isset($_POST['submit_alumni']) && $_SESSION['role'] === 'Alumni') {
     $stmt = mysqli_prepare($kon, $query);
     mysqli_stmt_bind_param($stmt, 'issssssis', $survey_id, $responden_tanggal, $responden_nip, $responden_nama, $responden_prodi, $responden_email, $responden_hp, $tahun_lulus, $image_path);
     if (mysqli_stmt_execute($stmt)) {
-        header("refresh:2;url=register-form.php"); // Redirect after success
+        header("refresh:2;url=register-form.php"); 
         exit;
     } else {
         echo "Error saving data: " . mysqli_stmt_error($stmt);
@@ -103,12 +97,11 @@ if (isset($_POST['submit_alumni']) && $_SESSION['role'] === 'Alumni') {
     mysqli_stmt_close($stmt);
 }
 
-// Handle form submission for Tendik
 if (isset($_POST['submit_tendik']) && $_SESSION['role'] === 'Tendik') {
     $_SESSION['responden_nama'] = $_POST['responden_nama'];
 
     $survey_id = NULL;
-    $responden_tanggal = NULL; // Automatically set the date
+    $responden_tanggal = NULL; 
     $responden_nopeg = mysqli_real_escape_string($kon, $_POST['responden_nopeg']);
     $responden_nama = mysqli_real_escape_string($kon, $_POST['responden_nama']);
     $email = mysqli_real_escape_string($kon, $_POST['email']);
@@ -120,7 +113,7 @@ if (isset($_POST['submit_tendik']) && $_SESSION['role'] === 'Tendik') {
     $stmt = mysqli_prepare($kon, $query);
     mysqli_stmt_bind_param($stmt, 'issssss', $survey_id, $responden_tanggal, $responden_nopeg, $responden_nama, $email, $responden_unit, $image_path);
     if (mysqli_stmt_execute($stmt)) {
-        header("refresh:2;url=register-form.php"); // Redirect after success
+        header("refresh:2;url=register-form.php"); 
         exit;
     } else {
         echo "Error saving data: " . mysqli_stmt_error($stmt);
@@ -132,7 +125,7 @@ if (isset($_POST['submit_ortu']) && $_SESSION['role'] === 'Ortu') {
     $_SESSION['responden_nama'] = $_POST['responden_nama'];
 
     $survey_id = NULL;
-    $responden_tanggal = NULL; // Automatically set the date
+    $responden_tanggal = NULL;
     $responden_nama = mysqli_real_escape_string($kon, $_POST['responden_nama']);
     $email = mysqli_real_escape_string($kon, $_POST['email']);
     $responden_jk = mysqli_real_escape_string($kon, $_POST['responden_jk']);
@@ -150,7 +143,7 @@ if (isset($_POST['submit_ortu']) && $_SESSION['role'] === 'Ortu') {
     $stmt = mysqli_prepare($kon, $query);
     mysqli_stmt_bind_param($stmt, 'issssisssssss', $survey_id, $responden_tanggal, $responden_nama, $email, $responden_jk, $responden_umur, $responden_hp, $responden_pendidikan, $responden_penghasilan, $mahasiswa_nim, $mahasiswa_nama, $mahasiswa_prodi, $image_path);
     if (mysqli_stmt_execute($stmt)) {
-        header("refresh:2;url=register-form.php"); // Redirect after success
+        header("refresh:2;url=register-form.php"); 
         exit;
     } else {
         echo "Error saving data: " . mysqli_stmt_error($stmt);
@@ -158,12 +151,11 @@ if (isset($_POST['submit_ortu']) && $_SESSION['role'] === 'Ortu') {
     mysqli_stmt_close($stmt);
 }
 
-// Handle form submission for Industri
 if (isset($_POST['submit_industri']) && $_SESSION['role'] === 'Industri') {
     $_SESSION['responden_nama'] = $_POST['responden_nama'];
 
     $survey_id = NULL;
-    $responden_tanggal = NULL; // Automatically set the date
+    $responden_tanggal = NULL; 
     $responden_nama = mysqli_real_escape_string($kon, $_POST['responden_nama']);
     $responden_jabatan = mysqli_real_escape_string($kon, $_POST['responden_jabatan']);
     $responden_perusahaan = mysqli_real_escape_string($kon, $_POST['responden_perusahaan']);
@@ -176,7 +168,7 @@ if (isset($_POST['submit_industri']) && $_SESSION['role'] === 'Industri') {
     $stmt = mysqli_prepare($kon, $query);
     mysqli_stmt_bind_param($stmt, 'issssssss', $survey_id, $responden_tanggal, $responden_nama, $responden_jabatan, $responden_perusahaan, $responden_email, $responden_hp, $responden_kota, $image_path);
     if (mysqli_stmt_execute($stmt)) {
-        header("refresh:2;url=register-form.php"); // Redirect after success
+        header("refresh:2;url=register-form.php"); 
         exit;
     } else {
         echo "Error saving data: " . mysqli_stmt_error($stmt);

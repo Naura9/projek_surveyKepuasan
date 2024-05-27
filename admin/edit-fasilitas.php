@@ -1,12 +1,9 @@
 <?php
 session_start();
-require_once '../Koneksi.php';
+include '../Koneksi.php';
 
-$koneksi = new Koneksi();
-$kon = $koneksi->kon;// Ambil data dari form
 
 if (!isset($_SESSION['username'])) {
-    // Jika belum, redirect pengguna ke halaman login
     header("Location: ../login/login.php");
     exit(); // Pastikan untuk keluar dari skrip setelah redirect
 }
@@ -15,6 +12,7 @@ if (!isset($_SESSION['username'])) {
 $username = $_SESSION['username'];
 $role = $_SESSION['role'];
 $nama = $_SESSION['nama'];
+
 
 if(isset($_GET['id'])) {
     $soal_id = $_GET['id'];
@@ -172,56 +170,7 @@ if(isset($_GET['id'])) {
 </head>
 <body>
 <div class="container">
-        <nav class="navbar">
-            <div class="logo">
-                <img src="img/logo-nama.png" alt="Logo" width="100">
-            </div>
-            <div class="username">
-                <span><?php echo $nama; ?> | Admin </span>
-                <a href="permintaan-user.php" class="message">
-                    <i class="fa-regular fa-envelope"></i>
-                </a>
-                <a href="../login/logout.php" class="logout">
-                    <i class="fa-solid fa-arrow-right-from-bracket"></i>
-                </a>
-            </div>
-        </nav>
-    </div>
-
-    <nav class="sidebar">
-        <ul class="sidebar-nav">
-            <li class="">
-                <a href="dashboard-admin.php" class="">
-                    <i class="fa-solid fa-house"></i>
-                    Dashboard
-                </a>
-            </li>
-            <li class="">
-                <a href="#" class="" data-bs-toggle="collapse" data-bs-target="#auth" aria-expanded="false" aria-controls="auth">
-                <i class="fa-solid fa-list-ol"></i> Survey
-                    <span class="lni lni-chevron-down"></span>
-                </a>
-                <ul id="auth" class="" data-bs-parent="#sidebar">
-                    <li><a href="soal-pendidikan.php"><i class="fa-solid fa-medal"></i> Kualitas Pendidikan</a></li>
-                    <li><a href="soal-fasilitas.php"><i class="fa-solid fa-layer-group"></i>     Fasilitas</a></li>                    
-                    <li><a href="soal-pelayanan.php"><i class="fa-solid fa-handshake"></i>  Pelayanan</a></li>
-                    <li><a href="soal-lulusan.php"><i class="fa-solid fa-graduation-cap"></i>  Lulusan</a></li>
-                </ul>
-            </li>
-            <li class="">
-                <a href="responden-survey.php" class="">
-                    <i class="fa-solid fa-user-group"></i>
-                    Responden
-                </a>
-            </li>
-            <li class="">
-                <a href="laporan-survey.php" class="">
-                    <i class="fa-solid fa-book-open"></i>
-                    Laporan
-                </a>
-            </li>
-        </ul>
-    </nav>
+<?php include 'Header.php'; ?>
 
     <section>
     <div class="content">
@@ -252,16 +201,7 @@ if(isset($_GET['id'])) {
         </div>    
         </form>
     </div>
-
-        <div class="kosong">
-    </div>
+        <div class="kosong"></div>
 </section>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"></script>
-    <script>
-        $('nav ul li').click(function(){
-             $(this).addClass("active").siblings().removeClass("active");
-        });    
-    </script>
 </body>
 </html>

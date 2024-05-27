@@ -26,7 +26,6 @@
     $profil_image = $row_get_profil_image['image'];
 
 
-    // Query untuk memeriksa apakah survei pendidikan sudah diisi oleh responden tertentu
     $query_check_survey = "SELECT COUNT(*) AS jumlah_survey FROM t_jawaban_mahasiswa
                             JOIN m_survey_soal ON t_jawaban_mahasiswa.soal_id = m_survey_soal.soal_id
                             WHERE m_survey_soal.kategori_id = 1
@@ -35,9 +34,6 @@
     $row_check_survey = mysqli_fetch_assoc($result_check_survey);
     $jumlah_survey = $row_check_survey['jumlah_survey'];
 
-    // Jika survei pendidikan sudah diisi oleh responden tertentu, tampilkan pesan atau alihkan pengguna ke halaman lain
-
-    // Query untuk mengambil soal survei dengan kategori_id 1
     $query = "SELECT m_survey_soal.soal_id, m_survey_soal.soal_nama
     FROM m_survey_soal
     JOIN m_survey ON m_survey_soal.survey_id = m_survey.survey_id
@@ -67,12 +63,12 @@
         }
     
         $query_soal_id = "SELECT m_survey_soal.soal_id
-                          FROM m_survey_soal
-                          JOIN m_survey ON m_survey_soal.survey_id = m_survey.survey_id
-                          JOIN m_kategori ON m_survey_soal.kategori_id = m_kategori.kategori_id
-                          JOIN m_user ON m_survey.user_id = m_user.user_id
-                          WHERE m_kategori.kategori_id = 1
-                          AND m_user.role = 'mahasiswa'";
+                            FROM m_survey_soal
+                            JOIN m_survey ON m_survey_soal.survey_id = m_survey.survey_id
+                            JOIN m_kategori ON m_survey_soal.kategori_id = m_kategori.kategori_id
+                            JOIN m_user ON m_survey.user_id = m_user.user_id
+                            WHERE m_kategori.kategori_id = 1
+                            AND m_survey_soal.survey_id = '$survey_id'";
         $result_soal_id = mysqli_query($kon, $query_soal_id);
     
         while ($row = mysqli_fetch_assoc($result_soal_id)) {
@@ -122,7 +118,9 @@
             margin-right: 100px;
             background-color: white; 
             padding: 10px; 
-            width : 1000px;
+            width : 1050px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+
         }
 
         .pilihan-container {

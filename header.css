@@ -90,7 +90,27 @@ body {
   padding: 0;
 }
 
+.sidebar-nav li a {
+  color: #333;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  padding: 10px 8px;
+  transition: background-color 0.3s, color 0.3s;
+}
 
+.sidebar-nav li a i {
+  margin-right: 10px;
+}
+
+.sidebar-nav li {
+  margin-bottom: 10px;
+}
+
+.sidebar-nav .collapse li a:hover, .sidebar-nav .collapse li.active > a {
+  background-color: #BEB8D1;
+  border-radius: 4px;
+}
 
 
 nav ul {

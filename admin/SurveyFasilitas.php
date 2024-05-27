@@ -2,11 +2,9 @@
 include '../Koneksi.php';
 include 'Survey.php';
 
-// Periksa apakah pengguna telah login
 if (!isset($_SESSION['username'])) {
-    // Jika belum, redirect pengguna ke halaman login
     header("Location: ../login/login.php");
-    exit(); // Pastikan untuk keluar dari skrip setelah redirect
+    exit(); 
 }
 
 class SurveyFasilitas {
@@ -22,7 +20,7 @@ class SurveyFasilitas {
             $pesan = $this->survey->hapusPertanyaan($soal_id); // Panggil metode hapusPertanyaan langsung
         }
 
-        $kategori_id = 2; // Asumsikan kategori ID untuk fasilitas adalah 2
+        $kategori_id = 2; // Asumsikan kategori ID untuk fasilitas  adalah 2
         $edit_soal = "edit-fasilitas.php";
         $questions = $this->survey->getSurveyQuestions($kategori_id);
         $this->survey->renderSurveyQuestions($questions, $kategori_id, $edit_soal, $_SERVER['PHP_SELF']);
@@ -37,7 +35,7 @@ $surveyFasilitas = new SurveyFasilitas();
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Survey Kualitas Fasilitas Polinema</title>
+    <title>Survey Fasilitas Polinema</title>
     <link href="https://cdn.lineicons.com/4.0/lineicons.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -54,10 +52,11 @@ $surveyFasilitas = new SurveyFasilitas();
         .survey-card {
             background-color: white;
             padding: 20px;
-            width: 1100px;
+            width: 1050px;
             border-radius: 10px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             margin-bottom: 0;
+
         }
 
         .survey-question h3 {
@@ -105,20 +104,22 @@ $surveyFasilitas = new SurveyFasilitas();
             border: none;
             font-size: 12px;
             height: auto;
-            background-color: orange; /* Change to orange */
+            background-color: #E87818; /* Change to orange */
             color: white;
             margin-left: auto;
             border-radius: 10px;
         }
 
         .button-tambah {
+            padding: 5px 10px;
+            font-size: 15px;
             margin-top: 10px;
-            margin-left: auto;
+            margin-left: 1230px;
             background-color: #2d1b6b;
-            border: 1px solid black;
+            border: none;
             text-decoration: none;
             color: white;
-            border-radius: 10px;
+            border-radius: 8px;
         }
 
         .button-edit {
@@ -148,7 +149,7 @@ $surveyFasilitas = new SurveyFasilitas();
 <?php include 'Header.php'; ?>
     <section>
         <div class="content">
-            <h2>Survey Fasilitas Polinema</h2>
+            <h2 style="font-weight: bold;">Survey Fasilitas Polinema</h2>
             <div class="survey-card">
                 <?php $surveyFasilitas->renderSurveyFasilitas(); ?>
             </div>

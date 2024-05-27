@@ -52,7 +52,7 @@ if(mysqli_num_rows($result_profil) > 0) {
             margin-right: 100px;
             background-color: white; 
             padding: 10px; 
-            width : 1000px;
+            width : 1050px;
             border-radius: 10px;
         }
 
@@ -86,15 +86,17 @@ if(mysqli_num_rows($result_profil) > 0) {
         }
 
         .button-edit {
-            margin-left: 945px; 
+            margin-left: 1000px; 
             background-color: #2d1b6b;
             color: white;
+            border: none;
         }
 
         .profile-label {
             width: 30%;
             font-weight: bold;
             margin-bottom: 5px; 
+            margin-left: 10px;
         }
 
         .profile-value {
@@ -103,6 +105,7 @@ if(mysqli_num_rows($result_profil) > 0) {
             border: 1px solid #ced4da;
             padding: 5px 10px;
             border-radius: 5px;
+            margin-left: 10px;
         }
     </style>
 </head>

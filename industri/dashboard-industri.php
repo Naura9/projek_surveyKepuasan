@@ -2,14 +2,11 @@
 session_start();
 include '../Koneksi.php';
 
-// Periksa apakah pengguna telah login
 if (!isset($_SESSION['username'])) {
-    // Jika belum, redirect pengguna ke halaman login
     header("Location: ../login/login.php");
-    exit(); // Pastikan untuk keluar dari skrip setelah redirect
+    exit(); 
 }
 
-// Ambil nilai username dan role dari sesi
 $username = $_SESSION['username'];
 $role = $_SESSION['role'];
 $nama = $_SESSION['nama'];
@@ -24,7 +21,6 @@ $result_get_profil_image = mysqli_query($kon, $query_get_profil_image);
 $row_get_profil_image = mysqli_fetch_assoc($result_get_profil_image);
 $profil_image = $row_get_profil_image['image'];
 
-// Query untuk menghitung jumlah kategori survei yang telah ditanggapi oleh responden tertentu
 $query_jumlah_survey = "SELECT COUNT(DISTINCT m_survey_soal.kategori_id) AS jumlah_survey
                         FROM t_jawaban_industri
                         INNER JOIN m_survey_soal ON t_jawaban_industri.soal_id = m_survey_soal.soal_id
@@ -94,14 +90,11 @@ $jumlah_survey_ditanggapi = $row_jumlah_survey['jumlah_survey'];
         <?php include '../header.php'; ?>
         <section>
             <div class="content">
-                <!-- Kotak berwarna putih -->
                 <div class="survey-box">
                     <div class="icon">
                         <i class="fa-solid fa-list-check"></i>
                     </div>
 
-
-                    <!-- Jumlah survey ditanggapi -->
                     <div class="survey-count">
                         <span id="surveyNumber"><?php echo $jumlah_survey_ditanggapi; ?></span>
                         <div class="survey-text">Survey Telah Ditanggapi</div>

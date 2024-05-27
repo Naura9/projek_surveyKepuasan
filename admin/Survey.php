@@ -2,16 +2,13 @@
 session_start();
 include '../koneksi.php';
 
-// Periksa apakah pengguna telah login
 if (!isset($_SESSION['username'])) {
-    // Jika belum, redirect pengguna ke halaman login
     header("Location: ../login/login.php");
-    exit(); // Pastikan untuk keluar dari skrip setelah redirect
+    exit();
 }
 
 class Survey {
     public function getSurveyQuestions($kategori_id) {
-        // Establish the database connection
         $kon = mysqli_connect("localhost", "root", "", "tp_survey");
         
         $query = "SELECT m_survey_soal.soal_id, m_survey_soal.soal_nama
@@ -43,10 +40,8 @@ class Survey {
     }
 
     public function hapusPertanyaan($soal_id) {
-        // Establish the database connection
         $kon = mysqli_connect("localhost", "root", "", "tp_survey");
 
-        // Dapatkan soal_nama dari soal_id
         $query_get_soal_nama = "SELECT soal_nama FROM m_survey_soal WHERE soal_id = $soal_id";
         $result_soal_nama = mysqli_query($kon, $query_get_soal_nama);
         
@@ -54,21 +49,17 @@ class Survey {
             $row = mysqli_fetch_assoc($result_soal_nama);
             $soal_nama = $row['soal_nama'];
             
-            // Query untuk menghapus pertanyaan dengan soal_nama yang sama
             $query_delete = "DELETE FROM m_survey_soal WHERE soal_nama = '$soal_nama'";
             $result_delete = mysqli_query($kon, $query_delete);
         
             if($result_delete) {
-                // Close the database connection
                 mysqli_close($kon);
                 return "Semua pertanyaan dengan kalimat \"$soal_nama\" berhasil dihapus.";
             } else {
-                // Close the database connection
                 mysqli_close($kon);
                 return "Gagal menghapus pertanyaan.";
             }
         } else {
-            // Close the database connection
             mysqli_close($kon);
             return "Gagal mendapatkan soal_nama.";
         }

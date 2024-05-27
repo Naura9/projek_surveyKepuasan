@@ -12,23 +12,23 @@
     $role = $_SESSION['role'];
     $nama = $_SESSION['nama'];
 
-$query_get_responden_id = "SELECT responden_dosen_id FROM t_responden_dosen WHERE responden_nama = '$nama'";
-$result_get_responden_id = mysqli_query($kon, $query_get_responden_id);
-$row_get_responden_id = mysqli_fetch_assoc($result_get_responden_id);
-$responden_dosen_id = $row_get_responden_id['responden_dosen_id'];
+    $query_get_responden_id = "SELECT responden_dosen_id FROM t_responden_dosen WHERE responden_nama = '$nama'";
+    $result_get_responden_id = mysqli_query($kon, $query_get_responden_id);
+    $row_get_responden_id = mysqli_fetch_assoc($result_get_responden_id);
+    $responden_dosen_id = $row_get_responden_id['responden_dosen_id'];
 
-$query_get_profil_image = "SELECT image FROM t_responden_dosen WHERE responden_nama = '$nama'";
-$result_get_profil_image = mysqli_query($kon, $query_get_profil_image);
-$row_get_profil_image = mysqli_fetch_assoc($result_get_profil_image);
-$profil_image = $row_get_profil_image['image'];
+    $query_get_profil_image = "SELECT image FROM t_responden_dosen WHERE responden_nama = '$nama'";
+    $result_get_profil_image = mysqli_query($kon, $query_get_profil_image);
+    $row_get_profil_image = mysqli_fetch_assoc($result_get_profil_image);
+    $profil_image = $row_get_profil_image['image'];
 
-$query_jumlah_survey = "SELECT COUNT(DISTINCT m_survey_soal.kategori_id) AS jumlah_survey
-                        FROM t_jawaban_dosen
-                        INNER JOIN m_survey_soal ON t_jawaban_dosen.soal_id = m_survey_soal.soal_id
-                        WHERE t_jawaban_dosen.responden_dosen_id = '$responden_dosen_id'";
-$result_jumlah_survey = mysqli_query($kon, $query_jumlah_survey);
-$row_jumlah_survey = mysqli_fetch_assoc($result_jumlah_survey);
-$jumlah_survey_ditanggapi = $row_jumlah_survey['jumlah_survey'];
+    $query_jumlah_survey = "SELECT COUNT(DISTINCT m_survey_soal.kategori_id) AS jumlah_survey
+                            FROM t_jawaban_dosen
+                            INNER JOIN m_survey_soal ON t_jawaban_dosen.soal_id = m_survey_soal.soal_id
+                            WHERE t_jawaban_dosen.responden_dosen_id = '$responden_dosen_id'";
+    $result_jumlah_survey = mysqli_query($kon, $query_jumlah_survey);
+    $row_jumlah_survey = mysqli_fetch_assoc($result_jumlah_survey);
+    $jumlah_survey_ditanggapi = $row_jumlah_survey['jumlah_survey'];
 
 ?>
 

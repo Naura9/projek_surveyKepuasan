@@ -102,7 +102,7 @@ $nama = $_SESSION['nama'];
                         echo 'Dosen';
                     } 
                     ?></span>
-                <img src="img/<?php echo $profil_image; ?>" alt="User" width="35" height="35" style="border-radius: 50%;">
+                <img src="img/<?php echo $profil_image; ?>" alt="User" width="35" height="35" style="border-radius: 50%; margin-left: 820px;">
                 <a href="../login/logout.php" class="logout">
                     <i class="fa-solid fa-arrow-right-from-bracket logout"></i>
                 </a>

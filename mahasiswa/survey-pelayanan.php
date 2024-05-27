@@ -13,10 +13,11 @@
     $role = $_SESSION['role'];
     $nama = $_SESSION['nama'];
 
-    $query_get_responden_id = "SELECT responden_mahasiswa_id FROM t_responden_mahasiswa WHERE responden_nama = '$nama'";
+    $query_get_responden_id = "SELECT responden_mahasiswa_id, survey_id FROM t_responden_mahasiswa WHERE responden_nama = '$nama'";
     $result_get_responden_id = mysqli_query($kon, $query_get_responden_id);
     $row_get_responden_id = mysqli_fetch_assoc($result_get_responden_id);
     $responden_mahasiswa_id = $row_get_responden_id['responden_mahasiswa_id'];
+    $survey_id = $row_get_responden_id['survey_id'];
 
     $query_get_profil_image = "SELECT image FROM t_responden_mahasiswa WHERE responden_nama = '$nama'";
     $result_get_profil_image = mysqli_query($kon, $query_get_profil_image);
@@ -32,22 +33,11 @@
     $jumlah_survey = $row_check_survey['jumlah_survey'];
 
     $query = "SELECT m_survey_soal.soal_id, m_survey_soal.soal_nama
-        FROM m_survey_soal
-        JOIN m_survey ON m_survey_soal.survey_id = m_survey.survey_id
-        JOIN m_kategori ON m_survey_soal.kategori_id = m_kategori.kategori_id
-        JOIN m_user ON m_survey.user_id = m_user.user_id
-        WHERE m_kategori.kategori_id = 3
-        AND m_user.role = 'mahasiswa'
-        AND (m_survey_soal.soal_nama, m_survey_soal.soal_id) IN (
-            SELECT soal_nama, MIN(soal_id)
-            FROM m_survey_soal
-            JOIN m_survey ON m_survey_soal.survey_id = m_survey.survey_id
-            JOIN m_kategori ON m_survey_soal.kategori_id = m_kategori.kategori_id
-            JOIN m_user ON m_survey.user_id = m_user.user_id
-            WHERE m_kategori.kategori_id = 3
-            AND m_user.role = 'mahasiswa'
-            GROUP BY soal_nama
-        )";
+    FROM m_survey_soal
+    JOIN m_survey ON m_survey_soal.survey_id = m_survey.survey_id
+    JOIN m_kategori ON m_survey_soal.kategori_id = m_kategori.kategori_id
+    WHERE m_kategori.kategori_id = 3
+    AND m_survey_soal.survey_id = '$survey_id'";
 
         
     $result = mysqli_query($kon, $query);
@@ -71,12 +61,12 @@
         }
     
         $query_soal_id = "SELECT m_survey_soal.soal_id
-                          FROM m_survey_soal
-                          JOIN m_survey ON m_survey_soal.survey_id = m_survey.survey_id
-                          JOIN m_kategori ON m_survey_soal.kategori_id = m_kategori.kategori_id
-                          JOIN m_user ON m_survey.user_id = m_user.user_id
-                          WHERE m_kategori.kategori_id = 3
-                          AND m_user.role = 'mahasiswa'";
+                            FROM m_survey_soal
+                            JOIN m_survey ON m_survey_soal.survey_id = m_survey.survey_id
+                            JOIN m_kategori ON m_survey_soal.kategori_id = m_kategori.kategori_id
+                            JOIN m_user ON m_survey.user_id = m_user.user_id
+                            WHERE m_kategori.kategori_id = 3
+                            AND m_survey_soal.survey_id = '$survey_id'";
         $result_soal_id = mysqli_query($kon, $query_soal_id);
     
         while ($row = mysqli_fetch_assoc($result_soal_id)) {
@@ -125,7 +115,8 @@
             margin-right: 100px;
             background-color: white; 
             padding: 10px; 
-            width : 1000px;
+            width : 1050px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 
         }
 

@@ -1,42 +1,32 @@
 <?php
-session_start();
 include '../Koneksi.php';
 include 'Survey.php';
 
+if (!isset($_SESSION['username'])) {
+    header("Location: ../login/login.php");
+    exit(); 
+}
+
 class SurveyPelayanan {
-    private $db;
-    public $username;
-    public $role;
-    public $nama;
-    
+    private $survey;
+
     public function __construct() {
-        $this->db = new Koneksi();
-        $this->survey = new Survey($this->db);
-         // Set session variables to class properties
-         if (isset($_SESSION['username'])) {
-            $this->username = $_SESSION['username'];
-            $this->role = $_SESSION['role'];
-            $this->nama = $_SESSION['nama'];
-        } else {
-            header("Location: ../login/login.php");
-            exit();
-        }
+        $this->survey = new Survey(); 
     }
 
     public function renderSurveyPelayanan() {
         if(isset($_POST['hapus']) && isset($_POST['soal_id'])) {
             $soal_id = $_POST['soal_id'];
-            $pesan = $this->survey->hapusPertanyaan($soal_id); // Panggil metode hapusPertanyaan langsung
+            $pesan = $this->survey->hapusPertanyaan($soal_id); 
         }
 
-        $kategori_id = 3; // Asumsikan kategori ID untuk fasilitas adalah 2
+        $kategori_id = 3; 
         $edit_soal = "edit-pelayanan.php";
         $questions = $this->survey->getSurveyQuestions($kategori_id);
         $this->survey->renderSurveyQuestions($questions, $kategori_id, $edit_soal, $_SERVER['PHP_SELF']);
     }
-
 }
-     
+
 $surveyPelayanan = new SurveyPelayanan();
 ?>
 <!DOCTYPE html>
@@ -45,7 +35,7 @@ $surveyPelayanan = new SurveyPelayanan();
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Survey Kualitas Pendidikan Polinema</title>
+    <title>Survey Pelayanan Polinema</title>
     <link href="https://cdn.lineicons.com/4.0/lineicons.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -53,7 +43,6 @@ $surveyPelayanan = new SurveyPelayanan();
     <link rel="stylesheet" href="../header.css">
     <script src="https://code.jquery.com/jquery-3.4.1.js"></script>
     <style>
-        /* Updated CSS */
         h2 {
             font-weight: bold;
             margin-bottom: 15px;
@@ -62,10 +51,11 @@ $surveyPelayanan = new SurveyPelayanan();
         .survey-card {
             background-color: white;
             padding: 20px;
-            width: 1000px;
+            width: 1050px;
             border-radius: 10px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             margin-bottom: 0;
+
         }
 
         .survey-question h3 {
@@ -113,20 +103,22 @@ $surveyPelayanan = new SurveyPelayanan();
             border: none;
             font-size: 12px;
             height: auto;
-            background-color: orange; /* Change to orange */
+            background-color: #E87818; /* Change to orange */
             color: white;
             margin-left: auto;
             border-radius: 10px;
         }
 
         .button-tambah {
+            padding: 5px 10px;
+            font-size: 15px;
             margin-top: 10px;
-            margin-left: auto;
+            margin-left: 1230px;
             background-color: #2d1b6b;
-            border: 1px solid black;
+            border: none;
             text-decoration: none;
             color: white;
-            border-radius: 10px;
+            border-radius: 8px;
         }
 
         .button-edit {
@@ -139,7 +131,6 @@ $surveyPelayanan = new SurveyPelayanan();
             color: white;
             border-radius: 10px;
             text-decoration: none;
-
         }
 
         hr {
@@ -157,15 +148,15 @@ $surveyPelayanan = new SurveyPelayanan();
 <?php include 'Header.php'; ?>
     <section>
         <div class="content">
-            <h2>Survey Pelayanan Polinema</h2>
+            <h2 style="font-weight: bold;">Survey Pelayanan Polinema</h2>
             <div class="survey-card">
                 <?php $surveyPelayanan->renderSurveyPelayanan(); ?>
             </div>
-        </div>
+        </div>   
     </section>
     <div class="kosong">
         <div class="button-container">
-            <a href="tambah-pelayanan.php" class=" button-tambah">Tambah</a>
+            <a href="tambah-pelayanan.php" class="button-tambah">Tambah</a>
         </div>
     </div>
 </body>

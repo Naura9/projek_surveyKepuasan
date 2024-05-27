@@ -53,40 +53,11 @@ $nama = $_SESSION['nama'];
         }
 
         .sidebar-nav .collapse li a:hover, .sidebar-nav .collapse li.active > a {
-            background-color: #BEB8D1y;
+            background-color: #BEB8D1;
             border-radius: 4px;
         }
 
-        .survey-box {
-            background-color: #ffffff;
-            border-radius: 8px;
-            padding: 30px;
-            display: flex;
-            align-items: center;
-            width: 400px;
-            height: 200px;
-            margin-left: 300px;
-            margin-top: 40px;
-        }
-
-        .survey-count {
-            font-size: 28px;
-            font-weight: bold;
-            margin-left: 50px;
-            margin-right: 16px;
-        }
-
-        .icon {
-            margin-left: 50px;
-            font-size: 60px;
-        }
-
-        .survey-text {
-            font-size: 13px;
-            color: #555555;
-        }
-
-    
+        
 
         .message {
             width: 5px;
