@@ -3,6 +3,12 @@
 
     include '../Koneksi.php';
     
+    ob_start();
+
+    $db = new Koneksi();
+    
+    $kon = $db->getConnection();
+    
     if (!isset($_SESSION['username'])) {
         header("Location: ../login/login.php");
         exit(); 
@@ -90,7 +96,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['simpan'])) {
             margin-right: 100px;
             background-color: white;
             padding: 10px; 
-            width : 1000px;
+            width : 1050px;
             border-radius: 10px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 
@@ -123,7 +129,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['simpan'])) {
 
         .button-container {
             display: flex;
-            margin-top: 245px;
+            margin-top: 229px;
         }
 
         .button-container button {
@@ -135,15 +141,41 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['simpan'])) {
 
         .button-kembali {
             background-color: white;
-            border: 1px solid black;
+            border-radius: 8px; 
+            text-decoration: none; 
+            padding: 9px 10px; 
+            font-size: 15px;
+            color: black; 
+            border: none;
+            text-decoration: none;
 
         }
 
+        .button-kembali:hover {
+            background-color: white;
+            border: 1px solid #2d1b6b;
+            border-radius: 8px;
+            text-decoration: none;
+            color: black;
+        }
+
         .button-simpan {
-            margin-left: 825px; 
+            margin-left: 875px; 
             background-color: #2d1b6b;
             color: white;
             border: 1px solid black;
+            border-radius: 8px; 
+            text-decoration: none; 
+            padding: 9px 10px; 
+            font-size: 15px;
+        }
+
+        .button-simpan:hover {
+            background-color: white;
+            border: 1px solid #2d1b6b;
+            border-radius: 8px;
+            text-decoration: none;
+            color: black;
         }
 
         .kosong {
@@ -159,65 +191,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['simpan'])) {
     </style>
 </head>
 <body>
-<div class="container">
-        <nav class="navbar">
-            <div class="logo">
-                <img src="img/logo-nama.png" alt="Logo" width="100">
-            </div>
-            <div class="username">
-                <span><?php echo $nama; ?> | Admin </span>
-                <a href="permintaan-user.php" class="message">
-                    <i class="fa-regular fa-envelope"></i>
-                </a>
-                <a href="../login/logout.php" class="logout">
-                    <i class="fa-solid fa-arrow-right-from-bracket"></i>
-                </a>
-            </div>
-        </nav>
-    </div>
+<?php include 'Header.php'; ?>
 
-    <nav class="sidebar">
-        <ul class="sidebar-nav">
-            <li class="">
-                <a href="dashboard-admin.php" class="">
-                    <i class="fa-solid fa-house"></i>
-                    Dashboard
-                </a>
-            </li>
-            <li class="">
-                <a href="#" class="" data-bs-toggle="collapse" data-bs-target="#auth" aria-expanded="false" aria-controls="auth">
-                <i class="fa-solid fa-list-ol"></i> Survey
-                    <span class="lni lni-chevron-down"></span>
-                </a>
-                <ul id="auth" class="" data-bs-parent="#sidebar">
-                    <li><a href="SurveyPendidikan.php"><i class="fa-solid fa-medal"></i> Kualitas Pendidikan</a></li>
-                    <li><a href="SurveyFasilitas.php"><i class="fa-solid fa-layer-group"></i>     Fasilitas</a></li>                    
-                    <li><a href="SurveyPelayanan.php"><i class="fa-solid fa-handshake"></i>  Pelayanan</a></li>
-                    <li><a href="SurveyLulusan.php"><i class="fa-solid fa-graduation-cap"></i>  Lulusan</a></li>
-                </ul>
-            </li>
-            <li class="">
-                <a href="responden-survey.php" class="">
-                    <i class="fa-solid fa-user-group"></i>
-                    Responden
-                </a>
-            </li>
-            <li class="">
-                <a href="laporan-survey.php" class="">
-                    <i class="fa-solid fa-book-open"></i>
-                    Laporan
-                </a>
-            </li>
-        </ul>
-    </nav>
     <section>
     <div class="content">
-        <h2>Survey Fasilitas Polinema</h2>
+        <h2 style="font-weight: bold;">Survey Fasilitas Polinema</h2>
         <div class="survey-question">
             <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="POST">
-                <label for="question1">Pertanyaan</label>
+                <label for="question1" style="font-weight: 630;">Pertanyaan</label>
                 <input type="text" class="form-control form-custom" name="question" id="question" placeholder="Masukkan Pertanyaan" required>
-                <label for="question1">Keterangan</label>
+                <label for="question1" style="margin-top: 10px; font-weight: 630;">Keterangan</label>
                 <div class="pilihan-container">
                     <div class="pilihan1">
                         <input type="radio" id="question1_kurang" name="question1" value="kurang">
@@ -234,8 +217,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['simpan'])) {
                 </div>
         </div>
             <div class="button-container">
-                <a href="SurveyFasilitas.php" class="btn button-kembali">Kembali</a>
-                <button type="submit" class="btn button-simpan" name="simpan">Simpan</button>
+                <a href="SurveyFasilitas.php" class="button-kembali">Kembali</a>
+                <button type="submit" class="button-simpan" name="simpan">Simpan</button>
             </div>    
         </form>
         <div class="kosong"></div>

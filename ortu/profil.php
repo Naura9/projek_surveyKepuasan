@@ -1,32 +1,34 @@
 <?php
-session_start();
-include '../Koneksi.php';
+    session_start();
+        
+    include '../Koneksi.php';
+    $db = new Koneksi();
+    $kon = $db->getConnection();
 
-if (!isset($_SESSION['username'])) {
-    header("Location: ../login/login.php");
-    exit(); 
-}
+    if (!isset($_SESSION['username'])) {
+        header("Location: ../login/login.php");
+        exit(); 
+    }
 
-$username = $_SESSION['username'];
-$role = $_SESSION['role'];
-$nama = $_SESSION['nama'];
+    $username = $_SESSION['username'];
+    $role = $_SESSION['role'];
+    $nama = $_SESSION['nama'];
 
-$query_get_profil_image = "SELECT image FROM t_responden_ortu WHERE responden_nama = '$nama'";
-$result_get_profil_image = mysqli_query($kon, $query_get_profil_image);
-$row_get_profil_image = mysqli_fetch_assoc($result_get_profil_image);
-$profil_image = $row_get_profil_image['image'];
+    $query_get_profil_image = "SELECT image FROM t_responden_ortu WHERE responden_nama = '$nama'";
+    $result_get_profil_image = mysqli_query($kon, $query_get_profil_image);
+    $row_get_profil_image = mysqli_fetch_assoc($result_get_profil_image);
+    $profil_image = $row_get_profil_image['image'];
 
-$query_profil = "SELECT * FROM t_responden_ortu 
-JOIN m_survey ON m_survey.survey_id = t_responden_ortu.survey_id
-JOIN m_user ON m_user.user_id = m_survey.user_id
-WHERE responden_nama = '$nama'";
-$result_profil = mysqli_query($kon, $query_profil);
+    $query_profil = "SELECT * FROM t_responden_ortu 
+    JOIN m_survey ON m_survey.survey_id = t_responden_ortu.survey_id
+    JOIN m_user ON m_user.user_id = m_survey.user_id
+    WHERE responden_nama = '$nama'";
+    $result_profil = mysqli_query($kon, $query_profil);
 
-// Periksa apakah data ditemukan
-if(mysqli_num_rows($result_profil) > 0) {
-    // Tampilkan data profil
-    while($ortu = mysqli_fetch_array($result_profil)){
+    if(mysqli_num_rows($result_profil) > 0) {
+        while($ortu = mysqli_fetch_array($result_profil)){
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -112,71 +114,71 @@ if(mysqli_num_rows($result_profil) > 0) {
     </style>
 </head>
 <body>
-<div class="container">
-<?php include '../header.php'; ?>
-
-    <section>
-        <div class="content">
-            <h2>Profil</h2>
-            <div class="form-profile">
-                <tr>
-                    <div class="profile-label">Foto Profil</div>
-                    <img src="img/<?php echo $profil_image; ?>" alt="Foto Profil" class="profile-image">
-                </tr>
-                <tr>
-                    <div class="profile-label">Nama Lengkap</div>
-                    <div class="profile-value"><?php echo $ortu['responden_nama']; ?></div>
-                </tr>
-                <tr>
-                    <div class="profile-label">Username</div>
-                    <div class="profile-value"><?php echo $ortu['username']; ?></div>
-                </tr>
-                <tr>
-                    <div class="profile-label">Password</div>
-                    <div class="profile-value">*********</div>                
-                </tr>
-                <tr>
-                    <div class="profile-label">Email</div>
-                    <div class="profile-value"><?php echo $ortu['email']; ?></div>
-                </tr>
-                <tr>
-                    <div class="profile-label">Jenis Kelamin</div>
-                    <div class="profile-value"><?php echo $ortu['responden_jk']; ?></div>
-                </tr>
-                <tr>
-                    <div class="profile-label">Umur</div>
-                    <div class="profile-value"><?php echo $ortu['responden_umur']; ?></div>
-                </tr>
-                <tr>
-                    <div class="profile-label">No. Hp</div>
-                    <div class="profile-value"><?php echo $ortu['responden_hp']; ?></div>
-                </tr>
-                <tr>
-                    <div class="profile-label">Pendidikan Terakhir</div>
-                    <div class="profile-value"><?php echo $ortu['responden_pendidikan']; ?></div>
-                </tr>
-                <tr>
-                    <div class="profile-label">Penghasilan</div>
-                    <div class="profile-value"><?php echo $ortu['responden_penghasilan']; ?></div>
-                </tr>
-                <tr>
-                    <div class="profile-label">NIM Mahasiswa</div>
-                    <div class="profile-value"><?php echo $ortu['mahasiswa_nim']; ?></div>
-                </tr>
-                <tr>
-                    <div class="profile-label">Nama Mahasiswa</div>
-                    <div class="profile-value"><?php echo $ortu['mahasiswa_nama']; ?></div>
-                </tr>
-                <tr>
-                    <div class="profile-label">Program Studi Mahasiswa</div>
-                    <div class="profile-value"><?php echo $ortu['mahasiswa_prodi']; ?></div>
-                </tr>
+    <div class="container">
+        <?php include '../header.php'; ?>
+        <section>
+            <div class="content">
+                <h2>Profil</h2>
+                <div class="form-profile">
+                    <tr>
+                        <div class="profile-label">Foto Profil</div>
+                        <img src="img/<?php echo $profil_image; ?>" alt="Foto Profil" class="profile-image">
+                    </tr>
+                    <tr>
+                        <div class="profile-label">Nama Lengkap</div>
+                        <div class="profile-value"><?php echo $ortu['responden_nama']; ?></div>
+                    </tr>
+                    <tr>
+                        <div class="profile-label">Username</div>
+                        <div class="profile-value"><?php echo $ortu['username']; ?></div>
+                    </tr>
+                    <tr>
+                        <div class="profile-label">Password</div>
+                        <div class="profile-value">*********</div>                
+                    </tr>
+                    <tr>
+                        <div class="profile-label">Email</div>
+                        <div class="profile-value"><?php echo $ortu['email']; ?></div>
+                    </tr>
+                    <tr>
+                        <div class="profile-label">Jenis Kelamin</div>
+                        <div class="profile-value"><?php echo $ortu['responden_jk']; ?></div>
+                    </tr>
+                    <tr>
+                        <div class="profile-label">Umur</div>
+                        <div class="profile-value"><?php echo $ortu['responden_umur']; ?></div>
+                    </tr>
+                    <tr>
+                        <div class="profile-label">No. Hp</div>
+                        <div class="profile-value"><?php echo $ortu['responden_hp']; ?></div>
+                    </tr>
+                    <tr>
+                        <div class="profile-label">Pendidikan Terakhir</div>
+                        <div class="profile-value"><?php echo $ortu['responden_pendidikan']; ?></div>
+                    </tr>
+                    <tr>
+                        <div class="profile-label">Penghasilan</div>
+                        <div class="profile-value"><?php echo $ortu['responden_penghasilan']; ?></div>
+                    </tr>
+                    <tr>
+                        <div class="profile-label">NIM Mahasiswa</div>
+                        <div class="profile-value"><?php echo $ortu['mahasiswa_nim']; ?></div>
+                    </tr>
+                    <tr>
+                        <div class="profile-label">Nama Mahasiswa</div>
+                        <div class="profile-value"><?php echo $ortu['mahasiswa_nama']; ?></div>
+                    </tr>
+                    <tr>
+                        <div class="profile-label">Program Studi Mahasiswa</div>
+                        <div class="profile-value"><?php echo $ortu['mahasiswa_prodi']; ?></div>
+                    </tr>
+                </div>
+                <div class="button-container">
+                    <a href="edit-profil.php?username=<?php echo $username; ?>" class="btn btn-light btn-outline-dark button-edit">Edit</a>
+                </div>
             </div>
-            <div class="button-container">
-                <a href="edit-profil.php?username=<?php echo $username; ?>" class="btn btn-light btn-outline-dark button-edit">Edit</a>
-            </div>
-        </div>
-    </section>
+        </section>
+    </div>
 </body>
 </html>
 <?php

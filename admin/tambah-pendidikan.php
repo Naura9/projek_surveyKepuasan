@@ -3,6 +3,12 @@
 
     include '../Koneksi.php';
     
+    ob_start();
+
+    $db = new Koneksi();
+    
+    $kon = $db->getConnection();
+    
     if (!isset($_SESSION['username'])) {
         header("Location: ../login/login.php");
         exit(); 
@@ -13,24 +19,18 @@
     $nama = $_SESSION['nama'];
 
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['simpan'])) {
-    // Data untuk disimpan ke dalam tabel m_survey_soal
-    $soal_nama = $_POST['question']; // Ambil pertanyaan dari formulir
+    $soal_nama = $_POST['question']; 
     $kategori_id = 1; 
-    $soal_jenis = "skala"; // Jenis pertanyaan
+    $soal_jenis = "skala"; 
 
-    // Persiapkan query SQL untuk mendapatkan semua survey_id yang ada di tabel m_survey_soal
     $sql_survey_ids = "SELECT DISTINCT survey_id FROM m_survey_soal";
 
-    // Eksekusi query untuk mendapatkan semua survey_id
     $result_survey_ids = mysqli_query($kon, $sql_survey_ids);
 
-    // Periksa apakah query berhasil dieksekusi
     if ($result_survey_ids) {
-        // Loop melalui setiap survey_id
         while ($row_survey_id = mysqli_fetch_assoc($result_survey_ids)) {
             $survey_id = $row_survey_id['survey_id'];
 
-            // Ambil nilai no_urut terakhir untuk survey_id ini
             $sql_last_no_urut = "SELECT MAX(no_urut) AS last_no_urut FROM m_survey_soal WHERE survey_id = ?";
             $stmt_last_no_urut = $kon->prepare($sql_last_no_urut);
             $stmt_last_no_urut->bind_param("i", $survey_id);
@@ -40,26 +40,21 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['simpan'])) {
             if ($row_last_no_urut = $result_last_no_urut->fetch_assoc()) {
                 $no_urut = $row_last_no_urut['last_no_urut'] + 1;
             } else {
-                $no_urut = 1; // Jika belum ada pertanyaan untuk survey_id ini
+                $no_urut = 1; 
             }
 
-            // Persiapkan statement SQL untuk menyimpan pertanyaan
             $sql = "INSERT INTO m_survey_soal (survey_id, kategori_id, no_urut, soal_jenis, soal_nama) 
                     VALUES (?, ?, ?, ?, ?)";
 
-            // Persiapkan dan eksekusi statement
             if ($stmt = $kon->prepare($sql)) {
-                // Bind parameter ke statement
                 $stmt->bind_param("iiiss", $survey_id, $kategori_id, $no_urut, $soal_jenis, $soal_nama);
 
-                // Eksekusi statement
                 if ($stmt->execute()) {
                     echo "Pertanyaan kualitas pendidikan berhasil ditambahkan untuk survey_id: $survey_id <br>";
                 } else {
                     echo "Gagal menambahkan pertanyaan kualitas pendidikan untuk survey_id: $survey_id <br>";
                 }
 
-                // Tutup statement
                 $stmt->close();
             } else {
                 echo "Error: " . $kon->error;
@@ -69,11 +64,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['simpan'])) {
         header("Location: SurveyPendidikan.php");
         exit();
     } else {
-        // Jika query untuk mendapatkan survey_id gagal, tampilkan pesan error
         echo "Error: " . mysqli_error($kon);
     }
 
-    // Tutup koneksi database
     $kon->close();
 }
 ?>
@@ -93,18 +86,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['simpan'])) {
      <link rel="stylesheet" href="../header.css">
     <script src="https://code.jquery.com/jquery-3.4.1.js"></script>
     <style>
-        /* CSS untuk menyesuaikan tata letak radio button */
-        h2 {
-            font-weight: bold;
-        }
 
         .survey-question {
             margin-top: 20px;
             margin-bottom: 20px;
             margin-right: 100px;
-            background-color: white; /* Tambahkan background color merah */
-            padding: 10px; /* Tambahkan padding untuk memberi jarak antara konten dan border */
-            width : 1000px;
+            background-color: white; 
+            padding: 10px; 
+            width : 1050px;
             border-radius: 10px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 
@@ -137,7 +126,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['simpan'])) {
 
         .button-container {
             display: flex;
-            margin-top: 245px;
+            margin-top: 229px;
         }
 
         .button-container button {
@@ -149,15 +138,41 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['simpan'])) {
 
         .button-kembali {
             background-color: white;
-            border: 1px solid black;
+            border-radius: 8px; 
+            text-decoration: none; 
+            padding: 9px 10px; 
+            font-size: 15px;
+            color: black; 
+            border: none;
+            text-decoration: none;
 
         }
 
+        .button-kembali:hover {
+            background-color: white;
+            border: 1px solid #2d1b6b;
+            border-radius: 8px;
+            text-decoration: none;
+            color: black;
+        }
+
         .button-simpan {
-            margin-left: 825px; 
+            margin-left: 875px; 
             background-color: #2d1b6b;
             color: white;
             border: 1px solid black;
+            border-radius: 8px; 
+            text-decoration: none; 
+            padding: 9px 10px; 
+            font-size: 15px;
+        }
+
+        .button-simpan:hover {
+            background-color: white;
+            border: 1px solid #2d1b6b;
+            border-radius: 8px;
+            text-decoration: none;
+            color: black;
         }
 
         .kosong {
@@ -174,15 +189,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['simpan'])) {
 </head>
 <body>
 <?php include 'Header.php'; ?>
-
+       
     <section>
     <div class="content">
-        <h2>Survey Kualitas Pendidikan Polinema</h2>
+        <h2 style="font-weight: bold;">Survey Kualitas Pendidikan Polinema</h2>
         <div class="survey-question">
             <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="POST">
-                <label for="question1">Pertanyaan</label>
+                <label for="question1" style="font-weight: 630;">Pertanyaan</label>
                 <input type="text" class="form-control form-custom" name="question" id="question" placeholder="Masukkan Pertanyaan" required>
-                <label for="question1">Keterangan</label>
+                <label for="question1" style="margin-top: 10px; font-weight: 630;">Keterangan </label>
                 <div class="pilihan-container">
                     <div class="pilihan1">
                         <input type="radio" id="question1_kurang" name="question1" value="kurang">
@@ -199,8 +214,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['simpan'])) {
                 </div>
         </div>
             <div class="button-container">
-                <a href="SurveyPendidikan.php" class="btn button-kembali">Kembali</a>
-                <button type="submit" class="btn button-simpan" name="simpan">Simpan</button>
+                <a href="SurveyPendidikan.php" class="button-kembali">Kembali</a>
+                <button type="submit" class="button-simpan" name="simpan">Simpan</button>
             </div>    
         </form>
         <div class="kosong"></div>

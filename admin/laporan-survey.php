@@ -1,6 +1,12 @@
 <?php
 session_start();
-include '../koneksi.php';
+include '../Koneksi.php';
+
+ob_start();
+
+$db = new Koneksi();
+
+$kon = $db->getConnection();
 
 if (!isset($_SESSION['username'])) {
     header("Location: ../login/login.php");
@@ -238,24 +244,25 @@ if ($result_kategori_1 && $result_kategori_2 && $result_kategori_3 && $result_ka
             border-radius: 8px;
             padding: 10px 20px 10px 20px;
             display: flex;
-            width: 400px;
-            height: 345px;
+            width: 500px;
+            height: 400px;
             flex-direction: column;
         }
 
         .survey-box.left {
-            margin-right: 50px;
+            margin-right: 15px;
             align-items: flex-start;
         }
 
         .survey-box.right {
-            margin-left: 20px;
+            margin-left: 15px;
         }
 
         .icon {
             display: flex;
             align-items: center;
             font-size: 60px;
+            margin-top: 10px;
         }
 
         .icon .fa-solid {
@@ -281,7 +288,7 @@ if ($result_kategori_1 && $result_kategori_2 && $result_kategori_3 && $result_ka
         }
 
         .chart {
-            margin-top: 20px;
+            margin-top: 30px;
             display: flex;
         }
 
@@ -315,9 +322,8 @@ if ($result_kategori_1 && $result_kategori_2 && $result_kategori_3 && $result_ka
         }
 
         .content {
-            height: 930px;
+            height: 1050px;
             background-color: #ececed;
-
         }
     </style>
 </head>

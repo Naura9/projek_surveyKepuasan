@@ -2,6 +2,12 @@
     session_start();
 
     include '../Koneksi.php';
+
+    ob_start();
+
+    $db = new Koneksi();
+    
+    $kon = $db->getConnection();    
     
     if (!isset($_SESSION['username'])) {
         header("Location: ../login/login.php");
@@ -12,26 +18,50 @@
     $role = $_SESSION['role'];
     $nama = $_SESSION['nama'];
 
-// Check if 'id' parameter is set in the URL
 if(isset($_GET['id'])) {
     $soal_id = $_GET['id'];
     
-    // Query to fetch the details of the question based on ID
     $query = "SELECT soal_id, soal_nama FROM m_survey_soal WHERE soal_id = $soal_id";
     $result = mysqli_query($kon, $query);
 
-    // Check if the question is found
     if(mysqli_num_rows($result) > 0) {
-        // Fetch question details
         $data = mysqli_fetch_assoc($result);
         $soal_id = $data['soal_id'];
         $soal_nama = $data['soal_nama'];
+
+        if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['simpan'])) {
+            $soal_id = $_GET['id']; 
+    
+            $soal_nama_baru = $_POST['soal_nama'];
+    
+            $query_get_old = "SELECT soal_nama FROM m_survey_soal WHERE soal_id = $soal_id";
+            $result_get_old = mysqli_query($kon, $query_get_old);
+            $row = mysqli_fetch_assoc($result_get_old);
+            $soal_nama_lama = $row['soal_nama'];
+    
+            $query_update = "UPDATE m_survey_soal SET soal_nama=? WHERE soal_nama LIKE ?";
+    
+            $stmt = $kon->prepare($query_update);
+    
+            $stmt->bind_param("ss", $soal_nama_baru, $soal_nama_lama);
+    
+            $stmt->execute();
+    
+            if($stmt->affected_rows > 0) {
+                echo "Pertanyaan dengan nama \"$soal_nama_lama\" berhasil diperbarui menjadi \"$soal_nama_baru\" untuk semua survey_id <br>";
+            } else {
+                echo "Gagal memperbarui pertanyaan dengan nama \"$soal_nama_lama\" <br>";
+            }
+    
+            $stmt->close();
+    
+            header("Location: SurveyPelayanan.php");
+            exit(); 
+        }
     } else {
-        // Handle if question is not found
         echo "Pertanyaan tidak ditemukan.";
     }
 } else {
-    // Handle if 'id' parameter is not set in the URL
     echo "ID parameter is not set.";
 }
 ?>
@@ -51,19 +81,15 @@ if(isset($_GET['id'])) {
      <link rel="stylesheet" href="../header.css">
     <script src="https://code.jquery.com/jquery-3.4.1.js"></script>
     <style>
-        /* CSS untuk menyesuaikan tata letak radio button */
-        h2 {
-            font-weight: bold;
-        }
-
         .survey-question {
             margin-top: 20px;
             margin-bottom: 20px;
             margin-right: 100px;
-            background-color: white; /* Tambahkan background color merah */
-            padding: 10px; /* Tambahkan padding untuk memberi jarak antara konten dan border */
-            width : 1000px;
-
+            background-color: white; 
+            padding: 10px; 
+            width : 1050px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
 
         .question1 {
@@ -105,15 +131,41 @@ if(isset($_GET['id'])) {
 
         .button-kembali {
             background-color: white;
-            border: 1px solid black;
+            border-radius: 8px; 
+            text-decoration: none; 
+            padding: 9px 10px; 
+            font-size: 15px;
+            color: black; 
+            border: none;
+            text-decoration: none;
 
         }
 
+        .button-kembali:hover {
+            background-color: white;
+            border: 1px solid #2d1b6b;
+            border-radius: 8px;
+            text-decoration: none;
+            color: black;
+        }
+
         .button-simpan {
-            margin-left: 750px; 
+            margin-left: 875px; 
             background-color: #2d1b6b;
             color: white;
             border: 1px solid black;
+            border-radius: 8px; 
+            text-decoration: none; 
+            padding: 9px 10px; 
+            font-size: 15px;
+        }
+
+        .button-simpan:hover {
+            background-color: white;
+            border: 1px solid #2d1b6b;
+            border-radius: 8px;
+            text-decoration: none;
+            color: black;
         }
 
         .kosong {
@@ -123,71 +175,21 @@ if(isset($_GET['id'])) {
         }
         .message {
             width: 5px;
-            margin-left: 885px
+            margin-left: 900px;
+
         }
     </style>
 </head>
 <body>
-<div class="container">
-        <nav class="navbar">
-            <div class="logo">
-                <img src="img/logo-nama.png" alt="Logo" width="100">
-            </div>
-            <div class="username">
-                <span><?php echo $nama; ?> | Admin </span>
-                <a href="permintaan-user.php" class="message">
-                    <i class="fa-regular fa-envelope"></i>
-                </a>
-                <a href="../login/logout.php" class="logout">
-                    <i class="fa-solid fa-arrow-right-from-bracket"></i>
-                </a>
-            </div>
-        </nav>
-    </div>
-
-    <nav class="sidebar">
-        <ul class="sidebar-nav">
-            <li class="">
-                <a href="dashboard-admin.php" class="">
-                    <i class="fa-solid fa-house"></i>
-                    Dashboard
-                </a>
-            </li>
-            <li class="">
-                <a href="#" class="" data-bs-toggle="collapse" data-bs-target="#auth" aria-expanded="false" aria-controls="auth">
-                <i class="fa-solid fa-list-ol"></i> Survey
-                    <span class="lni lni-chevron-down"></span>
-                </a>
-                <ul id="auth" class="" data-bs-parent="#sidebar">
-                    <li><a href="soal-pendidikan.php"><i class="fa-solid fa-medal"></i> Kualitas Pendidikan</a></li>
-                    <li><a href="soal-fasilitas.php"><i class="fa-solid fa-layer-group"></i>     Fasilitas</a></li>                    
-                    <li><a href="soal-pelayanan.php"><i class="fa-solid fa-handshake"></i>  Pelayanan</a></li>
-                    <li><a href="soal-lulusan.php"><i class="fa-solid fa-graduation-cap"></i>  Lulusan</a></li>
-                </ul>
-            </li>
-            <li class="">
-                <a href="responden-survey.php" class="">
-                    <i class="fa-solid fa-user-group"></i>
-                    Responden
-                </a>
-            </li>
-            <li class="">
-                <a href="laporan-survey.php" class="">
-                    <i class="fa-solid fa-book-open"></i>
-                    Laporan
-                </a>
-            </li>
-        </ul>
-    </nav>
-
+<?php include 'Header.php'; ?>
     <section>
     <div class="content">
-        <h2>Survey Pelayanan Polinema</h2>
-        <form action="proses-edit-pelayanan.php?id=<?php echo $soal_id; ?>" method="post" >
-            <div class="survey-question">
-            <label for="question1">Pertanyaan</label>
+        <h2 style="font-weight: bold">Survey Pelayanan Polinema</h2>
+        <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]) . "?id=$soal_id"; ?>" method="post" >            
+        <div class="survey-question">
+            <label for="question1" style="font-weight: 630;">Pertanyaan</label>
             <input type="text" class="form-control form-custom" name="soal_nama" id="soal_nama" value="<?php echo $soal_nama; ?>" required>                
-            <label for="question1">Keterangan</label>
+            <label for="question1" style="font-weight: 630; margin-top: 10px;">Keterangan</label>
                 <div class="pilihan-container">
                     <div class="pilihan1">
                         <input type="radio" id="question1_kurang" name="question1" value="kurang">
@@ -204,8 +206,8 @@ if(isset($_GET['id'])) {
                 </div>             
             </div>
         <div class="button-container">
-            <a href="soal-pelayanan.php" class="btn button-kembali">Kembali</a>
-            <button type="submit" class="btn button-simpan" name="simpan">Simpan</button>
+            <a href="SurveyPelayanan.php" class="button-kembali">Kembali</a>
+            <button type="submit" class="button-simpan" name="simpan">Simpan</button>
         </div>    
         </form>
     </div>
@@ -214,11 +216,5 @@ if(isset($_GET['id'])) {
     </div>
 </section>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"></script>
-    <script>
-        $('nav ul li').click(function(){
-             $(this).addClass("active").siblings().removeClass("active");
-        });    
-    </script>
 </body>
 </html>

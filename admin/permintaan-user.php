@@ -2,59 +2,49 @@
 session_start();
 include '../Koneksi.php';
 
+ob_start();
+
+$db = new Koneksi();
+
+$kon = $db->getConnection();
+
 
 if (!isset($_SESSION['username'])) {
     header("Location: ../login/login.php");
-    exit(); // Pastikan untuk keluar dari skrip setelah redirect
+    exit(); 
 }
 
-// Ambil nilai username dan role dari sesi
 $username = $_SESSION['username'];
 $role = $_SESSION['role'];
 $nama = $_SESSION['nama'];
 
 
-// Periksa apakah form telah disubmit
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // Periksa apakah id telah diterima
     if(isset($_POST['id'])) {
         $id = $_POST['id'];
 
-        // Jika tombol delete diklik
-
-        // Jika tombol status diklik
         if(isset($_POST['status'])) {
             $status = $_POST['status'];
 
-            // Lakukan sanitasi input sebelum query
             $status = mysqli_real_escape_string($kon, $status);
-            $id = intval($id); // Pastikan id adalah integer
+            $id = intval($id); 
 
-            // Lakukan query untuk memperbarui status
             $query = "UPDATE m_registrasi SET status='$status' WHERE id=$id";
 
             if(mysqli_query($kon, $query)) {
-                // Tampilkan pesan sukses atau lakukan tindakan lain yang diperlukan
-                // echo "Status berhasil diperbarui.";
             } else {
-                // echo "Gagal memperbarui status: " . mysqli_error($kon);
             }
         }
         $delete_query = "DELETE FROM m_registrasi WHERE id=$id";
         if(mysqli_query($kon, $delete_query)) {
-            // echo "Status berhasil diperbarui dan entri dihapus.";
         } else {
-            // echo "Gagal memperbarui status atau menghapus entri: " . mysqli_error($kon);
         }
     }
 }
 
-// Query untuk mengambil data dari m_registrasi
 $query = "SELECT * FROM m_registrasi";
 $result = mysqli_query($kon, $query);
 ?>
-
-
 
 <!DOCTYPE html>
 <html lang="en">

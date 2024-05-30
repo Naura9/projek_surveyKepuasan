@@ -1,31 +1,36 @@
 <?php
-session_start();
-include '../Koneksi.php';
+    session_start();
+        
+    include '../Koneksi.php';
+    $db = new Koneksi();
+    $kon = $db->getConnection();
 
-if (!isset($_SESSION['username'])) {
-    header("Location: ../login/login.php");
-    exit(); 
-}
+    if (!isset($_SESSION['username'])) {
+        header("Location: ../login/login.php");
+        exit(); 
+    }
 
-$username = $_SESSION['username'];
-$role = $_SESSION['role'];
-$nama = $_SESSION['nama'];
+    $username = $_SESSION['username'];
+    $role = $_SESSION['role'];
+    $nama = $_SESSION['nama'];
 
-$query_get_profil_image = "SELECT image FROM t_responden_dosen WHERE responden_nama = '$nama'";
-$result_get_profil_image = mysqli_query($kon, $query_get_profil_image);
-$row_get_profil_image = mysqli_fetch_assoc($result_get_profil_image);
-$profil_image = $row_get_profil_image['image'];
+    $query_get_profil_image = "SELECT image FROM t_responden_dosen WHERE responden_nama = '$nama'";
+    $result_get_profil_image = mysqli_query($kon, $query_get_profil_image);
+    $row_get_profil_image = mysqli_fetch_assoc($result_get_profil_image);
+    $profil_image = $row_get_profil_image['image'];
 
-$query_profil = "SELECT * FROM t_responden_dosen 
-JOIN m_survey ON m_survey.survey_id = t_responden_dosen.survey_id
-JOIN m_user ON m_user.user_id = m_survey.user_id
-WHERE responden_nama = '$nama'
-";
-$result_profil = mysqli_query($kon, $query_profil);
+    $query_profil = "SELECT * FROM t_responden_dosen 
+    JOIN m_survey ON m_survey.survey_id = t_responden_dosen.survey_id
+    JOIN m_user ON m_user.user_id = m_survey.user_id
+    WHERE responden_nama = '$nama'
+    ";
+    $result_profil = mysqli_query($kon, $query_profil);
 
-if(mysqli_num_rows($result_profil) > 0) {
-    while($dosen = mysqli_fetch_array($result_profil)){
+    if(mysqli_num_rows($result_profil) > 0) {
+        while($dosen = mysqli_fetch_array($result_profil)){
 ?>
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -149,6 +154,7 @@ if(mysqli_num_rows($result_profil) > 0) {
                 </div>
             </div>
         </section>
+    </div>
 </body>
 </html>
 <?php

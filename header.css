@@ -26,8 +26,8 @@ body {
   align-items: center;
   height: 30px;
   padding: 0;
-  position: fixed; /* Navbar tetap berada di posisi yang sama saat menggulir halaman */
-  width: 100%; /* Menempati lebar seluruh halaman */
+  position: fixed; 
+  width: 100%; 
   border-right: 2px solid #a9a9ac;
 
 }
@@ -145,7 +145,6 @@ nav ul li a:hover {
 
 nav ul ul {
   position: static;
-  /* display: none; */
 }
 
 nav ul ul li {

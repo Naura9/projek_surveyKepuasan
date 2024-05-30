@@ -1,59 +1,63 @@
 <?php
-session_start();
-include '../Koneksi.php';
+    session_start();
 
-if (!isset($_SESSION['username'])) {
-    header("Location: ../login/login.php");
-    exit(); 
-}
+    include '../Koneksi.php';
+    $db = new Koneksi();
+    $kon = $db->getConnection();
 
-$nama = $_SESSION['nama'];
-$username = $_GET['username'];
-
-$query = "SELECT * FROM t_responden_alumni 
-        JOIN m_survey ON m_survey.survey_id = t_responden_alumni.survey_id
-        JOIN m_user ON m_user.user_id = m_survey.user_id
-        WHERE responden_nama = '$nama'";
-
-$res = mysqli_query($kon, $query); 
-
-if(mysqli_num_rows($res) > 0) {
-    $alumni = mysqli_fetch_assoc($res);
-
-    if(isset($_FILES["fileImg"]["name"])){ 
-        $id = $_POST["responden_alumni_id"];
-
-        $src = $_FILES["fileImg"]["tmp_name"];
-        $imageName = uniqid() . $_FILES["fileImg"]["name"]; 
-
-        $target = "img/" . $imageName;
-
-        move_uploaded_file($src, $target);
-
-        $query = "UPDATE t_responden_alumni SET image = '$imageName' WHERE responden_alumni_id = $id"; 
-        mysqli_query($kon, $query);
-
-        header("Location: profil.php");
+    if (!isset($_SESSION['username'])) {
+        header("Location: ../login/login.php");
+        exit(); 
     }
 
-    $query_get_profil_image = "SELECT image FROM t_responden_alumni WHERE responden_nama = '$nama'";
-    $result_get_profil_image = mysqli_query($kon, $query_get_profil_image);
-    $row_get_profil_image = mysqli_fetch_assoc($result_get_profil_image);
-    $profil_image = $row_get_profil_image['image'];
+    $nama = $_SESSION['nama'];
+    $username = $_GET['username'];
 
+    $query = "SELECT * FROM t_responden_alumni 
+            JOIN m_survey ON m_survey.survey_id = t_responden_alumni.survey_id
+            JOIN m_user ON m_user.user_id = m_survey.user_id
+            WHERE responden_nama = '$nama'";
+
+    $res = mysqli_query($kon, $query); 
+
+    if(mysqli_num_rows($res) > 0) {
+        $alumni = mysqli_fetch_assoc($res);
+
+        if(isset($_FILES["fileImg"]["name"])){ 
+            $id = $_POST["responden_alumni_id"];
+
+            $src = $_FILES["fileImg"]["tmp_name"];
+            $imageName = uniqid() . $_FILES["fileImg"]["name"]; 
+
+            $target = "img/" . $imageName;
+
+            move_uploaded_file($src, $target);
+
+            $query = "UPDATE t_responden_alumni SET image = '$imageName' WHERE responden_alumni_id = $id"; 
+            mysqli_query($kon, $query);
+
+            header("Location: profil.php");
+        }
+
+        $query_get_profil_image = "SELECT image FROM t_responden_alumni WHERE responden_nama = '$nama'";
+        $result_get_profil_image = mysqli_query($kon, $query_get_profil_image);
+        $row_get_profil_image = mysqli_fetch_assoc($result_get_profil_image);
+        $profil_image = $row_get_profil_image['image'];
 ?>    
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Header</title>
+    <title>Edit Profil</title>
     <link href="https://cdn.lineicons.com/4.0/lineicons.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://kit.fontawesome.com/96cfbc074b.js" crossorigin="anonymous"></script>
-     <link rel="stylesheet" href="../header.css">
+    <link rel="stylesheet" href="../header.css">
     <script src="https://code.jquery.com/jquery-3.4.1.js"></script>
     <style>
         h2 {
@@ -111,11 +115,13 @@ if(mysqli_num_rows($res) > 0) {
             width: 140px;
             margin-bottom: 20px;
         }
+
         .upload img {
             border: 2px solid #DCDCDC;
             width: 150px;
             height: 150px;
         }
+
         .upload .rightRound {
             background: #00B4FF;
             width: 32px;
@@ -126,6 +132,7 @@ if(mysqli_num_rows($res) > 0) {
             overflow: hidden;
             cursor: pointer;
         }
+
         .upload .leftRound {
             bottom: 0;
             left: 0;
@@ -138,14 +145,17 @@ if(mysqli_num_rows($res) > 0) {
             overflow: hidden;
             cursor: pointer;
         }
+
         .upload .fa {
             color: white;
         }
+
         .upload input {
             position: absolute;
             transform: scale(2);
             opacity: 0;
         }
+
         .upload input::-webkit-file-upload-button, .upload input[type=submit] {
             cursor: pointer;
         }

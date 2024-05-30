@@ -1,6 +1,9 @@
 <?php
 session_start();
+    
 include '../Koneksi.php';
+$db = new Koneksi();
+$kon = $db->getConnection();
 
 if (!isset($_SESSION['username'])) {
     header("Location: ../login/login.php");
@@ -111,11 +114,13 @@ if(mysqli_num_rows($res) > 0) {
             width: 140px;
             margin-bottom: 20px;
         }
+
         .upload img {
             border: 2px solid #DCDCDC;
             width: 150px;
             height: 150px;
         }
+
         .upload .rightRound {
             background: #00B4FF;
             width: 32px;
@@ -124,7 +129,8 @@ if(mysqli_num_rows($res) > 0) {
             text-align: center;
             border-radius: 50%;
             overflow: hidden;
-            cursor: pointer;
+            c
+            ursor: pointer;
         }
         .upload .leftRound {
             bottom: 0;
@@ -138,107 +144,109 @@ if(mysqli_num_rows($res) > 0) {
             overflow: hidden;
             cursor: pointer;
         }
+
         .upload .fa {
             color: white;
         }
+
         .upload input {
             position: absolute;
             transform: scale(2);
             opacity: 0;
         }
+
         .upload input::-webkit-file-upload-button, .upload input[type=submit] {
             cursor: pointer;
         }
     </style>
 </head>
 <body>
-<div class="container">
-    <?php include '../header.php'; ?>
-    <section>
-    <div class="content">
-        <h2>Edit Profil</h2>
-            <div class="form-profile">
-                <table class="table">
-                    <div class="form-group text-left font-weight-bold">
-                        <div class="profile-label">Foto Profil</div>
-                            <form class="form" id="form" action="" enctype="multipart/form-data" method="post">
-                            <input type="hidden" name="responden_tendik_id" value="<?php echo $tendik['responden_tendik_id']; ?>">
-                            <div class="upload">
-                            <div class="rightRound" id="upload">
-                                    <input type="file" name="fileImg" id="fileImg" accept=".jpg, .jpeg, .png">
-                                    <i class="fa fa-camera"></i>
-                                </div>
-                                <img src="img/<?php echo $tendik['image']; ?>" id="image">
+    <div class="container">
+        <?php include '../header.php'; ?>
+        <section>
+            <div class="content">
+                <h2>Edit Profil</h2>
+                    <div class="form-profile">
+                        <table class="table">
+                            <div class="form-group text-left font-weight-bold">
+                                <div class="profile-label">Foto Profil</div>
+                                    <form class="form" id="form" action="" enctype="multipart/form-data" method="post">
+                                    <input type="hidden" name="responden_tendik_id" value="<?php echo $tendik['responden_tendik_id']; ?>">
+                                    <div class="upload">
+                                    <div class="rightRound" id="upload">
+                                            <input type="file" name="fileImg" id="fileImg" accept=".jpg, .jpeg, .png">
+                                            <i class="fa fa-camera"></i>
+                                        </div>
+                                        <img src="img/<?php echo $tendik['image']; ?>" id="image">
 
-                                <div class="leftRound" id="cancel" style="display: none;">
-                                    <i class="fa fa-times"></i>
-                                </div>
-                                <div class="rightRound" id="confirm" style="display: none;">
-                                    <input type="submit">
-                                    <i class="fa fa-check"></i>
-                                </div>
-                            </div>     
-                            </form>                        
-                    <form action="proses-edit.php" method="POST">
+                                        <div class="leftRound" id="cancel" style="display: none;">
+                                            <i class="fa fa-times"></i>
+                                        </div>
+                                        <div class="rightRound" id="confirm" style="display: none;">
+                                            <input type="submit">
+                                            <i class="fa fa-check"></i>
+                                        </div>
+                                    </div>     
+                                    </form>                        
+                            <form action="proses-edit.php" method="POST">
 
-                        </div>					
-                        <div class="form-group text-left font-weight-bold">
-                            <label for="responden_nopeg">No. Pegawai</label>
-                            <input type="text" class="form-control bg-custom" name="responden_nopeg" id="responden_nopeg" value="<?php echo $tendik['responden_nopeg']; ?>">
-                        </div>					
-                        <div class="form-group text-left font-weight-bold">
-						    <label for="respinden_nama">Nama Lengkap</label>
-							<input type="text" class="form-control bg-custom" name="responden_nama" id="responden_nama" value="<?php echo $tendik['responden_nama']; ?>">
-						</div>						
-                        <div class="form-group text-left font-weight-bold">
-                            <label for="username">Username</label>
-							<input type="text" class="form-control bg-custom" name="username" id="username" value="<?php echo $tendik['username']; ?>">
-						</div>						
-                        <div class="form-group text-left font-weight-bold">
-                            <label for="password">Password</label>
-							<input type="text" class="form-control bg-custom" name="password" id="password" value="xxxxxxxx">
-						</div>						
-                        <div class="form-group text-left font-weight-bold">
-                            <label for="email">Email</label>
-							<input type="text" class="form-control bg-custom" name="email" id="email" value="<?php echo $tendik['email']; ?>">
-						</div>						
-                        <div class="form-group text-left font-weight-bold">
-                            <label for="responden_unit">Unit</label>
-                            <input type="text" class="form-control bg-custom" name="responden_unit" id="responden_unit" value="<?php echo $tendik['responden_unit']; ?>">
-                        </div>						
-                    </div>					
-                </table>
+                                </div>					
+                                <div class="form-group text-left font-weight-bold">
+                                    <label for="responden_nopeg">No. Pegawai</label>
+                                    <input type="text" class="form-control bg-custom" name="responden_nopeg" id="responden_nopeg" value="<?php echo $tendik['responden_nopeg']; ?>">
+                                </div>					
+                                <div class="form-group text-left font-weight-bold">
+                                    <label for="respinden_nama">Nama Lengkap</label>
+                                    <input type="text" class="form-control bg-custom" name="responden_nama" id="responden_nama" value="<?php echo $tendik['responden_nama']; ?>">
+                                </div>						
+                                <div class="form-group text-left font-weight-bold">
+                                    <label for="username">Username</label>
+                                    <input type="text" class="form-control bg-custom" name="username" id="username" value="<?php echo $tendik['username']; ?>">
+                                </div>						
+                                <div class="form-group text-left font-weight-bold">
+                                    <label for="password">Password</label>
+                                    <input type="text" class="form-control bg-custom" name="password" id="password" value="xxxxxxxx">
+                                </div>						
+                                <div class="form-group text-left font-weight-bold">
+                                    <label for="email">Email</label>
+                                    <input type="text" class="form-control bg-custom" name="email" id="email" value="<?php echo $tendik['email']; ?>">
+                                </div>						
+                                <div class="form-group text-left font-weight-bold">
+                                    <label for="responden_unit">Unit</label>
+                                    <input type="text" class="form-control bg-custom" name="responden_unit" id="responden_unit" value="<?php echo $tendik['responden_unit']; ?>">
+                                </div>						
+                            </div>					
+                        </table>
+                    </div>
+
+                    <div class="button-container">
+                        <a href="profil.php" class="btn btn-light btn-outline-dark button-kembali">Kembali</a>
+                        <input type="submit" class="btn btn-outline-light button-simpan" name="simpan" value="Simpan">
+                    </div>    
+                </form>
             </div>
+        </section>
+        <script type="text/javascript">
+            document.getElementById("fileImg").onchange = function(){
+                document.getElementById("image").src = URL.createObjectURL(fileImg.files[0]); 
 
-            <div class="button-container">
-                <a href="profil.php" class="btn btn-light btn-outline-dark button-kembali">Kembali</a>
-                <input type="submit" class="btn btn-outline-light button-simpan" name="simpan" value="Simpan">
-            </div>    
-        </form>
+                document.getElementById("cancel").style.display = "block";
+                document.getElementById("confirm").style.display = "block";
 
+                document.getElementById("upload").style.display = "none";
+            }
+
+            var userImage = document.getElementById('image').src;
+            document.getElementById("cancel").onclick = function(){
+                document.getElementById("image").src = userImage; 
+
+                document.getElementById("cancel").style.display = "none";
+                document.getElementById("confirm").style.display = "none";
+
+                document.getElementById("upload").style.display = "block";
+            }
+        </script>
     </div>
-</section>
-
-<script type="text/javascript">
-      document.getElementById("fileImg").onchange = function(){
-        document.getElementById("image").src = URL.createObjectURL(fileImg.files[0]); 
-
-        document.getElementById("cancel").style.display = "block";
-        document.getElementById("confirm").style.display = "block";
-
-        document.getElementById("upload").style.display = "none";
-      }
-
-      var userImage = document.getElementById('image').src;
-      document.getElementById("cancel").onclick = function(){
-        document.getElementById("image").src = userImage; 
-
-        document.getElementById("cancel").style.display = "none";
-        document.getElementById("confirm").style.display = "none";
-
-        document.getElementById("upload").style.display = "block";
-      }
-    </script>
 </body>
 </html>
 <?php

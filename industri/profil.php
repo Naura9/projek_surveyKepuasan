@@ -1,31 +1,35 @@
 <?php
-session_start();
-include '../Koneksi.php';
+    session_start();
 
-if (!isset($_SESSION['username'])) {
-    header("Location: ../login/login.php");
-    exit(); 
-}
+    include '../Koneksi.php';
+    $db = new Koneksi();
+    $kon = $db->getConnection();
 
-$username = $_SESSION['username'];
-$role = $_SESSION['role'];
-$nama = $_SESSION['nama'];
+    if (!isset($_SESSION['username'])) {
+        header("Location: ../login/login.php");
+        exit(); 
+    }
 
-$query_get_profil_image = "SELECT image FROM t_responden_industri WHERE responden_nama = '$nama'";
-$result_get_profil_image = mysqli_query($kon, $query_get_profil_image);
-$row_get_profil_image = mysqli_fetch_assoc($result_get_profil_image);
-$profil_image = $row_get_profil_image['image'];
+    $username = $_SESSION['username'];
+    $role = $_SESSION['role'];
+    $nama = $_SESSION['nama'];
 
-$query_profil = "SELECT * FROM t_responden_industri 
-JOIN m_survey ON m_survey.survey_id = t_responden_industri.survey_id
-JOIN m_user ON m_user.user_id = m_survey.user_id
-WHERE responden_nama = '$nama'
-";
-$result_profil = mysqli_query($kon, $query_profil);
+    $query_get_profil_image = "SELECT image FROM t_responden_industri WHERE responden_nama = '$nama'";
+    $result_get_profil_image = mysqli_query($kon, $query_get_profil_image);
+    $row_get_profil_image = mysqli_fetch_assoc($result_get_profil_image);
+    $profil_image = $row_get_profil_image['image'];
 
-if(mysqli_num_rows($result_profil) > 0) {
-    while($industri = mysqli_fetch_array($result_profil)){
+    $query_profil = "SELECT * FROM t_responden_industri 
+    JOIN m_survey ON m_survey.survey_id = t_responden_industri.survey_id
+    JOIN m_user ON m_user.user_id = m_survey.user_id
+    WHERE responden_nama = '$nama'
+    ";
+    $result_profil = mysqli_query($kon, $query_profil);
+
+    if(mysqli_num_rows($result_profil) > 0) {
+        while($industri = mysqli_fetch_array($result_profil)){
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -110,62 +114,63 @@ if(mysqli_num_rows($result_profil) > 0) {
     </style>
 </head>
 <body>
-<div class="container">
-    <?php include '../header.php'; ?>
-    <section>
-        <div class="content">
-            <h2>Profil</h2>
-            <div class="form-profile">
-            <tr>
-                <div class="profile-label">Foto Profil</div>
-                <img src="img/<?php echo $industri['image']; ?>" alt="Foto Profil" class="profile-image">
-            </tr>
+    <div class="container">
+        <?php include '../header.php'; ?>
+        <section>
+            <div class="content">
+                <h2>Profil</h2>
+                <div class="form-profile">
+                <tr>
+                    <div class="profile-label">Foto Profil</div>
+                    <img src="img/<?php echo $industri['image']; ?>" alt="Foto Profil" class="profile-image">
+                </tr>
 
-            <tr>
-                <div class="profile-label">Nama Lengkap</div>
-                <div class="profile-value"><?php echo $industri['responden_nama']; ?></div>
-            </tr>
-            <tr>
-                <div class="profile-label">Username</div>
-                <div class="profile-value"><?php echo $industri['username']; ?></div>
-            </tr>
-            <tr>
-                <div class="profile-label">Password</div>
-                <div class="profile-value">*********</div>                
-            </tr>
-            <tr>
-                <div class="profile-label">Jabatan</div>
-                <div class="profile-value"><?php echo $industri['responden_jabatan']; ?></div>
-            </tr>
-            <tr>
-                <div class="profile-label">Perusahaan</div>
-                <div class="profile-value"><?php echo $industri['responden_perusahaan']; ?></div>
-            </tr>
-            <tr>
-                <div class="profile-label">Email</div>
-                <div class="profile-value"><?php echo $industri['responden_email']; ?></div>
-            </tr>
-            <tr>
-                <div class="profile-label">No. Hp</div>
-                <div class="profile-value"><?php echo $industri['responden_hp']; ?></div>
-            </tr>
-            <tr>
-                <div class="profile-label">Kota</div>
-                <div class="profile-value"><?php echo $industri['responden_kota']; ?></div>
-            </tr>
-        </div>
-            <div class="button-container">
-                <a href="edit-profil.php?username=<?php echo $username; ?>" class="btn btn-light btn-outline-dark button-edit">Edit</a>
+                <tr>
+                    <div class="profile-label">Nama Lengkap</div>
+                    <div class="profile-value"><?php echo $industri['responden_nama']; ?></div>
+                </tr>
+                <tr>
+                    <div class="profile-label">Username</div>
+                    <div class="profile-value"><?php echo $industri['username']; ?></div>
+                </tr>
+                <tr>
+                    <div class="profile-label">Password</div>
+                    <div class="profile-value">*********</div>                
+                </tr>
+                <tr>
+                    <div class="profile-label">Jabatan</div>
+                    <div class="profile-value"><?php echo $industri['responden_jabatan']; ?></div>
+                </tr>
+                <tr>
+                    <div class="profile-label">Perusahaan</div>
+                    <div class="profile-value"><?php echo $industri['responden_perusahaan']; ?></div>
+                </tr>
+                <tr>
+                    <div class="profile-label">Email</div>
+                    <div class="profile-value"><?php echo $industri['responden_email']; ?></div>
+                </tr>
+                <tr>
+                    <div class="profile-label">No. Hp</div>
+                    <div class="profile-value"><?php echo $industri['responden_hp']; ?></div>
+                </tr>
+                <tr>
+                    <div class="profile-label">Kota</div>
+                    <div class="profile-value"><?php echo $industri['responden_kota']; ?></div>
+                </tr>
             </div>
-        </div>
-    </section>
+                <div class="button-container">
+                    <a href="edit-profil.php?username=<?php echo $username; ?>" class="btn btn-light btn-outline-dark button-edit">Edit</a>
+                </div>
+            </div>
+        </section>
+    </div>
 </body>
 </html>
 <?php
+        }
+    } else {
+        echo "Data profil tidak ditemukan.";
     }
-} else {
-    echo "Data profil tidak ditemukan.";
-}
 
-mysqli_close($kon);
+    mysqli_close($kon);
 ?>

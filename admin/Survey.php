@@ -1,6 +1,6 @@
 <?php
 session_start();
-include '../koneksi.php';
+include '../Koneksi.php';
 
 if (!isset($_SESSION['username'])) {
     header("Location: ../login/login.php");
@@ -8,9 +8,13 @@ if (!isset($_SESSION['username'])) {
 }
 
 class Survey {
+    private $kon;
+
+    public function __construct($kon) {
+        $this->kon = $kon;
+    }
+
     public function getSurveyQuestions($kategori_id) {
-        $kon = mysqli_connect("localhost", "root", "", "tp_survey");
-        
         $query = "SELECT m_survey_soal.soal_id, m_survey_soal.soal_nama
             FROM m_survey_soal
             JOIN m_survey ON m_survey_soal.survey_id = m_survey.survey_id
@@ -26,41 +30,33 @@ class Survey {
                 WHERE m_kategori.kategori_id = $kategori_id
                 GROUP BY soal_nama
             )";
-        $result = mysqli_query($kon, $query);
-
+        $result = mysqli_query($this->kon, $query);
         $questions = array();
         while ($row = mysqli_fetch_assoc($result)) {
             $questions[] = $row;
         }
 
-        // Close the database connection
-        mysqli_close($kon);
-
+    mysqli_close($this->kon);
         return $questions;
     }
 
     public function hapusPertanyaan($soal_id) {
-        $kon = mysqli_connect("localhost", "root", "", "tp_survey");
-
         $query_get_soal_nama = "SELECT soal_nama FROM m_survey_soal WHERE soal_id = $soal_id";
-        $result_soal_nama = mysqli_query($kon, $query_get_soal_nama);
+        $result_soal_nama = mysqli_query($this->kon, $query_get_soal_nama);
         
         if ($result_soal_nama && mysqli_num_rows($result_soal_nama) > 0) {
             $row = mysqli_fetch_assoc($result_soal_nama);
             $soal_nama = $row['soal_nama'];
             
             $query_delete = "DELETE FROM m_survey_soal WHERE soal_nama = '$soal_nama'";
-            $result_delete = mysqli_query($kon, $query_delete);
+            $result_delete = mysqli_query($this->kon, $query_delete);
         
             if($result_delete) {
-                mysqli_close($kon);
                 return "Semua pertanyaan dengan kalimat \"$soal_nama\" berhasil dihapus.";
             } else {
-                mysqli_close($kon);
                 return "Gagal menghapus pertanyaan.";
             }
         } else {
-            mysqli_close($kon);
             return "Gagal mendapatkan soal_nama.";
         }
     }

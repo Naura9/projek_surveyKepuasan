@@ -1,17 +1,22 @@
 <?php
-include '../Koneksi.php';
-include 'Survey.php';
+    include 'Survey.php';
 
-if (!isset($_SESSION['username'])) {
-    header("Location: ../login/login.php");
-    exit(); 
-}
+    ob_start();
+
+    $db = new Koneksi();
+    
+    $kon = $db->getConnection();    
+
+    if (!isset($_SESSION['username'])) {
+        header("Location: ../login/login.php");
+        exit(); 
+    }
 
 class SurveyPelayanan {
     private $survey;
 
-    public function __construct() {
-        $this->survey = new Survey(); 
+    public function __construct($kon) {
+        $this->survey = new Survey($kon); 
     }
 
     public function renderSurveyPelayanan() {
@@ -27,7 +32,7 @@ class SurveyPelayanan {
     }
 }
 
-$surveyPelayanan = new SurveyPelayanan();
+$surveyPelayanan = new SurveyPelayanan($kon);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -103,22 +108,19 @@ $surveyPelayanan = new SurveyPelayanan();
             border: none;
             font-size: 12px;
             height: auto;
-            background-color: #E87818; /* Change to orange */
+            background-color: #E87818; 
             color: white;
             margin-left: auto;
             border-radius: 10px;
+            text-decoration: none;
         }
 
-        .button-tambah {
-            padding: 5px 10px;
-            font-size: 15px;
-            margin-top: 10px;
-            margin-left: 1230px;
-            background-color: #2d1b6b;
-            border: none;
+        .button-hapus:hover {
+            background-color: white;
+            border: 1px solid #E87818;
+            border-radius: 5px;
             text-decoration: none;
-            color: white;
-            border-radius: 8px;
+            color: black;
         }
 
         .button-edit {
@@ -133,6 +135,33 @@ $surveyPelayanan = new SurveyPelayanan();
             text-decoration: none;
         }
 
+        .button-edit:hover {
+            background-color: white;
+            border: 1px solid #2d1b6b;
+            border-radius: 5px;
+            text-decoration: none;
+            color: black;
+        }
+
+        .button-tambah {
+            padding: 5px 10px;
+            font-size: 15px;
+            margin-top: 20px;
+            margin-left: 1226px;
+            background-color: white;
+            border: none;
+            text-decoration: none;
+            font-weight: bold;
+            color: black;
+            border-radius: 8px;
+        }
+
+        .button-tambah:hover {
+            background-color: #2d1b6b ;
+            border-radius: 5px;
+            text-decoration: none;
+            color: white;
+        }
         hr {
             border: none;
             border-top: 2px solid #ccc;

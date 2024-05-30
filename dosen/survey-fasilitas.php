@@ -1,9 +1,11 @@
 
 <?php
     session_start();
-
-    include '../Koneksi.php';
     
+    include '../Koneksi.php';
+    $db = new Koneksi();
+    $kon = $db->getConnection();
+
     if (!isset($_SESSION['username'])) {
         header("Location: ../login/login.php");
         exit(); 
@@ -32,7 +34,6 @@
     $row_check_survey = mysqli_fetch_assoc($result_check_survey);
     $jumlah_survey = $row_check_survey['jumlah_survey'];
 
-
     $query = "SELECT m_survey_soal.soal_id, m_survey_soal.soal_nama
     FROM m_survey_soal
     JOIN m_survey ON m_survey_soal.survey_id = m_survey.survey_id
@@ -40,7 +41,6 @@
     WHERE m_kategori.kategori_id = 2
     AND m_survey_soal.survey_id = '$survey_id'";
 
-    
     $result = mysqli_query($kon, $query);
 
     $fasilitas = array();
@@ -80,7 +80,6 @@
             
             $result = mysqli_query($kon, $query_insert_jawaban);
             
-            
             if (!$result) {
                 echo "Gagal menyimpan jawaban untuk soal $soal_id: " . mysqli_error($kon);
             }
@@ -91,11 +90,11 @@
         $query_update_tanggal_survey = "UPDATE m_survey SET survey_tanggal = CURDATE() WHERE survey_id = '$survey_id'";
         $result_update_tanggal_survey = mysqli_query($kon, $query_update_tanggal_survey);
     
-    
         header("Location: dashboard-dosen.php");
         exit;
     }
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -103,12 +102,12 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Header</title>
+    <title>Survey Fasilitas</title>
     <link href="https://cdn.lineicons.com/4.0/lineicons.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://kit.fontawesome.com/96cfbc074b.js" crossorigin="anonymous"></script>
-     <link rel="stylesheet" href="../header.css">
+    <link rel="stylesheet" href="../header.css">
     <script src="https://code.jquery.com/jquery-3.4.1.js"></script>
     <style>
         h2 {
@@ -215,65 +214,65 @@
         }
     </style>
 </head>
-
 <body>
-<div class="container">
-    <?php include '../header.php'; ?>
-    <section>
-    <div class="content">
-        <h2>Survey Fasilitas</h2>
-        <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="POST">
-        <?php
-            $no = 1;
-            foreach ($fasilitas as $p) {
-                ?>
-                    <div class="survey-question">
-                        <label for="jawaban_<?php echo $p['soal_id']; ?>"><?php echo $p['soal_nama']; ?></label>
-                        <div class="pilihan-container">
-                            <div class="pilihan1">
-                                <input type="radio" id="jawaban_<?php echo $p['soal_id']; ?>_kurang" name="jawaban_<?php echo $p['soal_id']; ?>" value="kurang">
-                                <label for="jawaban_<?php echo $p['soal_id']; ?>_kurang">Kurang</label><br>
-                                <input type="radio" id="jawaban_<?php echo $p['soal_id']; ?>_cukup" name="jawaban_<?php echo $p['soal_id']; ?>" value="cukup">
-                                <label for="jawaban_<?php echo $p['soal_id']; ?>_cukup">Cukup</label>
-                            </div>
-                            <div class="pilihan2">
-                                <input type="radio" id="jawaban_<?php echo $p['soal_id']; ?>_baik" name="jawaban_<?php echo $p['soal_id']; ?>" value="baik">
-                                <label for="jawaban_<?php echo $p['soal_id']; ?>_baik">Baik</label><br>
-                                <input type="radio" id="jawaban_<?php echo $p['soal_id']; ?>_sangat_baik" name="jawaban_<?php echo $p['soal_id']; ?>" value="sangat_baik">
-                                <label for="jawaban_<?php echo $p['soal_id']; ?>_sangat_baik">Sangat Baik</label>
-                            </div>
-                        </div>
-                        <hr> 
-                    </div>
-
+    <div class="container">
+        <?php include '../header.php'; ?>
+        <section>
+            <div class="content">
+                <h2>Survey Fasilitas</h2>
+                <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="POST">
                 <?php
-                        $no++;
-                    }
-                ?>
-            <div class="button-container">
-                <button class="button-kembali">Kembali</button>
-                <input type="submit" class="btn btn-outline-light button-simpan" name="simpan" value="Simpan">
-            </div> 
-        </form>   
-    </div>
-    <div class="popup-overlay"></div>
-    <div class="popup-container">
-        <p class="popupmessage">Survey Fasilitas Telah Diisi</p>
-        <button class="popupbutton" onclick="closePopup()">Lanjut</button>
-    </div>
+                    $no = 1;
+                    foreach ($fasilitas as $p) {
+                        ?>
+                            <div class="survey-question">
+                                <label for="jawaban_<?php echo $p['soal_id']; ?>"><?php echo $p['soal_nama']; ?></label>
+                                <div class="pilihan-container">
+                                    <div class="pilihan1">
+                                        <input type="radio" id="jawaban_<?php echo $p['soal_id']; ?>_kurang" name="jawaban_<?php echo $p['soal_id']; ?>" value="kurang">
+                                        <label for="jawaban_<?php echo $p['soal_id']; ?>_kurang">Kurang</label><br>
+                                        <input type="radio" id="jawaban_<?php echo $p['soal_id']; ?>_cukup" name="jawaban_<?php echo $p['soal_id']; ?>" value="cukup">
+                                        <label for="jawaban_<?php echo $p['soal_id']; ?>_cukup">Cukup</label>
+                                    </div>
+                                    <div class="pilihan2">
+                                        <input type="radio" id="jawaban_<?php echo $p['soal_id']; ?>_baik" name="jawaban_<?php echo $p['soal_id']; ?>" value="baik">
+                                        <label for="jawaban_<?php echo $p['soal_id']; ?>_baik">Baik</label><br>
+                                        <input type="radio" id="jawaban_<?php echo $p['soal_id']; ?>_sangat_baik" name="jawaban_<?php echo $p['soal_id']; ?>" value="sangat_baik">
+                                        <label for="jawaban_<?php echo $p['soal_id']; ?>_sangat_baik">Sangat Baik</label>
+                                    </div>
+                                </div>
+                                <hr> 
+                            </div>
 
-    <script>
-        <?php if ($jumlah_survey > 0): ?>
-            document.querySelector('.popup-overlay').style.display = 'block';
-            document.querySelector('.popup-container').style.display = 'block';
-        <?php endif; ?>
+                        <?php
+                                $no++;
+                            }
+                        ?>
+                    <div class="button-container">
+                        <button class="button-kembali">Kembali</button>
+                        <input type="submit" class="btn btn-outline-light button-simpan" name="simpan" value="Simpan">
+                    </div> 
+                </form>   
+            </div>
+            <div class="popup-overlay"></div>
+            <div class="popup-container">
+                <p class="popupmessage">Survey Fasilitas Telah Diisi</p>
+                <button class="popupbutton" onclick="closePopup()">Lanjut</button>
+            </div>
 
-        function closePopup() {
-            document.querySelector('.popup-overlay').style.display = 'none';
-            document.querySelector('.popup-container').style.display = 'none';
-            window.location.href = "dashboard-dosen.php";
-        }
-    </script>
-</section>
+            <script>
+                <?php if ($jumlah_survey > 0): ?>
+                    document.querySelector('.popup-overlay').style.display = 'block';
+                    document.querySelector('.popup-container').style.display = 'block';
+                <?php endif; ?>
+
+                function closePopup() {
+                    document.querySelector('.popup-overlay').style.display = 'none';
+                    document.querySelector('.popup-container').style.display = 'none';
+                    window.location.href = "dashboard-dosen.php";
+                }
+            </script>
+        </section>
+    </div> 
 </body>
 </html>

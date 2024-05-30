@@ -1,6 +1,12 @@
 <?php
 session_start();
-include '../koneksi.php';
+include '../Koneksi.php';
+
+ob_start();
+
+$db = new Koneksi();
+
+$kon = $db->getConnection();
 
 if (!isset($_SESSION['username'])) {
     header("Location: ../login/login.php");

@@ -1,25 +1,28 @@
 <?php
-include '../Koneksi.php';
 include 'Survey.php';
 
-// Periksa apakah pengguna telah login
+ob_start();
+
+$db = new Koneksi();
+
+$kon = $db->getConnection();
+
 if (!isset($_SESSION['username'])) {
-    // Jika belum, redirect pengguna ke halaman login
     header("Location: ../login/login.php");
-    exit(); // Pastikan untuk keluar dari skrip setelah redirect
+    exit(); 
 }
 
 class SurveyLulusan {
     private $survey;
 
-    public function __construct() {
-        $this->survey = new Survey(); // Instantiate the Survey class
+    public function __construct($kon) {
+        $this->survey = new Survey($kon);
     }
 
     public function renderSurveyLulusan() {
         if(isset($_POST['hapus']) && isset($_POST['soal_id'])) {
             $soal_id = $_POST['soal_id'];
-            $pesan = $this->survey->hapusPertanyaan($soal_id); // Panggil metode hapusPertanyaan langsung
+            $pesan = $this->survey->hapusPertanyaan($soal_id); 
         }
 
         $kategori_id = 4;
@@ -29,8 +32,10 @@ class SurveyLulusan {
     }
 }
 
-$surveyLulusan = new SurveyLulusan();
+$surveyLulusan = new SurveyLulusan($kon);
 ?>
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -45,7 +50,6 @@ $surveyLulusan = new SurveyLulusan();
     <link rel="stylesheet" href="../header.css">
     <script src="https://code.jquery.com/jquery-3.4.1.js"></script>
     <style>
-        /* Updated CSS */
         h2 {
             font-weight: bold;
             margin-bottom: 15px;
@@ -58,7 +62,6 @@ $surveyLulusan = new SurveyLulusan();
             border-radius: 10px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             margin-bottom: 0;
-
         }
 
         .survey-question h3 {
@@ -106,22 +109,19 @@ $surveyLulusan = new SurveyLulusan();
             border: none;
             font-size: 12px;
             height: auto;
-            background-color: #E87818; /* Change to orange */
+            background-color: #E87818; 
             color: white;
             margin-left: auto;
             border-radius: 10px;
+            text-decoration: none;
         }
 
-        .button-tambah {
-            padding: 5px 10px;
-            font-size: 15px;
-            margin-top: 10px;
-            margin-left: 1230px;
-            background-color: #2d1b6b;
-            border: none;
+        .button-hapus:hover {
+            background-color: white;
+            border: 1px solid #E87818;
+            border-radius: 5px;
             text-decoration: none;
-            color: white;
-            border-radius: 8px;
+            color: black;
         }
 
         .button-edit {
@@ -134,6 +134,34 @@ $surveyLulusan = new SurveyLulusan();
             color: white;
             border-radius: 10px;
             text-decoration: none;
+        }
+
+        .button-edit:hover {
+            background-color: white;
+            border: 1px solid #2d1b6b;
+            border-radius: 5px;
+            text-decoration: none;
+            color: black;
+        }
+
+        .button-tambah {
+            padding: 5px 10px;
+            font-size: 15px;
+            margin-top: 20px;
+            margin-left: 1226px;
+            background-color: white;
+            border: none;
+            text-decoration: none;
+            font-weight: bold;
+            color: black;
+            border-radius: 8px;
+        }
+
+        .button-tambah:hover {
+            background-color: #2d1b6b ;
+            border-radius: 5px;
+            text-decoration: none;
+            color: white;
         }
 
         hr {

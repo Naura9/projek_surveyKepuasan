@@ -1,9 +1,11 @@
 <?php
-session_start();  // Ensure session start at the beginning
-@include '../koneksi.php';
+session_start();
+include '../Koneksi.php';
+
+$db = new Koneksi();
+$kon = $db->getConnection();
 
 if (!isset($_SESSION['role'])) {
-    // Redirect to another page if the role is not set
     header('Location: profil_form.php');
     exit;
 }

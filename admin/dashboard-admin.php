@@ -1,15 +1,18 @@
 <?php
 session_start();
-include '../koneksi.php';
+include '../Koneksi.php';
 
-// Periksa apakah pengguna telah login
+ob_start();
+
+$db = new Koneksi();
+
+$kon = $db->getConnection();
+
 if (!isset($_SESSION['username'])) {
-    // Jika belum, redirect pengguna ke halaman login
     header("Location: ../login/login.php");
-    exit(); // Pastikan untuk keluar dari skrip setelah redirect
+    exit(); 
 }
 
-// Ambil nilai username dan role dari sesi
 $username = $_SESSION['username'];
 $role = $_SESSION['role'];
 $nama = $_SESSION['nama'];
@@ -26,7 +29,6 @@ $query_user_survey = "SELECT
 $result_user_survey = mysqli_query($kon, $query_user_survey);
 $row_count_survey = mysqli_fetch_assoc($result_user_survey);
 
-// Ambil nilai-nilai jumlah survey untuk masing-masing jenis pengguna
 $mahasiswa_count = $row_count_survey['mahasiswa_count'];
 $alumni_count = $row_count_survey['alumni_count'];
 $ortu_count = $row_count_survey['ortu_count'];
@@ -34,7 +36,6 @@ $tendik_count = $row_count_survey['tendik_count'];
 $industri_count = $row_count_survey['industri_count'];
 $dosen_count = $row_count_survey['dosen_count'];
 
-// Hitung total jumlah survey
 $total_user = $mahasiswa_count + $alumni_count + $ortu_count + $tendik_count + $industri_count + $dosen_count;
 
 $query_survey_ditanggapi = "SELECT SUM(jumlah_responden) AS jumlah_survey
@@ -55,7 +56,6 @@ if ($result_survey_ditanggapi) {
     $row_survey_ditanggapi = mysqli_fetch_assoc($result_survey_ditanggapi);
     $jumlah_survey_ditanggapi = $row_survey_ditanggapi['jumlah_survey'];
 } else {
-    // Penanganan kesalahan jika query gagal
     $jumlah_survey_ditanggapi = 0;
 }
 
@@ -109,7 +109,7 @@ if ($result_survey_ditanggapi) {
         }
 
         .kosong {
-            height: 53px;
+            height: 65px;
             background-color: #ececed;
 
         }

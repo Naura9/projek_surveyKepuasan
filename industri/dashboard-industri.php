@@ -1,35 +1,38 @@
 <?php
-session_start();
-include '../Koneksi.php';
+    session_start();
 
-if (!isset($_SESSION['username'])) {
-    header("Location: ../login/login.php");
-    exit(); 
-}
+    include '../Koneksi.php';
+    $db = new Koneksi();
+    $kon = $db->getConnection();
 
-$username = $_SESSION['username'];
-$role = $_SESSION['role'];
-$nama = $_SESSION['nama'];
+    if (!isset($_SESSION['username'])) {
+        header("Location: ../login/login.php");
+        exit(); 
+    }
 
-$query_get_responden_id = "SELECT responden_industri_id FROM t_responden_industri WHERE responden_nama = '$nama'";
-$result_get_responden_id = mysqli_query($kon, $query_get_responden_id);
-$row_get_responden_id = mysqli_fetch_assoc($result_get_responden_id);
-$responden_industri_id = $row_get_responden_id['responden_industri_id'];
+    $username = $_SESSION['username'];
+    $role = $_SESSION['role'];
+    $nama = $_SESSION['nama'];
 
-$query_get_profil_image = "SELECT image FROM t_responden_industri WHERE responden_nama = '$nama'";
-$result_get_profil_image = mysqli_query($kon, $query_get_profil_image);
-$row_get_profil_image = mysqli_fetch_assoc($result_get_profil_image);
-$profil_image = $row_get_profil_image['image'];
+    $query_get_responden_id = "SELECT responden_industri_id FROM t_responden_industri WHERE responden_nama = '$nama'";
+    $result_get_responden_id = mysqli_query($kon, $query_get_responden_id);
+    $row_get_responden_id = mysqli_fetch_assoc($result_get_responden_id);
+    $responden_industri_id = $row_get_responden_id['responden_industri_id'];
 
-$query_jumlah_survey = "SELECT COUNT(DISTINCT m_survey_soal.kategori_id) AS jumlah_survey
-                        FROM t_jawaban_industri
-                        INNER JOIN m_survey_soal ON t_jawaban_industri.soal_id = m_survey_soal.soal_id
-                        WHERE t_jawaban_industri.responden_industri_id = '$responden_industri_id'";
-$result_jumlah_survey = mysqli_query($kon, $query_jumlah_survey);
-$row_jumlah_survey = mysqli_fetch_assoc($result_jumlah_survey);
-$jumlah_survey_ditanggapi = $row_jumlah_survey['jumlah_survey'];
+    $query_get_profil_image = "SELECT image FROM t_responden_industri WHERE responden_nama = '$nama'";
+    $result_get_profil_image = mysqli_query($kon, $query_get_profil_image);
+    $row_get_profil_image = mysqli_fetch_assoc($result_get_profil_image);
+    $profil_image = $row_get_profil_image['image'];
 
+    $query_jumlah_survey = "SELECT COUNT(DISTINCT m_survey_soal.kategori_id) AS jumlah_survey
+                            FROM t_jawaban_industri
+                            INNER JOIN m_survey_soal ON t_jawaban_industri.soal_id = m_survey_soal.soal_id
+                            WHERE t_jawaban_industri.responden_industri_id = '$responden_industri_id'";
+    $result_jumlah_survey = mysqli_query($kon, $query_jumlah_survey);
+    $row_jumlah_survey = mysqli_fetch_assoc($result_jumlah_survey);
+    $jumlah_survey_ditanggapi = $row_jumlah_survey['jumlah_survey'];
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -37,7 +40,7 @@ $jumlah_survey_ditanggapi = $row_jumlah_survey['jumlah_survey'];
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Header</title>
+    <title>Dashboard Industri</title>
     <link href="https://cdn.lineicons.com/4.0/lineicons.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -86,7 +89,7 @@ $jumlah_survey_ditanggapi = $row_jumlah_survey['jumlah_survey'];
     </style>
 </head>
 <body>
-<div class="container">
+    <div class="container">
         <?php include '../header.php'; ?>
         <section>
             <div class="content">

@@ -2,6 +2,12 @@
 session_start();
 include '../Koneksi.php';
 
+ob_start();
+
+$db = new Koneksi();
+
+$kon = $db->getConnection();
+
 if (!isset($_SESSION['username'])) {
     header("Location: ../login/login.php");
     exit(); 
@@ -59,12 +65,69 @@ if(isset($_GET['responden_id']) && isset($_GET['role']) && isset($_GET['username
     <link rel="stylesheet" href="../header.css">
     <script src="https://code.jquery.com/jquery-3.4.1.js"></script>
     <style>
+        .username span {
+            margin-left: 45px;
+        }
+
+        .username {
+            background-color: #ececed;
+            flex-grow: 1;
+            display: flex;
+            align-items: center; 
+            border-left: 2px solid #ccc;
+            height: 80px;
+            border-bottom: 2px solid #a9a9ac;
+            justify-content: space-between;
+        }
+
+        .username i {
+            font-size: 23px;
+            color: black;
+        }
+
+        .sidebar-nav li a {
+            color: #333;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            padding: 10px 8px;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .sidebar-nav li a i {
+            margin-right: 10px;
+        }
+
+        .sidebar-nav li {
+            margin-bottom: 10px;
+        }
+
+        .sidebar-nav .collapse li a:hover, .sidebar-nav .collapse li.active > a {
+            background-color: #BEB8D1;
+            border-radius: 4px;
+        }
+
+        .message {
+            width: 5px;
+            margin-left: 885px;
+
+        
+        }
+        .sidebar-nav .active > a {
+            background-color: #BEB8D1;
+            border-radius: 4px;
+        }
+        .logout {
+            margin-left: 0px;
+            margin-right: 30px;
+        }
+
         h2 {
             font-weight: bold;
         }
         .profile-img {
-            width: 150px; /* Atur lebar gambar */
-            height: 150px; /* Atur tinggi gambar */
+            width: 150px;
+            height: 150px; 
         }
 
 
@@ -107,10 +170,6 @@ if(isset($_GET['responden_id']) && isset($_GET['role']) && isset($_GET['username
             height: 20px;
             background: #ececed;
         }
-        .message {
-            width: 5px;
-            margin-left: 885px
-        }
     </style>
 </head>
 <body>
@@ -133,32 +192,32 @@ if(isset($_GET['responden_id']) && isset($_GET['role']) && isset($_GET['username
 
     <nav class="sidebar">
         <ul class="sidebar-nav">
-            <li class="">
-                <a href="dashboard-admin.php" class="">
+            <li>
+                <a href="dashboard-admin.php">
                     <i class="fa-solid fa-house"></i>
                     Dashboard
                 </a>
             </li>
-            <li class="">
-                <a href="#" class="" data-bs-toggle="collapse" data-bs-target="#auth" aria-expanded="false" aria-controls="auth">
-                <i class="fa-solid fa-list-ol"></i> Survey
+            <li>
+                <a href="#" data-bs-toggle="collapse" data-bs-target="#auth" aria-expanded="false" aria-controls="auth">
+                    <i class="fa-solid fa-list-ol"></i> Survey
                     <span class="lni lni-chevron-down"></span>
                 </a>
-                <ul id="auth" class="" data-bs-parent="#sidebar">
-                    <li><a href="soal-pendidikan.php"><i class="fa-solid fa-medal"></i> Kualitas Pendidikan</a></li>
-                    <li><a href="soal-fasilitas.php"><i class="fa-solid fa-layer-group"></i>     Fasilitas</a></li>                    
-                    <li><a href="soal-pelayanan.php"><i class="fa-solid fa-handshake"></i>  Pelayanan</a></li>
-                    <li><a href="soal-lulusan.php"><i class="fa-solid fa-graduation-cap"></i>  Lulusan</a></li>
+                <ul id="auth" class="collapse" data-bs-parent="#sidebar">
+                    <li><a href="SurveyPendidikan.php"><i class="fa-solid fa-medal"></i> Kualitas Pendidikan</a></li>
+                    <li><a href="SurveyFasilitas.php"><i class="fa-solid fa-layer-group"></i> Fasilitas</a></li>                    
+                    <li><a href="SurveyPelayanan.php"><i class="fa-solid fa-handshake"></i> Pelayanan</a></li>
+                    <li><a href="SurveyLulusan.php"><i class="fa-solid fa-graduation-cap"></i> Lulusan</a></li>
                 </ul>
             </li>
-            <li class="">
-                <a href="responden-survey.php" class="">
+            <li>
+                <a href="responden-survey.php">
                     <i class="fa-solid fa-user-group"></i>
                     Responden
                 </a>
             </li>
-            <li class="">
-                <a href="laporan-survey.php" class="">
+            <li>
+                <a href="laporan-survey.php">
                     <i class="fa-solid fa-book-open"></i>
                     Laporan
                 </a>
@@ -202,7 +261,6 @@ if(isset($_GET['responden_id']) && isset($_GET['role']) && isset($_GET['username
             </tr>
             <table class="table table-bordered">
                     <?php
-                    // Tampilkan informasi responden sesuai dengan peran
                     switch ($role) {
                         case 'mahasiswa':
                             echo "<tr><td><strong>NIM</strong></td><td>{$detail_responden['responden_nim']}</td></tr>";
@@ -264,7 +322,6 @@ if(isset($_GET['responden_id']) && isset($_GET['role']) && isset($_GET['username
                     ?>
                 </table>
             </div>
-            <!-- Tombol kembali -->
             <tr>
             <td class="text-rigth" colspan="2">
                 <a href="responden-survey.php" class="btn btn-light btn-kembali">Kembali</a>
@@ -272,15 +329,75 @@ if(isset($_GET['responden_id']) && isset($_GET['role']) && isset($_GET['username
         </tr>
         </div>
     </section>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"></script>
+    <script>
+       document.addEventListener("DOMContentLoaded", function() {
+    var sidebarItems = document.querySelectorAll('.sidebar-nav > li > a');
+    var subSidebarItems = document.querySelectorAll('.sidebar-nav .collapse li > a');
+
+    function removeActiveClass() {
+        sidebarItems.forEach(function(el) {
+            el.parentElement.classList.remove('active');
+        });
+        subSidebarItems.forEach(function(el) {
+            el.parentElement.classList.remove('active');
+        });
+    }
+
+    sidebarItems.forEach(function(item) {
+        item.addEventListener('click', function() {
+            removeActiveClass();
+
+            this.parentElement.classList.add('active');
+
+            localStorage.setItem('activeSidebarItem', this.getAttribute('href'));
+            localStorage.removeItem('activeSubSidebarItem');
+        });
+    });
+
+    subSidebarItems.forEach(function(item) {
+        item.addEventListener('click', function(event) {
+            event.stopPropagation();
+            removeActiveClass();
+
+            this.parentElement.classList.add('active');
+            this.closest('.collapse').previousElementSibling.parentElement.classList.add('active');
+
+            localStorage.setItem('activeSubSidebarItem', this.getAttribute('href'));
+            localStorage.setItem('activeSidebarItem', this.closest('.collapse').previousElementSibling.getAttribute('href'));
+        });
+    });
+
+    var activeItem = localStorage.getItem('activeSidebarItem');
+    var activeSubItem = localStorage.getItem('activeSubSidebarItem');
+
+    if (activeItem) {
+        sidebarItems.forEach(function(item) {
+            if (item.getAttribute('href') === activeItem) {
+                item.parentElement.classList.add('active');
+            }
+        });
+    }
+
+    if (activeSubItem) {
+        subSidebarItems.forEach(function(item) {
+            if (item.getAttribute('href') === activeSubItem) {
+                item.parentElement.classList.add('active');
+                item.closest('.collapse').classList.add('show');
+                item.closest('.collapse').previousElementSibling.parentElement.classList.add('active');
+            }
+        });
+    }
+});
+
+    </script>
 </body>
 </html>
 <?php
     } else {
-        // Tampilkan pesan jika data responden tidak ditemukan
         echo "Data responden tidak ditemukan";
     }
 } else {
-    // Tampilkan pesan jika parameter responden_id atau role tidak ditemukan
     echo "Parameter responden_id atau role tidak ditemukan";
 }
 ?>

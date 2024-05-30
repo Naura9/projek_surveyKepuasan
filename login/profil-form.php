@@ -1,6 +1,9 @@
 <?php
 session_start();
-@include '../koneksi.php';  
+include '../Koneksi.php';
+
+$db = new Koneksi();
+$kon = $db->getConnection();
 
 $roleOptions = array();
 $enumQuery = "SHOW COLUMNS FROM m_registrasi LIKE 'role'";
@@ -82,7 +85,6 @@ if (isset($_POST['submit_alumni']) && $_SESSION['role'] === 'Alumni') {
     $responden_hp = mysqli_real_escape_string($kon, $_POST['responden_hp']);
     $tahun_lulus = mysqli_real_escape_string($kon, $_POST['tahun_lulus']);
     $image_path = "noprofil.jpg";
-
 
     $query = "INSERT INTO t_responden_alumni (survey_id, responden_tanggal, responden_nip, responden_nama, responden_prodi, responden_email, responden_hp, tahun_lulus, image)
               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";

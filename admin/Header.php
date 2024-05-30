@@ -20,21 +20,23 @@ $nama = $_SESSION['nama'];
         .username span {
             margin-left: 45px;
         }
+
         .username {
-        background-color: #ececed;
-        flex-grow: 1;
-        display: flex;
-        align-items: center; 
-        border-left: 2px solid #ccc;
-        height: 80px;
-        border-bottom: 2px solid #a9a9ac;
-        justify-content: space-between;
+            background-color: #ececed;
+            flex-grow: 1;
+            display: flex;
+            align-items: center; 
+            border-left: 2px solid #ccc;
+            height: 80px;
+            border-bottom: 2px solid #a9a9ac;
+            justify-content: space-between;
         }
 
         .username i {
-        font-size: 23px;
-        color: black;
+            font-size: 23px;
+            color: black;
         }
+
         .sidebar-nav li a {
             color: #333;
             text-decoration: none;
@@ -57,8 +59,6 @@ $nama = $_SESSION['nama'];
             border-radius: 4px;
         }
 
-        
-
         .message {
             width: 5px;
             margin-left: 885px;
@@ -70,11 +70,9 @@ $nama = $_SESSION['nama'];
             border-radius: 4px;
         }
         .logout {
-                    margin-left: 0px;
-                    margin-right: 30px;
-                }
-                
-
+            margin-left: 0px;
+            margin-right: 30px;
+        }
     </style>
 </head>
 <body>
@@ -136,7 +134,6 @@ $nama = $_SESSION['nama'];
     var sidebarItems = document.querySelectorAll('.sidebar-nav > li > a');
     var subSidebarItems = document.querySelectorAll('.sidebar-nav .collapse li > a');
 
-    // Function to remove active class from all items
     function removeActiveClass() {
         sidebarItems.forEach(function(el) {
             el.parentElement.classList.remove('active');
@@ -146,39 +143,30 @@ $nama = $_SESSION['nama'];
         });
     }
 
-    // Add event listener to sidebar items
     sidebarItems.forEach(function(item) {
         item.addEventListener('click', function() {
-            // Remove active class from all items
             removeActiveClass();
 
-            // Add active class to the clicked item
             this.parentElement.classList.add('active');
 
-            // Store the active item in localStorage
             localStorage.setItem('activeSidebarItem', this.getAttribute('href'));
             localStorage.removeItem('activeSubSidebarItem');
         });
     });
 
-    // Add event listener to sub-sidebar items
     subSidebarItems.forEach(function(item) {
         item.addEventListener('click', function(event) {
             event.stopPropagation();
-            // Remove active class from all items
             removeActiveClass();
 
-            // Add active class to the clicked item
             this.parentElement.classList.add('active');
             this.closest('.collapse').previousElementSibling.parentElement.classList.add('active');
 
-            // Store the active sub-item in localStorage
             localStorage.setItem('activeSubSidebarItem', this.getAttribute('href'));
             localStorage.setItem('activeSidebarItem', this.closest('.collapse').previousElementSibling.getAttribute('href'));
         });
     });
 
-    // Set the active item based on localStorage
     var activeItem = localStorage.getItem('activeSidebarItem');
     var activeSubItem = localStorage.getItem('activeSubSidebarItem');
 

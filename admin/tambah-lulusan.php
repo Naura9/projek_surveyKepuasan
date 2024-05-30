@@ -3,6 +3,12 @@
 
     include '../Koneksi.php';
     
+    ob_start();
+
+    $db = new Koneksi();
+    
+    $kon = $db->getConnection();
+    
     if (!isset($_SESSION['username'])) {
         header("Location: ../login/login.php");
         exit(); 
@@ -11,7 +17,60 @@
     $username = $_SESSION['username'];
     $role = $_SESSION['role'];
     $nama = $_SESSION['nama'];
+
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['simpan'])) {
+    $soal_nama = $_POST['question']; 
+    $kategori_id = 4; 
+    $soal_jenis = "skala"; 
+
+    $sql_survey_ids = "SELECT DISTINCT survey_id FROM m_survey_soal";
+
+    $result_survey_ids = mysqli_query($kon, $sql_survey_ids);
+
+    if ($result_survey_ids) {
+        while ($row_survey_id = mysqli_fetch_assoc($result_survey_ids)) {
+            $survey_id = $row_survey_id['survey_id'];
+
+            $sql_last_no_urut = "SELECT MAX(no_urut) AS last_no_urut FROM m_survey_soal WHERE survey_id = ?";
+            $stmt_last_no_urut = $kon->prepare($sql_last_no_urut);
+            $stmt_last_no_urut->bind_param("i", $survey_id);
+            $stmt_last_no_urut->execute();
+            $result_last_no_urut = $stmt_last_no_urut->get_result();
+
+            if ($row_last_no_urut = $result_last_no_urut->fetch_assoc()) {
+                $no_urut = $row_last_no_urut['last_no_urut'] + 1;
+            } else {
+                $no_urut = 1; 
+            }
+
+            $sql = "INSERT INTO m_survey_soal (survey_id, kategori_id, no_urut, soal_jenis, soal_nama) 
+                    VALUES (?, ?, ?, ?, ?)";
+
+            if ($stmt = $kon->prepare($sql)) {
+                $stmt->bind_param("iiiss", $survey_id, $kategori_id, $no_urut, $soal_jenis, $soal_nama);
+
+                if ($stmt->execute()) {
+                    echo "Pertanyaan lulusan berhasil ditambahkan untuk survey_id: $survey_id <br>";
+                } else {
+                    echo "Gagal menambahkan pertanyaan lulusan untuk survey_id: $survey_id <br>";
+                }
+
+                $stmt->close();
+            } else {
+                echo "Error: " . $kon->error;
+            }
+        }
+
+        header("Location: SurveyLulusan.php");
+        exit();
+    } else {
+        echo "Error: " . mysqli_error($kon);
+    }
+
+    $kon->close();
+}
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -27,7 +86,6 @@
      <link rel="stylesheet" href="../header.css">
     <script src="https://code.jquery.com/jquery-3.4.1.js"></script>
     <style>
-        /* CSS untuk menyesuaikan tata letak radio button */
         h2 {
             font-weight: bold;
         }
@@ -36,9 +94,11 @@
             margin-top: 20px;
             margin-bottom: 20px;
             margin-right: 100px;
-            background-color: white; /* Tambahkan background color merah */
-            padding: 10px; /* Tambahkan padding untuk memberi jarak antara konten dan border */
-            width : 1000px;
+            background-color: white;
+            padding: 10px; 
+            width : 1050px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 
         }
 
@@ -69,7 +129,7 @@
 
         .button-container {
             display: flex;
-            margin-top: 245px;
+            margin-top: 229px;
         }
 
         .button-container button {
@@ -81,15 +141,41 @@
 
         .button-kembali {
             background-color: white;
-            border: 1px solid black;
+            border-radius: 8px; 
+            text-decoration: none; 
+            padding: 9px 10px; 
+            font-size: 15px;
+            color: black; 
+            border: none;
+            text-decoration: none;
 
         }
 
+        .button-kembali:hover {
+            background-color: white;
+            border: 1px solid #2d1b6b;
+            border-radius: 8px;
+            text-decoration: none;
+            color: black;
+        }
+
         .button-simpan {
-            margin-left: 840px; 
+            margin-left: 875px; 
             background-color: #2d1b6b;
             color: white;
             border: 1px solid black;
+            border-radius: 8px; 
+            text-decoration: none; 
+            padding: 9px 10px; 
+            font-size: 15px;
+        }
+
+        .button-simpan:hover {
+            background-color: white;
+            border: 1px solid #2d1b6b;
+            border-radius: 8px;
+            text-decoration: none;
+            color: black;
         }
 
         .kosong {
@@ -100,71 +186,21 @@
 
         .message {
             width: 5px;
-            margin-left: 885px
+            margin-left: 900px
         }
     </style>
 </head>
 <body>
-<div class="container">
-        <nav class="navbar">
-            <div class="logo">
-                <img src="img/logo-nama.png" alt="Logo" width="100">
-            </div>
-            <div class="username">
-                <span><?php echo $nama; ?> | Admin </span>
-                <a href="permintaan-user.php" class="message">
-                    <i class="fa-regular fa-envelope"></i>
-                </a>
-                <a href="../login/logout.php" class="logout">
-                    <i class="fa-solid fa-arrow-right-from-bracket"></i>
-                </a>
-            </div>
-        </nav>
-    </div>
-
-    <nav class="sidebar">
-        <ul class="sidebar-nav">
-            <li class="">
-                <a href="dashboard-admin.php" class="">
-                    <i class="fa-solid fa-house"></i>
-                    Dashboard
-                </a>
-            </li>
-            <li class="">
-                <a href="#" class="" data-bs-toggle="collapse" data-bs-target="#auth" aria-expanded="false" aria-controls="auth">
-                <i class="fa-solid fa-list-ol"></i> Survey
-                    <span class="lni lni-chevron-down"></span>
-                </a>
-                <ul id="auth" class="" data-bs-parent="#sidebar">
-                    <li><a href="soal-pendidikan.php"><i class="fa-solid fa-medal"></i> Kualitas Pendidikan</a></li>
-                    <li><a href="soal-fasilitas.php"><i class="fa-solid fa-layer-group"></i>     Fasilitas</a></li>                    
-                    <li><a href="soal-pelayanan.php"><i class="fa-solid fa-handshake"></i>  Pelayanan</a></li>
-                    <li><a href="soal-lulusan.php"><i class="fa-solid fa-graduation-cap"></i>  Lulusan</a></li>
-                </ul>
-            </li>
-            <li class="">
-                <a href="responden-survey.php" class="">
-                    <i class="fa-solid fa-user-group"></i>
-                    Responden
-                </a>
-            </li>
-            <li class="">
-                <a href="laporan-survey.php" class="">
-                    <i class="fa-solid fa-book-open"></i>
-                    Laporan
-                </a>
-            </li>
-        </ul>
-    </nav>
+<?php include 'Header.php'; ?>
 
     <section>
     <div class="content">
-        <h2>Survey Lulusan Polinema</h2>
+        <h2 style="font-weight: bold;">Survey Lulusan Polinema</h2>
         <div class="survey-question">
-            <form action="proses-tambah-lulusan.php" method="POST">
-                <label for="question1">Pertanyaan</label>
+            <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="POST">
+                <label for="question1" style="font-weight: 630;">Pertanyaan</label>
                 <input type="text" class="form-control form-custom" name="question" id="question" placeholder="Masukkan Pertanyaan" required>
-                <label for="question1">Keterangan</label>
+                <label for="question1" style="margin-top: 10px; font-weight: 630;">Keterangan</label>
                 <div class="pilihan-container">
                     <div class="pilihan1">
                         <input type="radio" id="question1_kurang" name="question1" value="kurang">
@@ -180,16 +216,9 @@
                     </div>        
                 </div>
         </div>
-
-        <!-- Tambahkan pertanyaan lainnya sesuai kebutuhan -->
-       
-        <!-- Tambahkan pertanyaan lainnya sesuai kebutuhan -->
-        
-        
-        <!-- Button container -->
             <div class="button-container">
-                <a href="soal-lulusan.php" class="btn button-kembali">Kembali</a>
-                <button type="submit" class="btn button-simpan" name="simpan">Simpan</button>
+                <a href="SurveyLulusan.php" class="button-kembali">Kembali</a>
+                <button type="submit" class="button-simpan" name="simpan">Simpan</button>
             </div>    
         </form>
         <div class="kosong"></div>

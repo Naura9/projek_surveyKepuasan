@@ -1,6 +1,11 @@
 <?php
-include '../Koneksi.php';
 include 'Survey.php';
+
+ob_start();
+
+$db = new Koneksi();
+
+$kon = $db->getConnection();
 
 if (!isset($_SESSION['username'])) {
     header("Location: ../login/login.php");
@@ -10,24 +15,24 @@ if (!isset($_SESSION['username'])) {
 class SurveyFasilitas {
     private $survey;
 
-    public function __construct() {
-        $this->survey = new Survey(); // Instantiate the Survey class
+    public function __construct($kon) {
+        $this->survey = new Survey($kon); 
     }
-
+    
     public function renderSurveyFasilitas() {
         if(isset($_POST['hapus']) && isset($_POST['soal_id'])) {
             $soal_id = $_POST['soal_id'];
-            $pesan = $this->survey->hapusPertanyaan($soal_id); // Panggil metode hapusPertanyaan langsung
+            $pesan = $this->survey->hapusPertanyaan($soal_id); 
         }
 
-        $kategori_id = 2; // Asumsikan kategori ID untuk fasilitas  adalah 2
+        $kategori_id = 2; 
         $edit_soal = "edit-fasilitas.php";
         $questions = $this->survey->getSurveyQuestions($kategori_id);
         $this->survey->renderSurveyQuestions($questions, $kategori_id, $edit_soal, $_SERVER['PHP_SELF']);
     }
 }
 
-$surveyFasilitas = new SurveyFasilitas();
+$surveyFasilitas = new SurveyFasilitas($kon);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -43,7 +48,6 @@ $surveyFasilitas = new SurveyFasilitas();
     <link rel="stylesheet" href="../header.css">
     <script src="https://code.jquery.com/jquery-3.4.1.js"></script>
     <style>
-        /* Updated CSS */
         h2 {
             font-weight: bold;
             margin-bottom: 15px;
@@ -104,22 +108,19 @@ $surveyFasilitas = new SurveyFasilitas();
             border: none;
             font-size: 12px;
             height: auto;
-            background-color: #E87818; /* Change to orange */
+            background-color: #E87818; 
             color: white;
             margin-left: auto;
             border-radius: 10px;
+            text-decoration: none;
         }
 
-        .button-tambah {
-            padding: 5px 10px;
-            font-size: 15px;
-            margin-top: 10px;
-            margin-left: 1230px;
-            background-color: #2d1b6b;
-            border: none;
+        .button-hapus:hover {
+            background-color: white;
+            border: 1px solid #E87818;
+            border-radius: 5px;
             text-decoration: none;
-            color: white;
-            border-radius: 8px;
+            color: black;
         }
 
         .button-edit {
@@ -133,6 +134,35 @@ $surveyFasilitas = new SurveyFasilitas();
             border-radius: 10px;
             text-decoration: none;
         }
+
+        .button-edit:hover {
+            background-color: white;
+            border: 1px solid #2d1b6b;
+            border-radius: 5px;
+            text-decoration: none;
+            color: black;
+        }
+
+        .button-tambah {
+            padding: 5px 10px;
+            font-size: 15px;
+            margin-top: 20px;
+            margin-left: 1226px;
+            background-color: white;
+            border: none;
+            text-decoration: none;
+            font-weight: bold;
+            color: black;
+            border-radius: 8px;
+        }
+
+        .button-tambah:hover {
+            background-color: #2d1b6b ;
+            border-radius: 5px;
+            text-decoration: none;
+            color: white;
+        }
+
 
         hr {
             border: none;
