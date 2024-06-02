@@ -2,73 +2,67 @@
     session_start();
 
     include '../Koneksi.php';
-    
-    ob_start();
-
     $db = new Koneksi();
-    
     $kon = $db->getConnection();
     
-    if (!isset($_SESSION['username'])) {
+    if (!isset($_SESSION['user_id'])) {
         header("Location: ../login/login.php");
         exit(); 
     }
     
-    $username = $_SESSION['username'];
+    $user_id = $_SESSION['user_id'];
     $role = $_SESSION['role'];
     $nama = $_SESSION['nama'];
 
-if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['simpan'])) {
-    $soal_nama = $_POST['question']; 
-    $kategori_id = 4; 
-    $soal_jenis = "skala"; 
+    if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['simpan'])) {
+        $soal_nama = $_POST['question']; 
+        $kategori_id = 4; 
+        $soal_jenis = "skala"; 
 
-    $sql_survey_ids = "SELECT DISTINCT survey_id FROM m_survey_soal";
+        $sql_survey_ids = "SELECT DISTINCT survey_id FROM m_survey_soal";
 
-    $result_survey_ids = mysqli_query($kon, $sql_survey_ids);
+        $result_survey_ids = mysqli_query($kon, $sql_survey_ids);
 
-    if ($result_survey_ids) {
-        while ($row_survey_id = mysqli_fetch_assoc($result_survey_ids)) {
-            $survey_id = $row_survey_id['survey_id'];
+        if ($result_survey_ids) {
+            while ($row_survey_id = mysqli_fetch_assoc($result_survey_ids)) {
+                $survey_id = $row_survey_id['survey_id'];
 
-            $sql_last_no_urut = "SELECT MAX(no_urut) AS last_no_urut FROM m_survey_soal WHERE survey_id = ?";
-            $stmt_last_no_urut = $kon->prepare($sql_last_no_urut);
-            $stmt_last_no_urut->bind_param("i", $survey_id);
-            $stmt_last_no_urut->execute();
-            $result_last_no_urut = $stmt_last_no_urut->get_result();
+                $sql_last_no_urut = "SELECT MAX(no_urut) AS last_no_urut FROM m_survey_soal WHERE survey_id = ?";
+                $stmt_last_no_urut = $kon->prepare($sql_last_no_urut);
+                $stmt_last_no_urut->bind_param("i", $survey_id);
+                $stmt_last_no_urut->execute();
+                $result_last_no_urut = $stmt_last_no_urut->get_result();
 
-            if ($row_last_no_urut = $result_last_no_urut->fetch_assoc()) {
-                $no_urut = $row_last_no_urut['last_no_urut'] + 1;
-            } else {
-                $no_urut = 1; 
-            }
-
-            $sql = "INSERT INTO m_survey_soal (survey_id, kategori_id, no_urut, soal_jenis, soal_nama) 
-                    VALUES (?, ?, ?, ?, ?)";
-
-            if ($stmt = $kon->prepare($sql)) {
-                $stmt->bind_param("iiiss", $survey_id, $kategori_id, $no_urut, $soal_jenis, $soal_nama);
-
-                if ($stmt->execute()) {
-                    echo "Pertanyaan lulusan berhasil ditambahkan untuk survey_id: $survey_id <br>";
+                if ($row_last_no_urut = $result_last_no_urut->fetch_assoc()) {
+                    $no_urut = $row_last_no_urut['last_no_urut'] + 1;
                 } else {
-                    echo "Gagal menambahkan pertanyaan lulusan untuk survey_id: $survey_id <br>";
+                    $no_urut = 1; 
                 }
 
-                $stmt->close();
-            } else {
-                echo "Error: " . $kon->error;
+                $sql = "INSERT INTO m_survey_soal (survey_id, kategori_id, no_urut, soal_jenis, soal_nama) 
+                        VALUES (?, ?, ?, ?, ?)";
+
+                if ($stmt = $kon->prepare($sql)) {
+                    $stmt->bind_param("iiiss", $survey_id, $kategori_id, $no_urut, $soal_jenis, $soal_nama);
+
+                    if ($stmt->execute()) {
+                        $_SESSION['success_message'] = "Pertanyaan lulusan berhasil ditambahkan untuk survey_id: $survey_id <br>";
+                    } else {
+                        $_SESSION['error_message'] = "Gagal menambahkan pertanyaan lulusan untuk survey_id: $survey_id <br>";
+                    }
+                    $stmt->close();
+
+                    header("Location: SurveyLulusan.php");
+                    exit();
+                } else {
+                    echo "Error: " . $kon->error;
+                }
             }
+        } else {
+            echo "Error: " . mysqli_error($kon);
         }
-
-        header("Location: SurveyLulusan.php");
-        exit();
-    } else {
-        echo "Error: " . mysqli_error($kon);
+        $kon->close();
     }
-
-    $kon->close();
-}
 ?>
 
 
@@ -78,12 +72,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['simpan'])) {
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Header</title>
+    <title>Tambah Lulusan</title>
     <link href="https://cdn.lineicons.com/4.0/lineicons.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://kit.fontawesome.com/96cfbc074b.js" crossorigin="anonymous"></script>
-     <link rel="stylesheet" href="../header.css">
+    <link rel="stylesheet" href="../header.css">
     <script src="https://code.jquery.com/jquery-3.4.1.js"></script>
     <style>
         h2 {
@@ -99,7 +93,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['simpan'])) {
             width : 1050px;
             border-radius: 10px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-
         }
 
         .question1 {
@@ -148,7 +141,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['simpan'])) {
             color: black; 
             border: none;
             text-decoration: none;
-
         }
 
         .button-kembali:hover {
@@ -192,7 +184,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['simpan'])) {
 </head>
 <body>
 <?php include 'Header.php'; ?>
-
     <section>
     <div class="content">
         <h2 style="font-weight: bold;">Survey Lulusan Polinema</h2>
@@ -222,8 +213,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['simpan'])) {
             </div>    
         </form>
         <div class="kosong"></div>
-</section>
-
+    </section>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"></script>
     <script>
         $('nav ul li').click(function(){

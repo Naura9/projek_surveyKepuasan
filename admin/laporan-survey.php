@@ -1,220 +1,212 @@
 <?php
-session_start();
-include '../Koneksi.php';
+    session_start();
 
-ob_start();
+    include '../Koneksi.php';
+    $db = new Koneksi();
+    $kon = $db->getConnection();
 
-$db = new Koneksi();
+    if (!isset($_SESSION['user_id'])) {
+        header("Location: ../login/login.php");
+        exit(); 
+    }
 
-$kon = $db->getConnection();
+    $user_id = $_SESSION['user_id'];
+    $role = $_SESSION['role'];
+    $nama = $_SESSION['nama'];
 
-if (!isset($_SESSION['username'])) {
-    header("Location: ../login/login.php");
-    exit(); 
-}
+    $query_kategori_1 = "SELECT jawaban, COUNT(*) AS total
+                        FROM (
+                            SELECT j.jawaban 
+                            FROM t_jawaban_mahasiswa j
+                            JOIN m_survey_soal s ON j.soal_id = s.soal_id
+                            WHERE s.kategori_id = 1
+                            UNION ALL
+                            SELECT j.jawaban 
+                            FROM t_jawaban_dosen j
+                            JOIN m_survey_soal s ON j.soal_id = s.soal_id
+                            WHERE s.kategori_id = 1
+                            AND j.jawaban IN ('kurang', 'cukup', 'baik', 'sangat_baik')
+                            UNION ALL
+                            SELECT j.jawaban 
+                            FROM t_jawaban_tendik j
+                            JOIN m_survey_soal s ON j.soal_id = s.soal_id
+                            WHERE s.kategori_id = 1
+                            AND j.jawaban IN ('kurang', 'cukup', 'baik', 'sangat_baik')
+                            UNION ALL
+                            SELECT j.jawaban 
+                            FROM t_jawaban_ortu j
+                            JOIN m_survey_soal s ON j.soal_id = s.soal_id
+                            WHERE s.kategori_id = 1
+                            AND j.jawaban IN ('kurang', 'cukup', 'baik', 'sangat_baik')
+                            UNION ALL
+                            SELECT j.jawaban 
+                            FROM t_jawaban_industri j
+                            JOIN m_survey_soal s ON j.soal_id = s.soal_id
+                            WHERE s.kategori_id = 1
+                            AND j.jawaban IN ('kurang', 'cukup', 'baik', 'sangat_baik')
+                            UNION ALL
+                            SELECT j.jawaban 
+                            FROM t_jawaban_alumni j
+                            JOIN m_survey_soal s ON j.soal_id = s.soal_id
+                            WHERE s.kategori_id = 1
+                            AND j.jawaban IN ('kurang', 'cukup', 'baik', 'sangat_baik')
+                        ) AS combined_tables
+                        GROUP BY jawaban
+                        ORDER BY total DESC
+                        LIMIT 1;
+                        ";
 
-$username = $_SESSION['username'];
-$role = $_SESSION['role'];
-$nama = $_SESSION['nama'];
+    $query_kategori_2 = "SELECT jawaban, COUNT(*) AS total
+                        FROM (
+                            SELECT j.jawaban 
+                            FROM t_jawaban_mahasiswa j
+                            JOIN m_survey_soal s ON j.soal_id = s.soal_id
+                            WHERE s.kategori_id = 2
+                            AND j.jawaban IN ('kurang', 'cukup', 'baik', 'sangat_baik')
+                            UNION ALL
+                            SELECT j.jawaban 
+                            FROM t_jawaban_dosen j
+                            JOIN m_survey_soal s ON j.soal_id = s.soal_id
+                            WHERE s.kategori_id = 2
+                            AND j.jawaban IN ('kurang', 'cukup', 'baik', 'sangat_baik')
+                            UNION ALL
+                            SELECT j.jawaban 
+                            FROM t_jawaban_tendik j
+                            JOIN m_survey_soal s ON j.soal_id = s.soal_id
+                            WHERE s.kategori_id = 2
+                            AND j.jawaban IN ('kurang', 'cukup', 'baik', 'sangat_baik')
+                            UNION ALL
+                            SELECT j.jawaban 
+                            FROM t_jawaban_ortu j
+                            JOIN m_survey_soal s ON j.soal_id = s.soal_id
+                            WHERE s.kategori_id = 2
+                            AND j.jawaban IN ('kurang', 'cukup', 'baik', 'sangat_baik')
+                            UNION ALL
+                            SELECT j.jawaban 
+                            FROM t_jawaban_industri j
+                            JOIN m_survey_soal s ON j.soal_id = s.soal_id
+                            WHERE s.kategori_id = 2
+                            AND j.jawaban IN ('kurang', 'cukup', 'baik', 'sangat_baik')
+                            UNION ALL
+                            SELECT j.jawaban 
+                            FROM t_jawaban_alumni j
+                            JOIN m_survey_soal s ON j.soal_id = s.soal_id
+                            WHERE s.kategori_id = 2
+                            AND j.jawaban IN ('kurang', 'cukup', 'baik', 'sangat_baik')
+                        ) AS combined_tables
+                        GROUP BY jawaban
+                        ORDER BY total DESC
+                        LIMIT 1;
+                        ";
 
-$query_kategori_1 = "SELECT jawaban, COUNT(*) AS total
-                    FROM (
-                        SELECT j.jawaban 
-                        FROM t_jawaban_mahasiswa j
-                        JOIN m_survey_soal s ON j.soal_id = s.soal_id
-                        WHERE s.kategori_id = 1
-                        UNION ALL
-                        SELECT j.jawaban 
-                        FROM t_jawaban_dosen j
-                        JOIN m_survey_soal s ON j.soal_id = s.soal_id
-                        WHERE s.kategori_id = 1
-                        AND j.jawaban IN ('kurang', 'cukup', 'baik', 'sangat_baik')
-                        UNION ALL
-                        SELECT j.jawaban 
-                        FROM t_jawaban_tendik j
-                        JOIN m_survey_soal s ON j.soal_id = s.soal_id
-                        WHERE s.kategori_id = 1
-                        AND j.jawaban IN ('kurang', 'cukup', 'baik', 'sangat_baik')
-                        UNION ALL
-                        SELECT j.jawaban 
-                        FROM t_jawaban_ortu j
-                        JOIN m_survey_soal s ON j.soal_id = s.soal_id
-                        WHERE s.kategori_id = 1
-                        AND j.jawaban IN ('kurang', 'cukup', 'baik', 'sangat_baik')
-                        UNION ALL
-                        SELECT j.jawaban 
-                        FROM t_jawaban_industri j
-                        JOIN m_survey_soal s ON j.soal_id = s.soal_id
-                        WHERE s.kategori_id = 1
-                        AND j.jawaban IN ('kurang', 'cukup', 'baik', 'sangat_baik')
-                        UNION ALL
-                        SELECT j.jawaban 
-                        FROM t_jawaban_alumni j
-                        JOIN m_survey_soal s ON j.soal_id = s.soal_id
-                        WHERE s.kategori_id = 1
-                        AND j.jawaban IN ('kurang', 'cukup', 'baik', 'sangat_baik')
-                    ) AS combined_tables
-                    GROUP BY jawaban
-                    ORDER BY total DESC
-                    LIMIT 1;
-                    ";
+    $query_kategori_3 = "SELECT jawaban, COUNT(*) AS total
+                        FROM (
+                            SELECT j.jawaban 
+                            FROM t_jawaban_mahasiswa j
+                            JOIN m_survey_soal s ON j.soal_id = s.soal_id
+                            WHERE s.kategori_id = 3
+                            AND j.jawaban IN ('kurang', 'cukup', 'baik', 'sangat_baik')
+                            UNION ALL
+                            SELECT j.jawaban 
+                            FROM t_jawaban_dosen j
+                            JOIN m_survey_soal s ON j.soal_id = s.soal_id
+                            WHERE s.kategori_id = 3
+                            AND j.jawaban IN ('kurang', 'cukup', 'baik', 'sangat_baik')
+                            UNION ALL
+                            SELECT j.jawaban 
+                            FROM t_jawaban_alumni j
+                            JOIN m_survey_soal s ON j.soal_id = s.soal_id
+                            WHERE s.kategori_id = 3
+                            AND j.jawaban IN ('kurang', 'cukup', 'baik', 'sangat_baik')
+                            UNION ALL
+                            SELECT j.jawaban 
+                            FROM t_jawaban_tendik j
+                            JOIN m_survey_soal s ON j.soal_id = s.soal_id
+                            WHERE s.kategori_id = 3
+                            AND j.jawaban IN ('kurang', 'cukup', 'baik', 'sangat_baik')
+                            UNION ALL
+                            SELECT j.jawaban 
+                            FROM t_jawaban_industri j
+                            JOIN m_survey_soal s ON j.soal_id = s.soal_id
+                            WHERE s.kategori_id = 3
+                            AND j.jawaban IN ('kurang', 'cukup', 'baik', 'sangat_baik')
+                            UNION ALL
+                            SELECT j.jawaban 
+                            FROM t_jawaban_ortu j
+                            JOIN m_survey_soal s ON j.soal_id = s.soal_id
+                            WHERE s.kategori_id = 3
+                            AND j.jawaban IN ('kurang', 'cukup', 'baik', 'sangat_baik')
+                        ) AS combined_tables
+                        GROUP BY jawaban
+                        ORDER BY total DESC
+                        LIMIT 1;
+                        ";
 
-$query_kategori_2 = "SELECT jawaban, COUNT(*) AS total
-                    FROM (
-                        SELECT j.jawaban 
-                        FROM t_jawaban_mahasiswa j
-                        JOIN m_survey_soal s ON j.soal_id = s.soal_id
-                        WHERE s.kategori_id = 2
-                        AND j.jawaban IN ('kurang', 'cukup', 'baik', 'sangat_baik')
-                        UNION ALL
-                        SELECT j.jawaban 
-                        FROM t_jawaban_dosen j
-                        JOIN m_survey_soal s ON j.soal_id = s.soal_id
-                        WHERE s.kategori_id = 2
-                        AND j.jawaban IN ('kurang', 'cukup', 'baik', 'sangat_baik')
-                        UNION ALL
-                        SELECT j.jawaban 
-                        FROM t_jawaban_tendik j
-                        JOIN m_survey_soal s ON j.soal_id = s.soal_id
-                        WHERE s.kategori_id = 2
-                        AND j.jawaban IN ('kurang', 'cukup', 'baik', 'sangat_baik')
-                        UNION ALL
-                        SELECT j.jawaban 
-                        FROM t_jawaban_ortu j
-                        JOIN m_survey_soal s ON j.soal_id = s.soal_id
-                        WHERE s.kategori_id = 2
-                        AND j.jawaban IN ('kurang', 'cukup', 'baik', 'sangat_baik')
-                        UNION ALL
-                        SELECT j.jawaban 
-                        FROM t_jawaban_industri j
-                        JOIN m_survey_soal s ON j.soal_id = s.soal_id
-                        WHERE s.kategori_id = 2
-                        AND j.jawaban IN ('kurang', 'cukup', 'baik', 'sangat_baik')
-                        UNION ALL
-                        SELECT j.jawaban 
-                        FROM t_jawaban_alumni j
-                        JOIN m_survey_soal s ON j.soal_id = s.soal_id
-                        WHERE s.kategori_id = 2
-                        AND j.jawaban IN ('kurang', 'cukup', 'baik', 'sangat_baik')
-                    ) AS combined_tables
-                    GROUP BY jawaban
-                    ORDER BY total DESC
-                    LIMIT 1;
-                    ";
+    $query_kategori_4 = "SELECT jawaban, COUNT(*) AS total
+                        FROM (
+                            
+                            SELECT j.jawaban 
+                            FROM t_jawaban_mahasiswa j
+                            JOIN m_survey_soal s ON j.soal_id = s.soal_id
+                            WHERE s.kategori_id = 4
+                            AND j.jawaban IN ('kurang', 'cukup', 'baik', 'sangat_baik')
+                            UNION ALL
+                            SELECT j.jawaban 
+                            FROM t_jawaban_dosen j
+                            JOIN m_survey_soal s ON j.soal_id = s.soal_id
+                            WHERE s.kategori_id = 4
+                            AND j.jawaban IN ('kurang', 'cukup', 'baik', 'sangat_baik')
+                            UNION ALL
+                            SELECT j.jawaban 
+                            FROM t_jawaban_tendik j
+                            JOIN m_survey_soal s ON j.soal_id = s.soal_id
+                            WHERE s.kategori_id = 4
+                            AND j.jawaban IN ('kurang', 'cukup', 'baik', 'sangat_baik')
+                            UNION ALL
+                            SELECT j.jawaban 
+                            FROM t_jawaban_ortu j
+                            JOIN m_survey_soal s ON j.soal_id = s.soal_id
+                            WHERE s.kategori_id = 4
+                            AND j.jawaban IN ('kurang', 'cukup', 'baik', 'sangat_baik')
+                            UNION ALL
+                            SELECT j.jawaban 
+                            FROM t_jawaban_industri j
+                            JOIN m_survey_soal s ON j.soal_id = s.soal_id
+                            WHERE s.kategori_id = 4
+                            AND j.jawaban IN ('kurang', 'cukup', 'baik', 'sangat_baik')
+                            UNION ALL
+                            SELECT j.jawaban 
+                            FROM t_jawaban_alumni j
+                            JOIN m_survey_soal s ON j.soal_id = s.soal_id
+                            WHERE s.kategori_id = 4
+                            AND j.jawaban IN ('kurang', 'cukup', 'baik', 'sangat_baik')
+                        ) AS combined_tables
+                        GROUP BY jawaban
+                        ORDER BY total DESC
+                        LIMIT 1;
+                        ";
 
-$query_kategori_3 = "SELECT jawaban, COUNT(*) AS total
-                    FROM (
-                        SELECT j.jawaban 
-                        FROM t_jawaban_mahasiswa j
-                        JOIN m_survey_soal s ON j.soal_id = s.soal_id
-                        WHERE s.kategori_id = 3
-                        AND j.jawaban IN ('kurang', 'cukup', 'baik', 'sangat_baik')
-                        UNION ALL
-                        SELECT j.jawaban 
-                        FROM t_jawaban_dosen j
-                        JOIN m_survey_soal s ON j.soal_id = s.soal_id
-                        WHERE s.kategori_id = 3
-                        AND j.jawaban IN ('kurang', 'cukup', 'baik', 'sangat_baik')
-                        UNION ALL
-                        SELECT j.jawaban 
-                        FROM t_jawaban_alumni j
-                        JOIN m_survey_soal s ON j.soal_id = s.soal_id
-                        WHERE s.kategori_id = 3
-                        AND j.jawaban IN ('kurang', 'cukup', 'baik', 'sangat_baik')
-                        UNION ALL
-                        SELECT j.jawaban 
-                        FROM t_jawaban_tendik j
-                        JOIN m_survey_soal s ON j.soal_id = s.soal_id
-                        WHERE s.kategori_id = 3
-                        AND j.jawaban IN ('kurang', 'cukup', 'baik', 'sangat_baik')
-                        UNION ALL
-                        SELECT j.jawaban 
-                        FROM t_jawaban_industri j
-                        JOIN m_survey_soal s ON j.soal_id = s.soal_id
-                        WHERE s.kategori_id = 3
-                        AND j.jawaban IN ('kurang', 'cukup', 'baik', 'sangat_baik')
-                        UNION ALL
-                        SELECT j.jawaban 
-                        FROM t_jawaban_ortu j
-                        JOIN m_survey_soal s ON j.soal_id = s.soal_id
-                        WHERE s.kategori_id = 3
-                        AND j.jawaban IN ('kurang', 'cukup', 'baik', 'sangat_baik')
-                    ) AS combined_tables
-                    GROUP BY jawaban
-                    ORDER BY total DESC
-                    LIMIT 1;
-                    ";
+    $result_kategori_1 = mysqli_query($kon, $query_kategori_1);
+    $result_kategori_2 = mysqli_query($kon, $query_kategori_2);
+    $result_kategori_3 = mysqli_query($kon, $query_kategori_3);
+    $result_kategori_4 = mysqli_query($kon, $query_kategori_4);
 
-$query_kategori_4 = "SELECT jawaban, COUNT(*) AS total
-                    FROM (
-                        
-                        SELECT j.jawaban 
-                        FROM t_jawaban_mahasiswa j
-                        JOIN m_survey_soal s ON j.soal_id = s.soal_id
-                        WHERE s.kategori_id = 4
-                        AND j.jawaban IN ('kurang', 'cukup', 'baik', 'sangat_baik')
-                        UNION ALL
-                        SELECT j.jawaban 
-                        FROM t_jawaban_dosen j
-                        JOIN m_survey_soal s ON j.soal_id = s.soal_id
-                        WHERE s.kategori_id = 4
-                        AND j.jawaban IN ('kurang', 'cukup', 'baik', 'sangat_baik')
-                        UNION ALL
-                        SELECT j.jawaban 
-                        FROM t_jawaban_tendik j
-                        JOIN m_survey_soal s ON j.soal_id = s.soal_id
-                        WHERE s.kategori_id = 4
-                        AND j.jawaban IN ('kurang', 'cukup', 'baik', 'sangat_baik')
-                        UNION ALL
-                        SELECT j.jawaban 
-                        FROM t_jawaban_ortu j
-                        JOIN m_survey_soal s ON j.soal_id = s.soal_id
-                        WHERE s.kategori_id = 4
-                        AND j.jawaban IN ('kurang', 'cukup', 'baik', 'sangat_baik')
-                        UNION ALL
-                        SELECT j.jawaban 
-                        FROM t_jawaban_industri j
-                        JOIN m_survey_soal s ON j.soal_id = s.soal_id
-                        WHERE s.kategori_id = 4
-                        AND j.jawaban IN ('kurang', 'cukup', 'baik', 'sangat_baik')
-                        UNION ALL
-                        SELECT j.jawaban 
-                        FROM t_jawaban_alumni j
-                        JOIN m_survey_soal s ON j.soal_id = s.soal_id
-                        WHERE s.kategori_id = 4
-                        AND j.jawaban IN ('kurang', 'cukup', 'baik', 'sangat_baik')
-                    ) AS combined_tables
-                    GROUP BY jawaban
-                    ORDER BY total DESC
-                    LIMIT 1;
-                    ";
+    if ($result_kategori_1 && $result_kategori_2 && $result_kategori_3 && $result_kategori_4) {
+        $row_kategori_1 = mysqli_fetch_assoc($result_kategori_1);
+        $rata_rata_kategori_1 = $row_kategori_1 ? $row_kategori_1['jawaban'] : "";
+        $rata_rata_kategori_1 = ($rata_rata_kategori_1 === "sangat_baik") ? "sangat baik" : $rata_rata_kategori_1;
 
-$result_kategori_1 = mysqli_query($kon, $query_kategori_1);
-$result_kategori_2 = mysqli_query($kon, $query_kategori_2);
-$result_kategori_3 = mysqli_query($kon, $query_kategori_3);
-$result_kategori_4 = mysqli_query($kon, $query_kategori_4);
+        $row_kategori_2 = mysqli_fetch_assoc($result_kategori_2);
+        $rata_rata_kategori_2 = $row_kategori_2 ? $row_kategori_2['jawaban'] : "";
+        $rata_rata_kategori_2 = ($rata_rata_kategori_2 === "sangat_baik") ? "sangat baik" : $rata_rata_kategori_2;
 
-if ($result_kategori_1 && $result_kategori_2 && $result_kategori_3 && $result_kategori_4) {
-    $row_kategori_1 = mysqli_fetch_assoc($result_kategori_1);
-    $rata_rata_kategori_1 = $row_kategori_1 ? $row_kategori_1['jawaban'] : "";
-    // Jika hasil adalah "sangat_baik", ganti menjadi "sangat baik"
-    $rata_rata_kategori_1 = ($rata_rata_kategori_1 === "sangat_baik") ? "sangat baik" : $rata_rata_kategori_1;
+        $row_kategori_3 = mysqli_fetch_assoc($result_kategori_3);
+        $rata_rata_kategori_3 = $row_kategori_3 ? $row_kategori_3['jawaban'] : "";
+        $rata_rata_kategori_3 = ($rata_rata_kategori_3 === "sangat_baik") ? "sangat baik" : $rata_rata_kategori_3;
 
-    $row_kategori_2 = mysqli_fetch_assoc($result_kategori_2);
-    $rata_rata_kategori_2 = $row_kategori_2 ? $row_kategori_2['jawaban'] : "";
-    // Jika hasil adalah "sangat_baik", ganti menjadi "sangat baik"
-    $rata_rata_kategori_2 = ($rata_rata_kategori_2 === "sangat_baik") ? "sangat baik" : $rata_rata_kategori_2;
-
-    $row_kategori_3 = mysqli_fetch_assoc($result_kategori_3);
-    $rata_rata_kategori_3 = $row_kategori_3 ? $row_kategori_3['jawaban'] : "";
-    // Jika hasil adalah "sangat_baik", ganti menjadi "sangat baik"
-    $rata_rata_kategori_3 = ($rata_rata_kategori_3 === "sangat_baik") ? "sangat baik" : $rata_rata_kategori_3;
-
-    $row_kategori_4 = mysqli_fetch_assoc($result_kategori_4);
-    $rata_rata_kategori_4 = $row_kategori_4 ? $row_kategori_4['jawaban'] : "";
-    // Jika hasil adalah "sangat_baik", ganti menjadi "sangat baik"
-    $rata_rata_kategori_4 = ($rata_rata_kategori_4 === "sangat_baik") ? "sangat baik" : $rata_rata_kategori_4;
-
+        $row_kategori_4 = mysqli_fetch_assoc($result_kategori_4);
+        $rata_rata_kategori_4 = $row_kategori_4 ? $row_kategori_4['jawaban'] : "";
+        $rata_rata_kategori_4 = ($rata_rata_kategori_4 === "sangat_baik") ? "sangat baik" : $rata_rata_kategori_4;
 ?>
 
 
@@ -224,12 +216,12 @@ if ($result_kategori_1 && $result_kategori_2 && $result_kategori_3 && $result_ka
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Header</title>
+    <title>Laporan Survey</title>
     <link href="https://cdn.lineicons.com/4.0/lineicons.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://kit.fontawesome.com/96cfbc074b.js" crossorigin="anonymous"></script>
-     <link rel="stylesheet" href="../header.css">
+    <link rel="stylesheet" href="../header.css">
     <script src="https://code.jquery.com/jquery-3.4.1.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.min.js" integrity="sha512-L0Shl7nXXzIlBSUUPpxrokqq4ojqgZFQczTYlGjzONGTDAcLremjwaWv5A+EDLnxhQzY5xUZPWLOLqYRkY0Cbw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <style>
@@ -256,6 +248,10 @@ if ($result_kategori_1 && $result_kategori_2 && $result_kategori_3 && $result_ka
 
         .survey-box.right {
             margin-left: 15px;
+        }
+
+        .survey-box.right .chart {
+            margin-right: 100px;
         }
 
         .icon {
@@ -327,7 +323,6 @@ if ($result_kategori_1 && $result_kategori_2 && $result_kategori_3 && $result_ka
         }
     </style>
 </head>
-
 <body>
 <?php include 'Header.php'; ?>
     <section>
@@ -409,8 +404,6 @@ if ($result_kategori_1 && $result_kategori_2 && $result_kategori_3 && $result_ka
             </div>
         </div>
     </section>
-
-
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         const data = {
@@ -717,7 +710,6 @@ if ($result_kategori_1 && $result_kategori_2 && $result_kategori_3 && $result_ka
             }]
         };
 
-
         const config = {
             type: 'pie',
             data: data,
@@ -785,7 +777,6 @@ if ($result_kategori_1 && $result_kategori_2 && $result_kategori_3 && $result_ka
             config4
         );
     </script>
-
 </body>
 </html>
 <?php

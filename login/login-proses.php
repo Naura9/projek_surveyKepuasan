@@ -21,14 +21,15 @@ $result = mysqli_query($kon, $query);
 if (mysqli_num_rows($result) == 1) {
     $row = mysqli_fetch_assoc($result);
 
+    $user_id = $row['user_id'];
     $nama = $row['nama'];
     $role = $row['role'];
 
-    $_SESSION['username'] = $username;
+    $_SESSION['user_id'] = $user_id;
     $_SESSION['nama'] = $nama;
     $_SESSION['role'] = $role;
 
-    setcookie('username', $username, time() + 3600, '/');
+    setcookie('user_id', $user_id, time() + 3600, '/');
     setcookie('nama', $nama, time() + 3600, '/');
     setcookie('role', $role, time() + 3600, '/');
     
@@ -62,5 +63,4 @@ if (mysqli_num_rows($result) == 1) {
     header('Location: login.php?login_error=true');
 }
 
-ob_end_flush();
 ?>

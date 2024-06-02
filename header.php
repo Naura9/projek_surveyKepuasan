@@ -1,7 +1,50 @@
 <?php
-$username = $_SESSION['username'];
+$db = new Koneksi();
+$kon = $db->getConnection();
+
+$user_id = $_SESSION['user_id'];
 $role = $_SESSION['role'];
-$nama = $_SESSION['nama'];
+
+$nama = "";
+
+    if ($_SESSION['role'] == 'mahasiswa') {
+        $sql = "SELECT responden_nama FROM t_responden_mahasiswa 
+        JOIN m_survey ON m_survey.survey_id = t_responden_mahasiswa.survey_id
+        JOIN m_user ON m_user.user_id = m_survey.user_id
+        WHERE m_user.user_id = '$user_id'";
+    } elseif ($_SESSION['role'] == 'alumni') {
+        $sql = "SELECT responden_nama FROM t_responden_alumni 
+        JOIN m_survey ON m_survey.survey_id = t_responden_alumni.survey_id
+        JOIN m_user ON m_user.user_id = m_survey.user_id
+        WHERE m_user.user_id = '$user_id'";
+    } elseif ($_SESSION['role'] == 'tendik') {
+        $sql = "SELECT responden_nama FROM t_responden_tendik 
+        JOIN m_survey ON m_survey.survey_id = t_responden_tendik.survey_id
+        JOIN m_user ON m_user.user_id = m_survey.user_id
+        WHERE m_user.user_id = '$user_id'";
+    } elseif ($_SESSION['role'] == 'ortu') {
+        $sql = "SELECT responden_nama FROM t_responden_ortu 
+        JOIN m_survey ON m_survey.survey_id = t_responden_ortu.survey_id
+        JOIN m_user ON m_user.user_id = m_survey.user_id
+        WHERE m_user.user_id = '$user_id'";
+    } elseif ($_SESSION['role'] == 'dosen') {
+        $sql = "SELECT responden_nama FROM t_responden_dosen
+        JOIN m_survey ON m_survey.survey_id = t_responden_dosen.survey_id
+        JOIN m_user ON m_user.user_id = m_survey.user_id
+        WHERE m_user.user_id = '$user_id'";
+    } elseif ($_SESSION['role'] == 'industri') {
+        $sql = "SELECT responden_nama FROM t_responden_industri 
+        JOIN m_survey ON m_survey.survey_id = t_responden_industri.survey_id
+        JOIN m_user ON m_user.user_id = m_survey.user_id
+        WHERE m_user.user_id = '$user_id'";
+    }
+
+    $result = mysqli_query($kon, $sql);
+    
+    if ($result->num_rows > 0) {
+        $row = $result->fetch_assoc();
+        $nama = $row['responden_nama'];
+    }
 ?>
 
 <link rel="stylesheet" href="../header.css">

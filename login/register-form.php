@@ -1,7 +1,6 @@
 <?php
 session_start();
 include '../Koneksi.php';
-
 $db = new Koneksi();
 $kon = $db->getConnection();
 
@@ -15,12 +14,12 @@ if(isset($_POST['submit'])){
     $nama = mysqli_real_escape_string($kon, $_POST['nama']);
     $password = mysqli_real_escape_string($kon, $_POST['password']);
     $confirm_password = mysqli_real_escape_string($kon, $_POST['confirm_password']);
-    $role = $_SESSION['role'];  // Get role from session
+    $role = $_SESSION['role'];  
 
     if ($password !== $confirm_password) {
         $error[] = 'Password tidak cocok!';
     } else {
-        $pass = md5($password);  // MD5 hash for the password
+        $pass = md5($password); 
         $select = "SELECT * FROM m_registrasi WHERE nama = '$nama' && password = '$pass'";
         $result = mysqli_query($kon, $select);
         if(mysqli_num_rows($result) > 0){
@@ -33,8 +32,6 @@ if(isset($_POST['submit'])){
         }
     }
 }
-
-
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -51,14 +48,12 @@ if(isset($_POST['submit'])){
         .reg-container {
             max-width: 433px;
             font-size: 15px;
-
         }
 
         .form-group {
             width: 430px;
             margin-top: 20px;
             padding: 0px;
-
         }
 
         h3 {
@@ -66,8 +61,7 @@ if(isset($_POST['submit'])){
         }
 
         h4 {
-            color: #A1A5B7;
-            
+            color: #A1A5B7;   
         }
 
         .input-group label {
@@ -77,14 +71,13 @@ if(isset($_POST['submit'])){
 
         .input-group input[type="text"],
         .input-group input[type="password"]{
-
             width: 100%;
             padding: 8px;
             border: 1px solid #ccc;
             border-radius: 4px;
             box-sizing: border-box;
             margin-bottom: 20px;
-            background-color: #ececed; /* Anda dapat menyesuaikan warna sesuai kebutuhan */
+            background-color: #ececed; 
         }
 
         .input-group input[type="submit"] {
@@ -115,7 +108,6 @@ if(isset($_POST['submit'])){
             color: white;
             font-size: 15px;
             margin-top: 20px;
-
         }
     </style>
 </head>

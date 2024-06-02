@@ -1,90 +1,86 @@
 <?php
-session_start();
-include '../Koneksi.php';
+    session_start();
 
-ob_start();
+    include '../Koneksi.php';
+    $db = new Koneksi();
+    $kon = $db->getConnection();
 
-$db = new Koneksi();
+    if (!isset($_SESSION['user_id'])) {
+        header("Location: ../login/login.php");
+        exit();
+    }
 
-$kon = $db->getConnection();
+    $user_id = $_SESSION['user_id'];
+    $role = $_SESSION['role'];
+    $nama = $_SESSION['nama'];
 
-if (!isset($_SESSION['username'])) {
-    header("Location: ../login/login.php");
-    exit();
-}
+    $query_user = "SELECT nama, role FROM m_user WHERE user_id = '$user_id'";
 
-$username = $_SESSION['username'];
-$role = $_SESSION['role'];
-$nama = $_SESSION['nama'];
+    $result_user = mysqli_query($kon, $query_user);
 
-$query_user = "SELECT nama, role FROM m_user WHERE username = '$username'";
+    if ($result_user) {
+        $user_info = mysqli_fetch_assoc($result_user);
+        
+        $nama = $user_info['nama'];
+        $role = $user_info['role'];
+    } else {
+        $nama = "Nama Pengguna";
+        $role = "Role";
+    }
 
-$result_user = mysqli_query($kon, $query_user);
-
-if ($result_user) {
-    $user_info = mysqli_fetch_assoc($result_user);
-
-    $nama = $user_info['nama'];
-    $role = $user_info['role'];
-} else {
-    $nama = "Nama Pengguna";
-    $role = "Role";
-}
-
-$query_all_respondents = "
-(
-    SELECT DISTINCT m.nama, m.username, m.role, r.responden_mahasiswa_id AS responden_id, r.responden_tanggal
-    FROM t_jawaban_mahasiswa j
-    INNER JOIN t_responden_mahasiswa r ON j.responden_mahasiswa_id = r.responden_mahasiswa_id
-    INNER JOIN m_survey s ON s.survey_id = r.survey_id
-    INNER JOIN m_user m ON s.user_id = m.user_id
-    )
-    UNION
+    $query_all_respondents = "
     (
-    SELECT DISTINCT m.nama, m.username, m.role, r.responden_alumni_id AS responden_id, r.responden_tanggal
-    FROM t_jawaban_alumni j
-    INNER JOIN t_responden_alumni r ON j.responden_alumni_id = r.responden_alumni_id
-    INNER JOIN m_survey s ON s.survey_id = r.survey_id
-    INNER JOIN m_user m ON s.user_id = m.user_id
-    )
-    UNION
-    (
-    SELECT DISTINCT m.nama, m.username, m.role, r.responden_ortu_id AS responden_id, r.responden_tanggal
-    FROM t_jawaban_ortu j
-    INNER JOIN t_responden_ortu r ON j.responden_ortu_id = r.responden_ortu_id
-    INNER JOIN m_survey s ON s.survey_id = r.survey_id
-    INNER JOIN m_user m ON s.user_id = m.user_id
-    )
-    UNION
-    (
-    SELECT DISTINCT m.nama, m.username, m.role, r.responden_tendik_id AS responden_id, r.responden_tanggal
-    FROM t_jawaban_tendik j
-    INNER JOIN t_responden_tendik r ON j.responden_tendik_id = r.responden_tendik_id
-    INNER JOIN m_survey s ON s.survey_id = r.survey_id
-    INNER JOIN m_user m ON s.user_id = m.user_id
-    )
-    UNION
-    (
-    SELECT DISTINCT m.nama, m.username, m.role, r.responden_dosen_id AS responden_id, r.responden_tanggal
-    FROM t_jawaban_dosen j
-    INNER JOIN t_responden_dosen r ON j.responden_dosen_id = r.responden_dosen_id
-    INNER JOIN m_survey s ON s.survey_id = r.survey_id
-    INNER JOIN m_user m ON s.user_id = m.user_id
-    )
-    UNION
-    (
-    SELECT DISTINCT m.nama, m.username, m.role, r.responden_industri_id AS responden_id, r.responden_tanggal
-    FROM t_jawaban_industri j
-    INNER JOIN t_responden_industri r ON j.responden_industri_id = r.responden_industri_id
-    INNER JOIN m_survey s ON s.survey_id = r.survey_id
-    INNER JOIN m_user m ON s.user_id = m.user_id
-    )
-";
+        SELECT DISTINCT m.nama, m.username, m.role, r.responden_mahasiswa_id AS responden_id, r.responden_tanggal
+        FROM t_jawaban_mahasiswa j
+        INNER JOIN t_responden_mahasiswa r ON j.responden_mahasiswa_id = r.responden_mahasiswa_id
+        INNER JOIN m_survey s ON s.survey_id = r.survey_id
+        INNER JOIN m_user m ON s.user_id = m.user_id
+        )
+        UNION
+        (
+        SELECT DISTINCT m.nama, m.username, m.role, r.responden_alumni_id AS responden_id, r.responden_tanggal
+        FROM t_jawaban_alumni j
+        INNER JOIN t_responden_alumni r ON j.responden_alumni_id = r.responden_alumni_id
+        INNER JOIN m_survey s ON s.survey_id = r.survey_id
+        INNER JOIN m_user m ON s.user_id = m.user_id
+        )
+        UNION
+        (
+        SELECT DISTINCT m.nama, m.username, m.role, r.responden_ortu_id AS responden_id, r.responden_tanggal
+        FROM t_jawaban_ortu j
+        INNER JOIN t_responden_ortu r ON j.responden_ortu_id = r.responden_ortu_id
+        INNER JOIN m_survey s ON s.survey_id = r.survey_id
+        INNER JOIN m_user m ON s.user_id = m.user_id
+        )
+        UNION
+        (
+        SELECT DISTINCT m.nama, m.username, m.role, r.responden_tendik_id AS responden_id, r.responden_tanggal
+        FROM t_jawaban_tendik j
+        INNER JOIN t_responden_tendik r ON j.responden_tendik_id = r.responden_tendik_id
+        INNER JOIN m_survey s ON s.survey_id = r.survey_id
+        INNER JOIN m_user m ON s.user_id = m.user_id
+        )
+        UNION
+        (
+        SELECT DISTINCT m.nama, m.username, m.role, r.responden_dosen_id AS responden_id, r.responden_tanggal
+        FROM t_jawaban_dosen j
+        INNER JOIN t_responden_dosen r ON j.responden_dosen_id = r.responden_dosen_id
+        INNER JOIN m_survey s ON s.survey_id = r.survey_id
+        INNER JOIN m_user m ON s.user_id = m.user_id
+        )
+        UNION
+        (
+        SELECT DISTINCT m.nama, m.username, m.role, r.responden_industri_id AS responden_id, r.responden_tanggal
+        FROM t_jawaban_industri j
+        INNER JOIN t_responden_industri r ON j.responden_industri_id = r.responden_industri_id
+        INNER JOIN m_survey s ON s.survey_id = r.survey_id
+        INNER JOIN m_user m ON s.user_id = m.user_id
+        )
+    ";
 
-$result_all_respondents = mysqli_query($kon, $query_all_respondents);
-
-
+    $result_all_respondents = mysqli_query($kon, $query_all_respondents);
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -92,14 +88,13 @@ $result_all_respondents = mysqli_query($kon, $query_all_respondents);
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Header</title>
+    <title>Responden Survey</title>
     <link href="https://cdn.lineicons.com/4.0/lineicons.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://kit.fontawesome.com/96cfbc074b.js" crossorigin="anonymous"></script>
-     <link rel="stylesheet" href="../header.css">
+    <link rel="stylesheet" href="../header.css">
     <script src="https://code.jquery.com/jquery-3.4.1.js"></script>
-
     <style>
         .content {
             height: 650px;
@@ -112,7 +107,8 @@ $result_all_respondents = mysqli_query($kon, $query_all_respondents);
             margin-bottom: 0;
             margin-right: 50px;
         }
-            .table th {
+
+        .table th {
             padding-top: 15px;
             padding-bottom: 15px; 
         }
@@ -133,7 +129,6 @@ $result_all_respondents = mysqli_query($kon, $query_all_respondents);
                             <th></th>
                         </tr>
                     </thead>
-                    
                     <tbody>
                     <?php
                         while($row = mysqli_fetch_assoc($result_all_respondents)) {                
@@ -163,7 +158,6 @@ $result_all_respondents = mysqli_query($kon, $query_all_respondents);
                                     echo "<a href=\"detail-responden.php?responden_id=$responden_id&role={$row['role']}&username={$row['username']}\" class=\"btn btn-light btn-outline-dark button-edit\">Detail</a>";
                                 ?>
                             </td>
-
                         </tr>
                         <?php
                         }
@@ -174,8 +168,5 @@ $result_all_respondents = mysqli_query($kon, $query_all_respondents);
         </div>
         <div class="kosong"></div>
     </section>
-
-
-    
 </body>
 </html>

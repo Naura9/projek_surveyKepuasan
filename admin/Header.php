@@ -1,8 +1,10 @@
 <?php
-$username = $_SESSION['username'];
-$role = $_SESSION['role'];
-$nama = $_SESSION['nama'];
-?><!DOCTYPE html>
+    $user_id = $_SESSION['user_id'];
+    $role = $_SESSION['role'];
+    $nama = $_SESSION['nama'];
+?>
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -15,7 +17,6 @@ $nama = $_SESSION['nama'];
     <script src="https://kit.fontawesome.com/96cfbc074b.js" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="../header.css">
     <script src="https://code.jquery.com/jquery-3.4.1.js"></script>
-
     <style>
         .username span {
             margin-left: 45px;

@@ -5,16 +5,19 @@
     $db = new Koneksi();
     $kon = $db->getConnection();
 
-    if (!isset($_SESSION['username'])) {
+    if (!isset($_SESSION['user_id'])) {
         header("Location: ../login/login.php");
         exit(); 
     }
 
-    $username = $_SESSION['username'];
+    $user_id = $_SESSION['user_id'];
     $role = $_SESSION['role'];
     $nama = $_SESSION['nama'];
 
-    $query_get_profil_image = "SELECT image FROM t_responden_mahasiswa WHERE responden_nama = '$nama'";
+    $query_get_profil_image = "SELECT image FROM t_responden_mahasiswa 
+    JOIN m_survey ON m_survey.survey_id = t_responden_mahasiswa.survey_id
+    JOIN m_user ON m_user.user_id = m_survey.user_id
+    WHERE m_user.user_id = '$user_id'";
     $result_get_profil_image = mysqli_query($kon, $query_get_profil_image);
     $row_get_profil_image = mysqli_fetch_assoc($result_get_profil_image);
     $profil_image = $row_get_profil_image['image'];
@@ -22,12 +25,8 @@
     $query_profil = "SELECT * FROM t_responden_mahasiswa 
     JOIN m_survey ON m_survey.survey_id = t_responden_mahasiswa.survey_id
     JOIN m_user ON m_user.user_id = m_survey.user_id
-    WHERE responden_nama = '$nama'
-    ";
+    WHERE m_user.user_id = '$user_id'";
     $result_profil = mysqli_query($kon, $query_profil);
-
-    if(mysqli_num_rows($result_profil) > 0) {
-        while($mhs = mysqli_fetch_array($result_profil)){
 ?>
 
 
@@ -117,6 +116,10 @@
         <section>
             <div class="content">
                 <h2>Profil</h2>
+                <?php
+                    if(mysqli_num_rows($result_profil) > 0) {
+                        $mhs = mysqli_fetch_array($result_profil);
+                ?>
                 <div class="form-profile">
                     <tr>
                         <div class="profile-label">Foto Profil</div>
@@ -156,18 +159,17 @@
                     </tr>
                 </div>
                 <div class="button-container">
-                    <a href="edit-profil.php?username=<?php echo $username; ?>" class="btn btn-light btn-outline-dark button-edit">Edit</a>
+                    <a href="edit-profil.php?user_id=<?php echo $user_id; ?>" class="btn btn-light btn-outline-dark button-edit">Edit</a>
                 </div>
+                <?php
+                    } else {
+                        echo "Data profil tidak ditemukan.";
+                    }
+                    mysqli_close($kon);
+                ?>
             </div>
         </section>
     </div>
 </body>
 </html>
 
-<?php
-        }
-    } else {
-        echo "Data profil tidak ditemukan.";
-    }
-    mysqli_close($kon);
-?>

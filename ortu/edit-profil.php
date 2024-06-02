@@ -1,22 +1,23 @@
 <?php
     session_start();
-        
+
     include '../Koneksi.php';
     $db = new Koneksi();
     $kon = $db->getConnection();
 
-    if (!isset($_SESSION['username'])) {
+    if (!isset($_SESSION['user_id'])) {
         header("Location: ../login/login.php");
         exit(); 
     }
 
+    $user_id = $_SESSION['user_id'];
+    $role = $_SESSION['role'];
     $nama = $_SESSION['nama'];
-    $username = $_GET['username'];
 
     $query = "SELECT * FROM t_responden_ortu 
             JOIN m_survey ON m_survey.survey_id = t_responden_ortu.survey_id
             JOIN m_user ON m_user.user_id = m_survey.user_id
-            WHERE responden_nama = '$nama'";
+            WHERE m_user.user_id = '$user_id'";
 
     $res = mysqli_query($kon, $query); 
 
@@ -39,7 +40,10 @@
             header("Location: profil.php");
         }
 
-        $query_get_profil_image = "SELECT image FROM t_responden_ortu WHERE responden_nama = '$nama'";
+        $query_get_profil_image = "SELECT image FROM t_responden_ortu 
+        JOIN m_survey ON m_survey.survey_id = t_responden_ortu.survey_id
+        JOIN m_user ON m_user.user_id = m_survey.user_id
+        WHERE m_user.user_id = '$user_id'";
         $result_get_profil_image = mysqli_query($kon, $query_get_profil_image);
         $row_get_profil_image = mysqli_fetch_assoc($result_get_profil_image);
         $profil_image = $row_get_profil_image['image'];
@@ -202,7 +206,7 @@
                                 </div>						
                                 <div class="form-group text-left font-weight-bold">
                                     <label for="password">Password</label>
-                                    <input type="text" class="form-control bg-custom" name="password" id="password" value="xxxxxxxx">
+                                    <input type="password" class="form-control bg-custom" name="password" id="password" value="">
                                 </div>						
                                 <div class="form-group text-left font-weight-bold">
                                     <label for="email">Email</label>
@@ -249,7 +253,6 @@
                         </table>
                     </div>
 
-                <!-- Button container -->
                     <div class="button-container">
                         <a href="profil.php" class="btn btn-light btn-outline-dark button-kembali">Kembali</a>
                         <input type="submit" class="btn btn-outline-light button-simpan" name="simpan" value="Simpan">

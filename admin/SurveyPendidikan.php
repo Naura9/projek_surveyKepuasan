@@ -1,46 +1,28 @@
 <?php
+    include 'Survey.php';
+    $db = new Koneksi();
+    $kon = $db->getConnection();
 
-include 'Survey.php';
-
-ob_start();
-
-$db = new Koneksi();
-
-$kon = $db->getConnection();
-
-if (!isset($_SESSION['username'])) {
-    header("Location: ../login/login.php");
-}
-
-class SurveyPendidikan {
-    private $survey;
-    
-    public function __construct($kon) {
-        $this->survey = new Survey($kon); 
+    if (!isset($_SESSION['user_id'])) {
+        header("Location: ../login/login.php");
+        exit(); 
     }
 
-    public function renderSurveyPendidikan() {
-        if(isset($_POST['hapus']) && isset($_POST['soal_id'])) {
-            $soal_id = $_POST['soal_id'];
-            $pesan = $this->survey->hapusPertanyaan($soal_id); 
-        }
+    $survey = new Survey($kon);
 
-        $kategori_id = 1; 
-        $edit_soal = "edit-pendidikan.php";
-        $questions = $this->survey->getSurveyQuestions($kategori_id);
-        $this->survey->renderSurveyQuestions($questions, $kategori_id, $edit_soal, $_SERVER['PHP_SELF']);
+    if (isset($_POST['hapus']) && isset($_POST['soal_id'])) {
+        $soal_id = $_POST['soal_id'];
+        $pesan = $survey->hapusPertanyaan($soal_id);
     }
-}
-
-$surveyPendidikan = new SurveyPendidikan($kon);
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Survey Kualitas Pendidikan Polinema</title>
+    <title>Survey Fasilitas Polinema</title>
     <link href="https://cdn.lineicons.com/4.0/lineicons.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -179,7 +161,10 @@ $surveyPendidikan = new SurveyPendidikan($kon);
         <div class="content">
             <h2 style="font-weight: bold;">Survey Kualitas Pendidikan Polinema</h2>
             <div class="survey-card">
-                <?php $surveyPendidikan->renderSurveyPendidikan(); ?>
+                <?php 
+                $questions = $survey->getSurveyQuestions(1);
+                $survey->renderSurveyQuestions($questions, 1, "edit-pendidikan.php", $_SERVER['PHP_SELF']); 
+                ?>
             </div>
         </div>   
     </section>

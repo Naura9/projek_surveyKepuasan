@@ -1,27 +1,31 @@
-
 <?php
     session_start();
     
     include '../Koneksi.php';
     $db = new Koneksi();
     $kon = $db->getConnection();
-
-    if (!isset($_SESSION['username'])) {
+    
+    if (!isset($_SESSION['user_id'])) {
         header("Location: ../login/login.php");
         exit(); 
     }
     
-    $username = $_SESSION['username'];
+    $user_id = $_SESSION['user_id'];
     $role = $_SESSION['role'];
     $nama = $_SESSION['nama'];
 
-    $query_get_responden_id = "SELECT responden_tendik_id, survey_id FROM t_responden_tendik WHERE responden_nama = '$nama'";
+    $query_get_responden_id = "SELECT responden_tendik_id FROM t_responden_tendik 
+    JOIN m_survey ON m_survey.survey_id = t_responden_tendik.survey_id
+    JOIN m_user ON m_user.user_id = m_survey.user_id
+    WHERE m_user.user_id = '$user_id'";
     $result_get_responden_id = mysqli_query($kon, $query_get_responden_id);
     $row_get_responden_id = mysqli_fetch_assoc($result_get_responden_id);
     $responden_tendik_id = $row_get_responden_id['responden_tendik_id'];
-    $survey_id = $row_get_responden_id['survey_id'];
 
-    $query_get_profil_image = "SELECT image FROM t_responden_tendik WHERE responden_nama = '$nama'";
+    $query_get_profil_image = "SELECT image FROM t_responden_tendik 
+    JOIN m_survey ON m_survey.survey_id = t_responden_tendik.survey_id
+    JOIN m_user ON m_user.user_id = m_survey.user_id
+    WHERE m_user.user_id = '$user_id'";
     $result_get_profil_image = mysqli_query($kon, $query_get_profil_image);
     $row_get_profil_image = mysqli_fetch_assoc($result_get_profil_image);
     $profil_image = $row_get_profil_image['image'];
@@ -38,9 +42,10 @@
     FROM m_survey_soal
     JOIN m_survey ON m_survey_soal.survey_id = m_survey.survey_id
     JOIN m_kategori ON m_survey_soal.kategori_id = m_kategori.kategori_id
+    JOIN m_user ON m_user.user_id = m_survey.user_id
     WHERE m_kategori.kategori_id = 3
-    AND m_survey_soal.survey_id = '$survey_id'";
-
+    AND m_user.user_id = '$user_id'";
+        
     $result = mysqli_query($kon, $query);
 
     $pelayanan = array();
@@ -49,9 +54,12 @@
 	}
     
     if(isset($_POST['simpan'])) {
-        $username = $_SESSION['username']; 
         $nama = $_SESSION['nama']; 
-        $query_responden = "SELECT responden_tendik_id FROM t_responden_tendik WHERE responden_nama = '$nama'";
+        $query_responden = "SELECT responden_tendik_id FROM t_responden_tendik     
+        JOIN m_survey ON m_survey.survey_id = t_responden_tendik.survey_id
+        JOIN m_user ON m_user.user_id = m_survey.user_id
+        WHERE m_user.user_id = '$user_id'";
+    
         $result_responden = mysqli_query($kon, $query_responden);
         if(mysqli_num_rows($result_responden) > 0) {
             $data_responden = mysqli_fetch_assoc($result_responden);
@@ -67,8 +75,8 @@
         JOIN m_kategori ON m_survey_soal.kategori_id = m_kategori.kategori_id
         JOIN m_user ON m_survey.user_id = m_user.user_id
         WHERE m_kategori.kategori_id = 3
-        AND m_survey_soal.survey_id = '$survey_id'";
-        
+        AND m_user.user_id = '$user_id'";
+
         $result_soal_id = mysqli_query($kon, $query_soal_id);
     
         while ($row = mysqli_fetch_assoc($result_soal_id)) {
@@ -87,7 +95,7 @@
         $query_update_tanggal = "UPDATE t_responden_tendik SET responden_tanggal = CURDATE() WHERE responden_tendik_id = '$responden_tendik_id'";
         $result_update_tanggal = mysqli_query($kon, $query_update_tanggal);
     
-        $query_update_tanggal_survey = "UPDATE m_survey SET survey_tanggal = CURDATE() WHERE survey_id = '$survey_id'";
+        $query_update_tanggal_survey = "UPDATE m_survey SET survey_tanggal = CURDATE() WHERE user_id = '$user_id'";
         $result_update_tanggal_survey = mysqli_query($kon, $query_update_tanggal_survey);
     
         header("Location: dashboard-tendik.php");

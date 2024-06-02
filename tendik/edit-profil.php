@@ -1,49 +1,52 @@
 <?php
-session_start();
-    
-include '../Koneksi.php';
-$db = new Koneksi();
-$kon = $db->getConnection();
+    session_start();
 
-if (!isset($_SESSION['username'])) {
-    header("Location: ../login/login.php");
-    exit(); 
-}
+    include '../Koneksi.php';
+    $db = new Koneksi();
+    $kon = $db->getConnection();
 
-$nama = $_SESSION['nama'];
-$username = $_GET['username'];
-
-$query = "SELECT * FROM t_responden_tendik 
-        JOIN m_survey ON m_survey.survey_id = t_responden_tendik.survey_id
-        JOIN m_user ON m_user.user_id = m_survey.user_id
-        WHERE responden_nama = '$nama'";
-
-$res = mysqli_query($kon, $query); 
-
-if(mysqli_num_rows($res) > 0) {
-    $tendik = mysqli_fetch_assoc($res);
-
-    if(isset($_FILES["fileImg"]["name"])){ 
-        $id = $_POST["responden_tendik_id"];
-
-        $src = $_FILES["fileImg"]["tmp_name"];
-        $imageName = uniqid() . $_FILES["fileImg"]["name"]; 
-
-        $target = "img/" . $imageName;
-
-        move_uploaded_file($src, $target);
-
-        $query = "UPDATE t_responden_tendik SET image = '$imageName' WHERE responden_tendik_id = $id"; 
-        mysqli_query($kon, $query);
-
-        header("Location: profil.php");
+    if (!isset($_SESSION['user_id'])) {
+        header("Location: ../login/login.php");
+        exit(); 
     }
 
-    $query_get_profil_image = "SELECT image FROM t_responden_tendik WHERE responden_nama = '$nama'";
-    $result_get_profil_image = mysqli_query($kon, $query_get_profil_image);
-    $row_get_profil_image = mysqli_fetch_assoc($result_get_profil_image);
-    $profil_image = $row_get_profil_image['image'];
+    $user_id = $_SESSION['user_id'];
+    $role = $_SESSION['role'];
+    $nama = $_SESSION['nama'];
 
+    $query = "SELECT * FROM t_responden_tendik 
+        JOIN m_survey ON m_survey.survey_id = t_responden_tendik.survey_id
+        JOIN m_user ON m_user.user_id = m_survey.user_id
+        WHERE m_user.user_id = '$user_id'";
+
+    $res = mysqli_query($kon, $query); 
+
+    if(mysqli_num_rows($res) > 0) {
+        $tendik = mysqli_fetch_assoc($res);
+
+        if(isset($_FILES["fileImg"]["name"])){ 
+            $id = $_POST["responden_tendik_id"];
+
+            $src = $_FILES["fileImg"]["tmp_name"];
+            $imageName = uniqid() . $_FILES["fileImg"]["name"]; 
+
+            $target = "img/" . $imageName;
+
+            move_uploaded_file($src, $target);
+
+            $query = "UPDATE t_responden_tendik SET image = '$imageName' WHERE responden_tendik_id = $id"; 
+            mysqli_query($kon, $query);
+
+            header("Location: profil.php");
+        }
+
+        $query_get_profil_image = "SELECT image FROM t_responden_tendik 
+        JOIN m_survey ON m_survey.survey_id = t_responden_tendik.survey_id
+        JOIN m_user ON m_user.user_id = m_survey.user_id
+        WHERE m_user.user_id = '$user_id'";
+        $result_get_profil_image = mysqli_query($kon, $query_get_profil_image);
+        $row_get_profil_image = mysqli_fetch_assoc($result_get_profil_image);
+        $profil_image = $row_get_profil_image['image'];
 ?>    
 <!DOCTYPE html>
 <html lang="en">

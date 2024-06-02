@@ -1,39 +1,21 @@
 <?php
-include 'Survey.php';
+    include 'Survey.php';
+    $db = new Koneksi();
+    $kon = $db->getConnection();
 
-ob_start();
-
-$db = new Koneksi();
-
-$kon = $db->getConnection();
-
-if (!isset($_SESSION['username'])) {
-    header("Location: ../login/login.php");
-    exit(); 
-}
-
-class SurveyFasilitas {
-    private $survey;
-
-    public function __construct($kon) {
-        $this->survey = new Survey($kon); 
+    if (!isset($_SESSION['user_id'])) {
+        header("Location: ../login/login.php");
+        exit(); 
     }
-    
-    public function renderSurveyFasilitas() {
-        if(isset($_POST['hapus']) && isset($_POST['soal_id'])) {
-            $soal_id = $_POST['soal_id'];
-            $pesan = $this->survey->hapusPertanyaan($soal_id); 
-        }
 
-        $kategori_id = 2; 
-        $edit_soal = "edit-fasilitas.php";
-        $questions = $this->survey->getSurveyQuestions($kategori_id);
-        $this->survey->renderSurveyQuestions($questions, $kategori_id, $edit_soal, $_SERVER['PHP_SELF']);
+    $survey = new Survey($kon);
+
+    if (isset($_POST['hapus']) && isset($_POST['soal_id'])) {
+        $soal_id = $_POST['soal_id'];
+        $pesan = $survey->hapusPertanyaan($soal_id);
     }
-}
-
-$surveyFasilitas = new SurveyFasilitas($kon);
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -60,7 +42,6 @@ $surveyFasilitas = new SurveyFasilitas($kon);
             border-radius: 10px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             margin-bottom: 0;
-
         }
 
         .survey-question h3 {
@@ -163,7 +144,6 @@ $surveyFasilitas = new SurveyFasilitas($kon);
             color: white;
         }
 
-
         hr {
             border: none;
             border-top: 2px solid #ccc;
@@ -181,7 +161,10 @@ $surveyFasilitas = new SurveyFasilitas($kon);
         <div class="content">
             <h2 style="font-weight: bold;">Survey Fasilitas Polinema</h2>
             <div class="survey-card">
-                <?php $surveyFasilitas->renderSurveyFasilitas(); ?>
+                <?php 
+                $questions = $survey->getSurveyQuestions(2);
+                $survey->renderSurveyQuestions($questions, 2, "edit-fasilitas.php", $_SERVER['PHP_SELF']); 
+                ?>
             </div>
         </div>   
     </section>

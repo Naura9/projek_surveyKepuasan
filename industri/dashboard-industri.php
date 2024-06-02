@@ -5,21 +5,27 @@
     $db = new Koneksi();
     $kon = $db->getConnection();
 
-    if (!isset($_SESSION['username'])) {
+    if (!isset($_SESSION['user_id'])) {
         header("Location: ../login/login.php");
         exit(); 
     }
-
-    $username = $_SESSION['username'];
+    
+    $user_id = $_SESSION['user_id'];
     $role = $_SESSION['role'];
     $nama = $_SESSION['nama'];
 
-    $query_get_responden_id = "SELECT responden_industri_id FROM t_responden_industri WHERE responden_nama = '$nama'";
+    $query_get_responden_id = "SELECT responden_industri_id FROM t_responden_industri 
+    JOIN m_survey ON m_survey.survey_id = t_responden_industri.survey_id
+    JOIN m_user ON m_user.user_id = m_survey.user_id
+    WHERE m_user.user_id = '$user_id'";
     $result_get_responden_id = mysqli_query($kon, $query_get_responden_id);
     $row_get_responden_id = mysqli_fetch_assoc($result_get_responden_id);
     $responden_industri_id = $row_get_responden_id['responden_industri_id'];
 
-    $query_get_profil_image = "SELECT image FROM t_responden_industri WHERE responden_nama = '$nama'";
+    $query_get_profil_image = "SELECT image FROM t_responden_industri 
+    JOIN m_survey ON m_survey.survey_id = t_responden_industri.survey_id
+    JOIN m_user ON m_user.user_id = m_survey.user_id
+    WHERE m_user.user_id = '$user_id'";
     $result_get_profil_image = mysqli_query($kon, $query_get_profil_image);
     $row_get_profil_image = mysqli_fetch_assoc($result_get_profil_image);
     $profil_image = $row_get_profil_image['image'];
@@ -40,14 +46,13 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Industri</title>
+    <title>Dashboard industri</title>
     <link href="https://cdn.lineicons.com/4.0/lineicons.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://kit.fontawesome.com/96cfbc074b.js" crossorigin="anonymous"></script>
-     <link rel="stylesheet" href="../header.css">
+    <link rel="stylesheet" href="../header.css">
     <script src="https://code.jquery.com/jquery-3.4.1.js"></script>
-
     <style>
         .survey-box {
             background-color: #ffffff;

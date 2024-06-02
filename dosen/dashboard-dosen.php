@@ -5,21 +5,27 @@
     $db = new Koneksi();
     $kon = $db->getConnection();
 
-    if (!isset($_SESSION['username'])) {
+    if (!isset($_SESSION['user_id'])) {
         header("Location: ../login/login.php");
         exit(); 
     }
     
-    $username = $_SESSION['username'];
+    $user_id = $_SESSION['user_id'];
     $role = $_SESSION['role'];
     $nama = $_SESSION['nama'];
 
-    $query_get_responden_id = "SELECT responden_dosen_id FROM t_responden_dosen WHERE responden_nama = '$nama'";
+    $query_get_responden_id = "SELECT responden_dosen_id FROM t_responden_dosen 
+    JOIN m_survey ON m_survey.survey_id = t_responden_dosen.survey_id
+    JOIN m_user ON m_user.user_id = m_survey.user_id
+    WHERE m_user.user_id = '$user_id'";
     $result_get_responden_id = mysqli_query($kon, $query_get_responden_id);
     $row_get_responden_id = mysqli_fetch_assoc($result_get_responden_id);
     $responden_dosen_id = $row_get_responden_id['responden_dosen_id'];
 
-    $query_get_profil_image = "SELECT image FROM t_responden_dosen WHERE responden_nama = '$nama'";
+    $query_get_profil_image = "SELECT image FROM t_responden_dosen 
+    JOIN m_survey ON m_survey.survey_id = t_responden_dosen.survey_id
+    JOIN m_user ON m_user.user_id = m_survey.user_id
+    WHERE m_user.user_id = '$user_id'";
     $result_get_profil_image = mysqli_query($kon, $query_get_profil_image);
     $row_get_profil_image = mysqli_fetch_assoc($result_get_profil_image);
     $profil_image = $row_get_profil_image['image'];
@@ -31,7 +37,6 @@
     $result_jumlah_survey = mysqli_query($kon, $query_jumlah_survey);
     $row_jumlah_survey = mysqli_fetch_assoc($result_jumlah_survey);
     $jumlah_survey_ditanggapi = $row_jumlah_survey['jumlah_survey'];
-
 ?>
 
 
